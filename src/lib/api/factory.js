@@ -32,6 +32,7 @@ export const patchFactory = (data, restful) => PATCH(data, apiConfig.factory, re
 /** 查询单个车间
  * @param {String} restful - 车间唯一标志
  */
+console.log(apiConfig.workshop)
 export const queryWorkShop = (data, restful) => GET(data, apiConfig.workshop, restful);
 
 /** 新增车间

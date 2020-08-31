@@ -5,7 +5,8 @@
       <tpms-header ref="tpmsHeader" :formData="equipmentFormList" @inquireTableData="inquireTableData" />
     </el-row>
      <el-row class="buttom-group" type="flex" justify="end" align="middle">
-          <el-button class="button-more" size="small">导出</el-button>
+          <input @change="chooseFile" v-show="false" type="file" ref='file'>
+          <el-button @click='importFile' class="button-more" size="small">导入</el-button>
           <el-button
             class="button-more"
             type="primary"
@@ -30,17 +31,18 @@
             <span class="button" @click="seeEquipmentDetail(row)">详情</span>
           </template> -->
           <template slot="operation" slot-scope="{row}">
-            <span class="button" @click="showPlanDetail(row)">查看</span>
-            <span class="button" @click="brCodeIsShow=true">编辑</span>
+            <span class="button" @click="showPlanDetail(row)">查看详情</span>
+            <span class="button" @click="checkWorkorders(row)">查看工单</span>
+            <!-- <span class="button" @click="brCodeIsShow=true">编辑</span> -->
             <span class="button" @click="del(row.id)">删除</span>
-            <span class="button" @click="seeBOM(row)">发布</span>
+            <!-- <span class="button" @click="seeBOM(row)">发布</span> -->
           </template>
         </tpms-table>
       </el-card>
     </el-row>
 
     <!-- 查看详情对话框 -->
-    <el-dialog :visible.sync="detailDialog" width="80%" title="查看">
+    <el-dialog :visible.sync="detailDialog" width="80%" title="查看详情">
       <el-row>
         <el-form :model="detail" label-position="left" label-width="120px">
           <el-row>
@@ -102,25 +104,33 @@
         </el-form>
       </el-row>
     </el-dialog>
-    <!-- <el-dialog title="查看详情" :visible.sync="detailDialog" width="50%" :before-close="handleClose">
-      <div class="upkeep-form">
-        <div class="clearfix upkeep-line" v-for="(item,index) in detailDialogFormList" :key="index">
-          <div class="upkeep-item-left">
-            <span>{{item.leftLabel+'：'}}</span>
-            <span>{{detailDialogForm[item.leftName]}}</span>
-          </div>
-          <div class="upkeep-item-right">
-            <span>{{item.rightLabel+'：'}}</span>
-            <span>{{detailDialogForm[item.rightName]}}</span>
-          </div>
-        </div>
-      </div>
-      <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="detailDialog = false">
-          <i class="el-icon-edit"></i>返 回
-        </el-button>
-      </span>
+
+    <!-- 查看保养计划生成的工单 -->
+    <el-dialog :visible.sync="workerOrdersDialog" width="80%" title="查看工单">
+      <el-row>
+        <el-form :model="detail" label-position="left" label-width="120px">
+          <el-row style="background: #f5f5f5;padding: 0.2rem">
+            <!-- 表格区 -->
+            <el-table
+              :data="workerOrdersData"
+              style="width:100%"
+              border
+              default-expand-all
+              :tree-props="{children: 'childPlanContents', hasChildren: 'hasChildren'}"
+            >
+              <el-table-column align="center" type="index" label="项目" width="50"></el-table-column>
+              <!-- <el-table-column align="center" prop="executionNode" label="时间/部件" width="150"></el-table-column> -->
+              <el-table-column align="center" prop="planName" label="保养名称" width="300"></el-table-column>
+              <el-table-column align="center" prop="planNo" label="保养计划编号"></el-table-column> -->
+              <el-table-column align="center" prop="no" label="区域代号"></el-table-column>
+              <el-table-column align="center" prop="status" label="审批状态" width="110"></el-table-column>
+              <!-- <el-table-column align="center" prop="photoDisplay" label="图示"></el-table-column> -->
+            </el-table>
+          </el-row>
+        </el-form>
+      </el-row>
     </el-dialog>
+
     <!-- 编辑对话框 -->
     <el-dialog title="编辑" :visible.sync="editDialog" width="80%" :before-close="handleClose">
       <el-form
@@ -149,79 +159,7 @@
         </el-button>
       </span>
     </el-dialog>
-    <!-- 新增对话框 -->
-    <!-- <el-dialog title="新增" :visible.sync="newAddDialog" width="80%" :before-close="handleClose">
 
-          <el-form :model="newAddDialogForm" :rules="addRules" ref="ruleForm" label-position="left" label-width="120px">
-            <el-row>
-              <el-col :span="11">
-                <el-form-item label="保养名称" prop='name'>
-                  <el-input v-model="newAddDialogForm.name" />
-                </el-form-item>
-              </el-col>
-              <el-col :span="11" :offset="2">
-                <el-form-item label="保养计划编号" prop="no">
-                  <el-input v-model="newAddDialogForm.no" />
-                </el-form-item>
-              </el-col>
-               <el-col :span="11">
-                <el-form-item label="设备/生产线名称" prop="workshopName">
-                  <el-input v-model="newAddDialogForm.workshopName" />
-                </el-form-item>
-              </el-col>
-              <el-col :span="11" :offset="2">
-                <el-form-item label="审批状态">
-                  <el-select v-model="newAddDialogForm.status">
-                    <el-option
-                          v-for="item in equipmentFormList[1].checkList"
-                          :key="item.id"
-                          :label="item.label"
-                          :value="item.id">
-                        </el-option>
-                  </el-select>
-                </el-form-item>
-              </el-col>
-              <el-col :span="11">
-                <el-form-item label="保养部位">
-                  <el-input v-model="newAddDialogForm.executionPart" />
-                </el-form-item>
-              </el-col>
-              <el-col :span="11" :offset="2">
-                <el-form-item label="保养位置">
-                   <el-input v-model="newAddDialogForm.executionNode" />
-                </el-form-item>
-              </el-col>
-              <el-col :span="11">
-                <el-form-item label="保养内容">
-                  <el-input v-model="newAddDialogForm.content" />
-                </el-form-item>
-              </el-col>
-              <el-col :span="11" :offset="2">
-                <el-form-item label="执行顺序">
-                <el-input v-model="newAddDialogForm.sort" />
-                </el-form-item>
-              </el-col>
-              <el-col :span="11">
-                <el-form-item label="所属周期ID">
-                  <el-input v-model="newAddDialogForm.cycleId" />
-                </el-form-item>
-              </el-col>
-
-            </el-row>
-          </el-form>
-
-
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="newAddDialog = false">
-          <i class="el-icon-edit"></i>
-          取 消
-        </el-button>
-        <el-button type="primary" @click="add">
-          <i class="el-icon-edit"></i>
-          提交
-        </el-button>
-      </span>
-    </el-dialog> -->
 
     <!-- 新增对话框 -->
     <el-dialog title="新增" :visible.sync="newAddDialog" width="80%" :before-close="handleClose">
@@ -255,7 +193,14 @@
             </el-col>
             <el-col :span="11" :offset="2">
               <el-form-item label="审批状态" required="required">
-                <el-input v-model="newAddDialogForm.status"></el-input>
+                <el-select v-model="newAddDialogForm.status">
+                  <el-option v-for="(v,i) in statusSelect"
+                   :key='i'
+                   :value='v.value'
+                   :label='v.label'
+                  >
+                  </el-option>
+                </el-select>
               </el-form-item>
             </el-col>
           </el-row>
@@ -279,8 +224,6 @@
                 <el-input v-model="item.deviceNos"></el-input>
               </el-form-item>
             </el-col>
-
-            <!-- 表格区 -->
             <el-table
               :data="item.maintainPlanContents"
               style="width:100%"
@@ -334,7 +277,6 @@
                   </el-select>
                 </template>
               </el-table-column>
-
               <el-table-column align="center" width="280" label="操作" fixed="right">
                 <template slot-scope="scope">
                   <el-button size="small" @click="scope.row.editShow = true">编辑</el-button>
@@ -357,6 +299,117 @@
         </el-form>
       </el-row>
     </el-dialog>
+
+    <el-dialog title="预览" :visible.sync="previewDialog" width="80%" :before-close="handleClose">
+      <!-- 头部表单 -->
+      <el-row style="margin-top:40px">
+        <el-form :model="previewData" ref="form" label-width="140px" label-position="left">
+          <el-row
+
+            style="background: #f5f5f5;padding: 0.2rem"
+          >
+           <el-col :span="11">
+             <el-form-item label="保养名称" required="required">
+              <el-input v-model="previewData.name"></el-input>
+             </el-form-item>
+           </el-col>
+           <el-col :span="11" :offset="2">
+             <el-form-item label="保养计划编号" required="required">
+               <el-input v-model="previewData.no" ></el-input>
+             </el-form-item>
+           </el-col>
+           <el-col :span="11">
+             <el-form-item label="设备/生产线名称" required="required">
+               <el-input v-model="previewData.workshopName" ></el-input>
+             </el-form-item>
+           </el-col>
+           <el-col :span="11" :offset="2">
+             <el-form-item label="审批状态" required="required">
+               <el-select v-model="previewData.status">
+                 <el-option v-for="(v,i) in statusSelect"
+                  :key='i'
+                  :value='v.value'
+                  :label='v.label'
+                 >
+                 </el-option>
+               </el-select>
+             </el-form-item>
+           </el-col>
+            <el-table
+              :data="previewData.maintainContentColonies[0].maintainPlanContents"
+              style="width:100%"
+              border
+              row-key="id"
+              default-expand-all
+              :tree-props="{children: 'childPlanContents', hasChildren: 'hasChildren'}"
+            >
+              <el-table-column align="center" type="index" label="项目" width="80"></el-table-column>
+              <el-table-column align="center" label="保养部位" width="150">
+                <template slot-scope="scope">
+                  <el-input v-show="scope.row.editShow" v-model="scope.row.executionPart"></el-input>
+                  <span v-show="!scope.row.editShow">{{scope.row.executionPart}}</span>
+                </template>
+              </el-table-column>
+              <el-table-column align="center" label="保养位置" width="200">
+                <template slot-scope="scope">
+                  <el-input v-show="scope.row.editShow" v-model="scope.row.executionNode"></el-input>
+                  <span v-show="!scope.row.editShow">{{scope.row.executionNode}}</span>
+                </template>
+              </el-table-column>
+              <el-table-column align="center" label="保养内容" width="200">
+                <template slot-scope="scope">
+                  <el-input v-show="scope.row.editShow" v-model="scope.row.content"></el-input>
+                  <span v-show="!scope.row.editShow">{{scope.row.content}}</span>
+                </template>
+              </el-table-column>
+              <el-table-column align="center" label="执行顺序">
+                <template slot-scope="scope">
+                  <el-input v-show="scope.row.editShow" v-model="scope.row.sort"></el-input>
+                  <span v-show="!scope.row.editShow">{{scope.row.sort}}</span>
+                </template>
+              </el-table-column>
+              <el-table-column align="center" label="所属周期ID" width="200">
+                <!-- <template slot-scope="scope">
+                  <el-input v-show="scope.row.editShow" v-model="scope.row.cycleId"></el-input>
+                  <span v-show="!scope.row.editShow">{{scope.row.cycleId}}</span>
+                </template> -->
+                <template slot-scope="scope">
+                  <el-select
+                    v-model="scope.row.cycleId"
+                    style="width:100%"
+                    v-show="scope.row.editShow"
+                  >
+                    <el-option
+                      v-for="item in cycleList"
+                      :key="item.id"
+                      :label="item.label"
+                      :value="item.id"
+                    ></el-option>
+                  </el-select>
+                </template>
+              </el-table-column>
+              <el-table-column align="center" width="280" label="操作" fixed="right">
+                <template slot-scope="scope">
+                  <el-button size="small" @click="scope.row.editShow = true">编辑</el-button>
+                  <el-button size="small" @click="scope.row.editShow = false">保存</el-button>
+                  <el-button
+                    size="small"
+                    @click.native.prevent="deleteRow(scope.$index, item.maintainPlanContents)"
+                    style="margin-right:10px"
+                  >删除</el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-row>
+          <el-col :span="10" :offset="14" style="margin-top:20px">
+            <el-form-item>
+              <el-button type="primary" @click="saveFile">保存</el-button>
+              <el-button @click="previewDialog = false">取 消</el-button>
+            </el-form-item>
+          </el-col>
+        </el-form>
+      </el-row>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -365,7 +418,12 @@ import {
   checkPlanDetail, //查看保养计划详情
   addmaintainPlan, //新增保养计划
   deletePlanDetail, //删除保养计划
+  checkWorkorders, // 查看保养计划生成的工单
+  importFile     //导入文件
 } from "../../lib/api/upkeepManagePage.js";
+import {getWorkshopname} from '../../lib/api/user.js';
+//查询单个车间
+import {queryWorkShop} from '../../lib/api/factory.js';
 import { tpmsHeader, tpmsTable } from "../../components";
 import {getExamineStatus} from '../../utils/index'
 import {cycleSelect} from "../../lib/api/checkPlan";
@@ -414,16 +472,7 @@ export default {
       listData: [], //查看的列表详情
       detail:{},//查看的详情
       total:0,  //数据总数
-      periodSelect: [
-        {
-          value: "选项1",
-          label: "黄金糕",
-        },
-        {
-          value: "选项2",
-          label: "双皮奶",
-        },
-      ], // 周期的下拉选择框
+      // 周期的下拉选择框
       statusSelect: [
         {
           value: 1,
@@ -488,7 +537,7 @@ export default {
           label: "操作",
           slotName: "operation",
           fixed: "right",
-          width: "200px",
+          width: "220px",
         }
       ],
       detailDialog: false, // 控制查看详情对话框的打开与关闭
@@ -503,37 +552,8 @@ export default {
         preparePersion: "PHY-001", // 编制人
         prepareDate: "张三", // 编制日期
       },
-      detailDialogFormList: [
-        // 渲染查看详情表单的item项
-        {
-          leftLabel: "保养名称",
-          leftName: "upkeepName",
-          rightLabel: "保养计划编号",
-          rightName: "upkeepPlanNumber",
-        },
-        {
-          leftLabel: "版本",
-          leftName: "version",
-          rightLabel: "工位/工段",
-          rightName: "workshopStation",
-        },
-        {
-          leftLabel: "工时",
-          leftName: "workshopTime",
-          rightLabel: "设备(生产线)名称",
-          rightName: "partName",
-        },
-        {
-          leftLabel: "编制人",
-          leftName: "preparePersion",
-          rightLabel: "编制日期",
-          rightName: "prepareDate",
-        },
-      ],
       editDialog: false, // 控制编辑对话框的打开与关闭
-      editDialogForm: {
-        // 编辑对话框中表单的内容
-      },
+      editDialogForm: {},// 编辑对话框中表单的内容
       editDialogFormList: [
         // 渲染编辑对话框的表单内容
         {
@@ -585,78 +605,41 @@ export default {
           "name": "",
           "no": "",
           "reason": "",
-          "status": 0,
-          "workshopId": 0,
+          "status": '',
+          "workshopId": '',
           "workshopName": ""
       },   // 新增对话框头部表单
-      newAddDialogTable: [
-        // 新增对话框表格数据
-        {
-          timeOrPart: "开机前检查",
-          content: "润滑油站润滑油站润滑油站润滑油站润滑油站润滑油站",
-          workshopTime: "30",
-          period: "16",
-          photoDisplay: "",
-          editDate: "1",
-        },
-        {
-          timeOrPart: "开机前检查",
-          content: "润滑油站润滑油站油站润滑油站润滑油站",
-          workshopTime: "30",
-          period: "16",
-          photoDisplay: "",
-          editDate: "1",
-        },
-        {
-          timeOrPart: "开机前检查",
-          content: "润滑油站润滑油站润滑油站站润滑油站润滑油站",
-          workshopTime: "30",
-          period: "16",
-          photoDisplay: "",
-          editDate: "1",
-        },
-        {
-          timeOrPart: "开机前检查",
-          content: "润滑油站润油站润滑油站润滑油站",
-          workshopTime: "30",
-          period: "16",
-          photoDisplay: "",
-          editDate: "1",
-        },
-        {
-          timeOrPart: "开机前检查",
-          content: "润滑油站润油站",
-          workshopTime: "30",
-          period: "16",
-          photoDisplay: "",
-          editDate: "1",
-        },
-        {
-          timeOrPart: "开机前检查",
-          content: "润滑油站滑油站润滑油站润滑油站",
-          workshopTime: "30",
-          period: "16",
-          photoDisplay: "",
-          editDate: "1",
-        },
-        {
-          timeOrPart: "开机前检查",
-          content: "润滑油站润滑油站润滑油站润滑油站润滑油站润滑油站",
-          workshopTime: "30",
-          period: "16",
-          photoDisplay: "",
-          editDate: "1",
-        },
-        {
-          timeOrPart: "开机前检查",
-          content: "润滑油站润滑油站润滑油站润滑油站润滑油站",
-          workshopTime: "30",
-          period: "16",
-          photoDisplay: "",
-          editDate: "1",
-        },
-      ],
-    };
+      workerOrdersData:[],        //工单数据
+      workerOrdersDialog:false,//是否显示工单详情
+      previewDialog:false,   //是否显示预览dialog
+      previewData:{
+        "maintainContentColonies": [
+          {
+            "deviceNames": "",
+            "deviceNos": "",
+            "maintainPlanContents": [
+              {
+                "accessoryId": 0,
+                "accessoryUrl": "",
+                "content": "",
+                "cycleId": '',
+                "cycleName": "",
+                "executionNode": "",
+                "executionPart": "",
+                "sort": '',
+                "editShow":false
+              }
+            ]
+          }
+        ],
+        "name": "",
+        "no": "",
+        "reason": "",
+        "status": '',
+        "workshopId": '',
+        "workshopName": ""
+      }        ,//预览数据
+    }
   },
   components: {
     tpmsTable,
@@ -665,8 +648,67 @@ export default {
   mounted() {
     this.getData();
     this.getCycleList();
+    // this.getWorkShopName();
+    getWorkshopname();
   },
   methods: {
+    /**
+     * @description 保存导入的数据
+     */
+    saveFile(){
+
+       console.log(JSON.stringify(this.previewData))
+      addmaintainPlan(this.previewData).then(res=>{
+        this.$message.success('操作成功');
+        this.newAddDialog=false;
+        this.getData()
+      })
+    },
+    /**
+     * @description 选择要导入的文件
+     */
+    chooseFile(){
+      // console.log(this.$refs.file.files)
+      let file=this.$refs.file.files[0];
+      let formData=new FormData();
+      let workshopName=localStorage.getItem('workshopName');
+      formData.append('file',file);
+      formData.append('workshopName',workshopName);
+      importFile(formData).then(res=>{
+        let data=res.data[0];
+        data.maintainPlanContents=data.maintainPlanContents.map(item=>{
+          return Object.assign(item,{editShow:false})
+        })
+		let {name,workshopId}=JSON.parse(localStorage.getItem('user_info')).principal
+        this.previewData={
+			"maintainContentColonies":[data],
+			"name": name,
+			"no": "12",
+			"reason": "",
+			"status": '',
+			"workshopId": workshopId,
+			"workshopName": workshopName
+		};
+        this.previewDialog=true;
+      })
+    },
+    // 导入文件
+    importFile(){
+      this.$refs.file.click()
+    },
+    /**
+     * @description  查看保养计划生成的工单
+     * @param {Object} 当前查看保养的数据对象
+     */
+    checkWorkorders(row){
+      let {id}=row;
+      this.workerOrdersDialog=true
+      checkWorkorders(null,id).then(res=>{
+        console.log(res)
+        this.workerOrdersData=res.data.content;
+      })
+
+    },
     /** 获取周期列表 */
     getCycleList() {
       var workshopId = this.User_info.principal.workshopId;
@@ -675,6 +717,11 @@ export default {
         this.cycleList = res.data;
       });
     },
+    /**
+     * @description 删除指定的保养子项
+     * @param {Number} index  当前被删除项的下标
+     * @param {Object} row    当前被删除项的数组
+     */
     deleteRow(index,row){
       row.splice(index,1)
     },
@@ -683,10 +730,12 @@ export default {
      option.editShow=true;
      // this.$forceUpdate();
     },
+    /**
+     * @description 获取周期列表
+     */
     getCycleList() {
       var workshopId = this.User_info.principal.workshopId;
       cycleSelect(null, workshopId + "/cycle/names").then((res) => {
-        console.log("周期列表", res);
         this.cycleList = res.data;
       });
     },
@@ -712,21 +761,40 @@ export default {
           ]
       })
     },
+    /**
+     * @description 删除指定的保养
+     * @param {Object} id 要删除的保养的id编号
+     */
     del(id){
       console.log(id)
       // return false;
-      deletePlanDetail(null,id).then(res=>{
-        console.log(res)
-      })
+      this.$confirm('确定要删除吗, 是否继续?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+              }).then(() => {
+                deletePlanDetail(null,id).then(res=>{
+                  this.$message({
+                    type: 'success',
+                    message: '删除成功!'
+                  });
+                  this.getData();
+                })
+              }).catch(() => {
+                this.$message({
+                  type: 'info',
+                  message: '已取消删除'
+                });
+              });
     },
     /**
      * @description 添加保养计划
      */
     add(){
-
-      console.log(this.newAddDialogForm)
       addmaintainPlan(this.newAddDialogForm).then(res=>{
-        console.log(res)
+        this.$message.success('操作成功');
+        this.newAddDialog=false;
+        this.getData()
       })
     },
     /**
@@ -754,7 +822,7 @@ export default {
     getData() {
       let data = this.$refs.tpmsHeader.getData();
       let pageData = this.$refs.tpmsTable.getData();
-      // console.log(pageData);
+      console.log(data);
       maintainPlan({ ...data, ...pageData }).then((res) => {
         this.listData = res.data.content;
         this.total = res.data.totalElements;
@@ -794,6 +862,7 @@ export default {
       _this.detailDialog = false;
       _this.editDialog = false;
       _this.newAddDialog = false;
+      this.previewDialog=false
     },
   },
 };

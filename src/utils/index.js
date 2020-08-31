@@ -37,7 +37,9 @@ export function parseTime(time, cFormat) {
   const time_str = format.replace(/{([ymdhisa])+}/g, (result, key) => {
     const value = formatObj[key]
     // Note: getDay() returns 0 on Sunday
-    if (key === 'a') { return ['日', '一', '二', '三', '四', '五', '六'][value ] }
+    if (key === 'a') {
+      return ['日', '一', '二', '三', '四', '五', '六'][value]
+    }
     return value.toString().padStart(2, '0')
   })
   return time_str
@@ -160,12 +162,12 @@ export function param2Obj(url) {
   }
   return JSON.parse(
     '{"' +
-      decodeURIComponent(search)
-        .replace(/"/g, '\\"')
-        .replace(/&/g, '","')
-        .replace(/=/g, '":"')
-        .replace(/\+/g, ' ') +
-      '"}'
+    decodeURIComponent(search)
+    .replace(/"/g, '\\"')
+    .replace(/&/g, '","')
+    .replace(/=/g, '":"')
+    .replace(/\+/g, ' ') +
+    '"}'
   )
 }
 
@@ -350,7 +352,7 @@ export function removeClass(ele, cls) {
  * Juge authorization
  * @param {*} key
  */
-export function isAuth (roles) {
+export function isAuth(roles) {
   if (roles.includes('admin') || roles.includes('editor')) {
     return true
   } else {
@@ -362,24 +364,27 @@ export function isAuth (roles) {
  * @description 将审批状态码转化为相对应的文字
  * @param {Number} status 审批状态，1：待审批；2：审批中；4：已退回；8：待发布；16：已发布
  */
-export function getExamineStatus(status){
-  let res='';
-  switch (status){
+export function getExamineStatus(status) {
+  let res = '';
+  switch (status) {
     case 1:
-      res='待审批';
-    break;
+      res = '待审批';
+      break;
     case 2:
-      res='审批中';
-    break;
+      res = '审批中';
+      break;
     case 4:
-      res='已退回';
-    break;
+      res = '已退回';
+      break;
     case 8:
-      res='待发布';
-    break;
+      res = '待发布';
+      break;
     case 16:
-      res='已发布';
-    break;
+      res = '已发布';
+      break;
+    default:
+      res = status;
+      break;
   }
   return res
 }

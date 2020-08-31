@@ -1,138 +1,206 @@
 <template>
   <div>
-          <!-- 头部功能区 -->
-        <el-row>
-          <el-form :model='sparePartForm' label-width="80px">
-            <el-col :span="7">
-              <el-form-item label="工位/工段">
-                <el-input v-model="sparePartForm.workshopStation"></el-input>
+	  <!-- 头部功能区 -->
+	  <tpms-header ref="tpmsHeader" :formData="equipmentFormList" @inquireTableData="inquireTableData" />
+
+    <!-- 表格 -->
+    <el-row>
+      <el-card>
+        <tpms-table
+          :column_index="true"
+          ref="tpmsTable"
+          :total="total"
+          :data="listData"
+          :columns="equipmentTableList"
+          @inquireTableData="inquireTableData"
+          @getTableData="getData"
+        >
+          <template slot="status" slot-scope="{row}">
+            <span >{{getExamineStatus(row.status)}}</span>
+          </template>
+          <template slot="operation" slot-scope="{row}">
+            <span class="button" @click="showPlanDetail(row)">查看</span>
+            <span class="button" @click="editWorkorders(row)">编辑工单</span>
+          </template>
+        </tpms-table>
+      </el-card>
+    </el-row>
+    <!-- 详情 -->
+    <el-dialog title="查看详情" :visible.sync="detailModal" width="80%" >
+      <!-- 头部表单 -->
+      <el-row style="margin-top:40px">
+        <el-form :model="detail" ref="form" label-width="140px" label-position="left">
+          <el-row
+
+          >
+           <el-col :span="11">
+             <el-form-item label="保养工单" required="required">
+              <el-input v-model="detail.no" readonly=""></el-input>
+             </el-form-item>
+           </el-col>
+           <el-col :span="11" :offset="2">
+             <el-form-item label="计划名称" required="required">
+               <el-input v-model="detail.no" readonly></el-input>
+             </el-form-item>
+           </el-col>
+           <el-col :span="11">
+             <el-form-item label="计划编号" required="required">
+               <el-input v-model="detail.planNo" readonly></el-input>
+             </el-form-item>
+           </el-col>
+           <el-col :span="11" :offset="2">
+             <el-form-item  label="审批状态" required="required">
+               <el-input v-model="detail.status" readonly></el-input>
+             </el-form-item>
+           </el-col>
+          </el-row>
+          <el-row v-for="(v,i) in detail.maintainWorkOrderColonies" style="background: #f5f5f5;padding: 0.2rem">
+            <el-col :span="11">
+              <el-form-item label="设备名称" required="required">
+               <el-input v-model="v.deviceNames" readonly=""></el-input>
               </el-form-item>
             </el-col>
-            <el-col :span="10">
-              <el-form-item label-width="160px" label="设备/生产线名称">
-                <el-input v-model="sparePartForm.partName"></el-input>
+            <el-col :span="11" :offset="2">
+              <el-form-item label="设备编号" required="required">
+                <el-input v-model="v.deviceNos" readonly></el-input>
               </el-form-item>
             </el-col>
-            <el-col :span="7">
-              <el-form-item label="周期" >
-                <el-select v-model="sparePartForm.period" placeholder=''>
-                    <el-option
-                    v-for="item in periodSelect"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value">
-                    </el-option>
-                </el-select>
-              </el-form-item>
-            </el-col>
-            <el-col :span="7">
-              <el-form-item label="状态" >
-                <el-select v-model="sparePartForm.status" placeholder=''>
-                    <el-option
-                    v-for="item in statusSelect"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value">
-                    </el-option>
-                </el-select>
-              </el-form-item>
-            </el-col>
-            <el-col :span="6" :offset="11">
-              <el-form-item>
-                <el-button type='primary' size="mini">
-                    <i class="el-icon-edit"></i>
-                    查询
-                </el-button>
-                <el-button size="mini">
-                    <i class="el-icon-edit"></i>
-                    重置
-                </el-button>
-              </el-form-item>
-            </el-col>
-          </el-form>
-        </el-row>
-        <!-- 底部表格 -->
-        <el-row>
-            <el-table :data="sparePartTableData" style="width: 100%">
-                <el-table-column align="center"  type="index" label="序号" width="60px"></el-table-column>
-                <el-table-column align="center" width="140" v-for="(item,index) in sparePartTableList" :key='index' :label="item.name" :prop="item.props"></el-table-column>
-                <el-table-column align="center" label="状态" width="180px">
-                   <template slot-scope="scope">
-                        <div v-if='scope.row.status ==1'>
-                            <span class="dot dot-blue"></span><span>待审批</span>
-                        </div>
-                        <div v-if='scope.row.status ==2'>
-                            <span class="dot dot-orange"></span><span>已处理</span>
-                        </div>
-                        <div v-if='scope.row.status ==3'>
-                            <span class="dot dot-red"></span><span>待报废</span>
-                        </div>
-                        <div v-if='scope.row.status ==4'>
-                            <span class="dot dot-green"></span><span>待修复</span>
-                        </div>
-                        <div v-if='scope.row.status ==5'>
-                            <span class="dot dot-purple"></span><span>已退回</span>
-                        </div>
-                   </template>
-                </el-table-column>
-                <el-table-column align="center" label="操作" width="180px">
-                   <template slot-scope="scope">
-                        <span class="button">查看</span>
-                        <span class="button" v-if='scope.row.operate == 2'>导出</span>
-                        <span class="button" v-if='scope.row.operate == 1' >暂停</span>
-                   </template>
-                </el-table-column>
+
+            <el-table
+              :data="v.maintainWorkOrderContents"
+              style="width:100%"
+              border
+              row-key="id"
+              default-expand-all
+              :tree-props="{children: 'childPlanContents', hasChildren: 'hasChildren'}"
+            >
+              <el-table-column align="center" type="index" label="项目" width="80"></el-table-column>
+              <el-table-column align="center" label="保养部位" width="150">
+                <template slot-scope="scope">
+                  <span v-show="!scope.row.editShow">{{scope.row.executionPart}}</span>
+                </template>
+              </el-table-column>
+              <el-table-column align="center" label="保养位置" >
+                <template slot-scope="scope">
+                  <span v-show="!scope.row.editShow">{{scope.row.executionNode}}</span>
+                </template>
+              </el-table-column>
+              <el-table-column align="center" label="保养内容">
+                <template slot-scope="scope">
+                  <span v-show="!scope.row.editShow">{{scope.row.content}}</span>
+                </template>
+              </el-table-column>
+              <el-table-column align="center" label="周期" >
+                <template slot-scope="scope">
+                  <span v-show="!scope.row.editShow">{{scope.row.cycleName}}</span>
+                </template>
+              </el-table-column>
+              <el-table-column align="center" label="周期ID" >
+                <template slot-scope="scope">
+                  <span v-show="!scope.row.editShow">{{scope.row.cycleId}}</span>
+                </template>
+
+              </el-table-column>
+
             </el-table>
-        </el-row>
-        <!-- 分页 -->
-         <el-pagination
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-        :current-page="1"
-        :page-sizes="[5, 10, 15, 20]"
-        :page-size="100"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="30">
-        </el-pagination>
+          </el-row>
+        </el-form>
+      </el-row>
+    </el-dialog>
   </div>
 </template>
 <script>
+	import {
+	  workshopSectionSelect,
+	  workStationSelect,
+	  planStatusSelect
+	} from "../../lib/api/checkPlan";
+  import {
+   maintainWorkOrder,//工单
+   maintainWorkOrderDetail
+  } from "../../lib/api/upkeepManagePage";
+  import {
+    tpmsHeader,
+    tpmsTable
+  } from "../../components";
+  import {getExamineStatus} from '../../utils/index.js'
 export default {
     data(){
-        return{ 
-            sparePartForm:{             // 头部表单
-                workshopStation:'',           // 工位/工段
-                partName:'',         // 设备/生产线名称
-                period:'',              // 周期
-                status:''                // 状态
-            },
-            periodSelect:[{value:'选项1',label:'黄金糕'},{value:"选项2",label:'双皮奶'}],   // 周期的下拉选择框
-            statusSelect:[{value:'选项1',label:'黄金糕'},{value:"选项2",label:'双皮奶'}],    // 状态的下拉选择框
-            sparePartTableData:[        // 表格的数据
-                {upkeepPlanNumber:'123456',upkeepName:'2019-07-08',version:'SHB00032',workshopStation:'润滑油站',workshopTime:'001',partName:'500',prepareDate:'2019-03-02',preparePersion:'张三',status:1,operate:0},
-                {upkeepPlanNumber:'123456',upkeepName:'2019-07-08',version:'SHB00032',workshopStation:'润滑油站',workshopTime:'001',partName:'500',prepareDate:'2019-03-02',preparePersion:'张三',status:1,operate:0},
-                {upkeepPlanNumber:'123456',upkeepName:'2019-07-08',version:'SHB00032',workshopStation:'润滑油站',workshopTime:'001',partName:'500',prepareDate:'2019-03-02',preparePersion:'张三',status:1,operate:0},
-                {upkeepPlanNumber:'123456',upkeepName:'2019-07-08',version:'SHB00032',workshopStation:'润滑油站',workshopTime:'001',partName:'500',prepareDate:'2019-03-02',preparePersion:'张三',status:2,operate:0},
-                {upkeepPlanNumber:'123456',upkeepName:'2019-07-08',version:'SHB00032',workshopStation:'润滑油站',workshopTime:'001',partName:'500',prepareDate:'2019-03-02',preparePersion:'张三',status:3,operate:0},
-                {upkeepPlanNumber:'123456',upkeepName:'2019-07-08',version:'SHB00032',workshopStation:'润滑油站',workshopTime:'001',partName:'500',prepareDate:'2019-03-02',preparePersion:'张三',status:4,operate:1},
-                {upkeepPlanNumber:'123456',upkeepName:'2019-07-08',version:'SHB00032',workshopStation:'润滑油站',workshopTime:'001',partName:'500',prepareDate:'2019-03-02',preparePersion:'张三',status:5,operate:2},
-                {upkeepPlanNumber:'123456',upkeepName:'2019-07-08',version:'SHB00032',workshopStation:'润滑油站',workshopTime:'001',partName:'500',prepareDate:'2019-03-02',preparePersion:'张三',status:1,operate:5},
-                {upkeepPlanNumber:'123456',upkeepName:'2019-07-08',version:'SHB00032',workshopStation:'润滑油站',workshopTime:'001',partName:'500',prepareDate:'2019-03-02',preparePersion:'张三',status:1,operate:0},
-                {upkeepPlanNumber:'123456',upkeepName:'2019-07-08',version:'SHB00032',workshopStation:'润滑油站',workshopTime:'001',partName:'500',prepareDate:'2019-03-02',preparePersion:'张三',status:1,operate:0}
-            ],
-            sparePartTableList:[        // 渲染表格的表头
-                {props:'upkeepPlanNumber',name:'保养计划编号'},
-                {props:'upkeepName',name:'保养名称'},
-                {props:'version',name:'版本'},
-                {props:'workshopStation',name:'工位/工段'},
-                {props:'workshopTime',name:'工时'},
-                {props:'partName',name:'设备/生产线名称'},
-                {props:'preparePersion',name:'编制人'},
-                {props:'prepareDate',name:'编制日期'}
-            ],
-        }
+		// 获取头部搜索组下拉选择的list
+		let getListFuncs = [
+		  workshopSectionSelect,
+		  workStationSelect,
+		  planStatusSelect,
+		];
+		let [stationList, sectionList, statusList] = getListFuncs.map(
+		  (getListFunc) => {
+		    let arr = [];
+		    getListFunc(null).then((res) => {
+		      arr.push(...res.data);
+		    });
+		    return arr;
+		  }
+		);
+        return{
+          statusList,
+			equipmentFormList:[
+				{label:'设备编号',props:'no',value:''},
+				{label:'计划名称',props:'planName',value:''},
+				{label:'状态',props:'status',value:'',type:'radio',checkList:statusList}
+			],
+      listData:[],
+      equipmentTableList:[
+        {props:'no',label:'工单编号'},
+        {props:'planName',label:'计划名称'},
+        {props:'planNo',label:'计划编号'},
+        {props:'hour',label:'工时'},
+        {props:'type',label:'类型'},
+        {props:'status',label:'状态',slotName:'status'},
+        {props:'',label:''},
+        {label:'操作',slotName:'operation',width:'200px',fixed:'right'}
+      ],
+      total:0,
+      detailModal:false,
+      detail:{}
+      }
+    },
+    components: {
+      tpmsHeader,
+      tpmsTable
+    },
+    mounted() {
+      this.getData()
     },
     methods:{
+    showPlanDetail(row){
+      let {id}=row;
+      maintainWorkOrderDetail(null,id).then(res=>{
+        console.log(res)
+        let data=res.data;
+        data.status=this.getExamineStatus(data.status)
+        this.detail=res.data;
+        this.detailModal=true
+      })
+    },
+    editWorkorders(){},
+    getExamineStatus,
+    /**
+     * @description 点击头部按钮查询
+     */
+		inquireTableData(){
+      // 重置table页为第一页
+      this.$refs.tpmsTable.resetCurrentPage();
+      this.getData();
+    },
+    getData(){
+        let data = this.$refs.tpmsHeader.getData();
+        let pageData = this.$refs.tpmsTable.getData();
+        console.log(data);
+        maintainWorkOrder({ ...data, ...pageData }).then((res) => {
+          this.listData = res.data.content;
+          this.total = res.data.totalElements;
+        });
+    },
         /**
          * @description 分页器中pageSize 改变时触发的事件
          * @param {val} 每页的条数

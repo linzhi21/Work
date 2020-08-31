@@ -75,6 +75,7 @@ export default {
         .then(res => {
           // 获取用户信息
           principal();
+		      
           this.$router.push("/home");
           // 检查是否要记住密码
           this.storagePassword();

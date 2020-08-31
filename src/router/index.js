@@ -401,6 +401,7 @@ const route = new Router({
 route.beforeEach(beforeEach);
 route.afterEach((to,from)=>{
   if(to.name === 'login'){
+    
   }else{
     refreshToken()
   }

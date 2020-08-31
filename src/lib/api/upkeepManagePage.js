@@ -44,6 +44,28 @@ export const addmaintainPlan=(data)=>POST(data,apiConfig.maintainPlan)
  * @param {formData} data.file
  * @param {String} data.workshopName
  */
-export const exportedFile=(data)=>POST(data,`${apiConfig.maintainPlan}/importBY`)
+export const importFile=(data)=>POST(data,`${apiConfig.maintainPlan}/importBY`)
 
+/**
+ * @description 删除指定的保养数据
+ * @param {null} data 默认为空 
+ * @param {Number} id 当前保养数据的id编号  
+ */
 export const deletePlanDetail=(data,id)=>DELETE(data,apiConfig.maintainPlan,id)
+
+
+/**
+ * @description 查看工单列表
+ * @param {Object} data 
+ * @param {String} data.no 工单编号
+ * @param {String} data.planName 计划名称 
+ * @param {Number} data.status 状态
+ */
+export const maintainWorkOrder=(data)=>GET(data,apiConfig.maintainWorkOrder)
+
+
+/**
+ * @description 查看工单详情
+ * @param {Number} id 工单id 
+ */
+export const maintainWorkOrderDetail=(data,id)=>GET(data,apiConfig.maintainWorkOrder,id)

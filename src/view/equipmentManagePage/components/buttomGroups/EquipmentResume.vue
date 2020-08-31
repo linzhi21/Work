@@ -106,6 +106,7 @@ export default {
             responseType: "blob"
           })
           .then(res => {
+			  console.log(res)
             if (!res) return;
             let blob = new Blob([res.data], {
               type: "application/vnd.ms-excel;charset=utf-8"

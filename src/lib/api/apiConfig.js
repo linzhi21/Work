@@ -21,15 +21,15 @@ export default {
 
 
     // GET - 查询工厂列表|查询单个工厂; POST - 添加工厂; PATCH - 修改工厂信息;
-    factory: '/factory',
+    factory: `${urls.system}/factory`,
     // GET - 查询车间; POST - 新增车间;
-    workshop: '/workshop',
+    workshop: `${urls.system}/workshop`,
     // GET - 查询区域列表|查询打个区域详情; POST- 新增区域;
     workshopArea: `${urls.system}/workshopArea`,
     // GET - 查询设备履历页面区域下拉框列表；
     workshopAreaNames: `${urls.system}/workshopArea/names`,
     // GET - 查询岗位; POST - 增加岗位;
-    sysPosition: '/sysPosition',
+    sysPosition: `${urls.system}/sysPosition`,
     // GET - 查询工段; POST -新增测试工段
     workshopSection: `${urls.system}/workshopSection`,
     // GET - 查询班组列表|查询单个班组; POST - 新增班组;
@@ -168,8 +168,8 @@ export default {
     checkWorkOrder: `${urls.business}/web/workOrder`,
     // GET - 查询点检计划更改记录列表
     checkPlanChanges: `${urls.business}/web/plan/planChanges`,
-
-
+    // GET - 导出计划excel
+    exportExcel:`${urls.business}/web/plan/download`,
 
     // 附件管理
     //附件  delete  /accessory/{ids}
@@ -182,8 +182,9 @@ export default {
     uploadAccessoryBatch: `${urls.accessory}/accessory/upload/batch`,
 
     //保养管理
-    // 保养计划管理
-    maintainPlan:`${urls.business}/maintainPlan`
 
+    maintainPlan:`${urls.business}/maintainPlan`,
+    //保养工单
+    maintainWorkOrder:`${urls.business}/maintainWorkOrder`
 
 }
