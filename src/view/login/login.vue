@@ -1,46 +1,34 @@
 <template>
   <div class="login-container">
-    <!-- 登录卡片 -->
-    <div class="login-area">
-      <!-- 左侧图片展示区 -->
-      <div class="left-photo"></div>
-      <!-- 右侧登录表单区 -->
-      <div class="right-form">
-        <!-- 头部logo -->
-        <div class="login-logo">
-          <div>
-            <!-- <img src="../../assets/image/login/login_logo.png" alt /> -->
-          </div>
-          <span>大众TPMS系统</span>
+    <div class="bg"></div>
+    <el-card class="login-wrap">
+      <p class="title">TPMS设备管理系统</p>
+      <div class="form">
+        <div class="inp-wrap">
+          <i class="el-icon-user"></i>
+          <input type="text" v-model="loginForm.username" placeholder="请输入用户名" />
         </div>
-        <!-- 表单区 -->
-        <el-form class="login-form" :model="loginForm" label-width="0">
-          <el-form-item prop="username">
-            <el-input type="text" v-model="loginForm.username">
-              <i slot="prefix" class="el-input__icon el-icon-user-solid"></i>
-            </el-input>
-          </el-form-item>
-          <el-form-item prop="password">
-            <el-input type="password" v-model="loginForm.password">
-              <i slot="prefix" class="el-input__icon el-icon-s-goods"></i>
-            </el-input>
-          </el-form-item>
-          <el-form-item>
-            <div class="remember-password">
-              <input type="checkbox" v-model="rememberPassword" />
-              <span>记住密码</span>
-            </div>
-          </el-form-item>
-          <el-form-item>
-            <el-button class="login-button" type="primary" @click="login">登录</el-button>
-          </el-form-item>
-        </el-form>
+        <div class="inp-wrap">
+          <i class="el-icon-lock"></i>
+          <input v-model="loginForm.password" type="password" placeholder="请输入密码" />
+        </div>
+        <p class="remember-password">
+          <span class="remmber-password">
+            <el-checkbox v-model="rememberPassword">记住密码</el-checkbox>
+          </span>
+          <!-- <span>忘记密码？请联系管理员重置</span> -->
+        </p>
+        <el-button @click="login" class="login-btn" type="primary" round>登录</el-button>
+        <div class="forget-password">
+          <span>忘记密码？请联系管理员重置</span>
+        </div>
       </div>
-    </div>
+    </el-card>
   </div>
 </template>
 <script>
 import { login, principal, refreshToken } from "../../lib/api/user";
+import { getUserMenus } from '../../lib/api/userManage';
 import { factory } from "../../lib/api/factory";
 export default {
   data() {
@@ -74,13 +62,15 @@ export default {
       })
         .then(res => {
           // 获取用户信息
-          principal();
-		      
-          this.$router.push("/home");
-          // 检查是否要记住密码
-          this.storagePassword();
+          principal().then(()=>{
+            this.$router.push("/home");
+            // 检查是否要记住密码
+            this.storagePassword();
+            getUserMenus();
+          });
         })
         .catch(fail => {
+          this.$message.error("账号或者密码输入错误");
           console.log(fail);
         });
     },
@@ -99,64 +89,91 @@ export default {
 </script>
 <style lang='scss' scoped>
 .login-container {
-  width: 100vw;
+  position: relative;
   height: 100vh;
-  background-image: url(../../assets/image/login/loginbg.png);
-  background-size: 100% 100%;
-  .login-area {
+  width: 100%;
+  background: #f9f9f9;
+  .bg {
+    width: 50%;
+    height: 100%;
+    background: rgb(0,119,200);
+    border-top-right-radius: 250px;
+    border-bottom-right-radius: 250px;
     position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 0;
+  }
+  .login-wrap {
+    // width: 450px;
+    width: 30%;
+    position: absolute;
+    // height: 450px;
+    height: 70%;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    width: 10.8rem;
-    height: 6rem;
     margin: auto;
-    background-color: #fff;
-    .left-photo {
-      float: left;
-      width: 5.7rem;
-      height: 100%;
-      background-image: url(../../assets/image/login/login_leftphoto.png);
-      background-image: 100% 100%;
-      img {
-        width: 100%;
-        height: 100%;
+    text-align: center;
+    .title {
+      margin: 40px 0;
+      font-weight: 600;
+      font-size: 22px;
+      color: rgb(0,119,200);
+    }
+    .inp-wrap {
+      width: 80%;
+      margin: 30px auto;
+      border: none;
+      line-height: 1.8;
+      box-sizing: border-box;
+      background-image: linear-gradient(#fff, #fff),
+        linear-gradient(to bottom right, rgb(0,119,200), rgb(0,119,200));
+      font-weight: 300;
+      padding: 0.5px;
+      border-radius: 10px;
+      background-clip: content-box, padding-box;
+      i {
+        float: left;
+        color: rgb(0,119,200);
+        font-weight: 600;
+        font-size: 24px;
+        margin: 10px;
+      }
+      input {
+        width: calc(100% - 60px);
+        height: 36px;
+        margin: 6px 0;
+        border: 0;
+        outline: none;
+        font-size: 14px;
+        float: left;
+      }
+
+      &::after {
+        content: "";
+        display: block;
+        height: 0;
+        clear: both;
+        visibility: hidden;
       }
     }
-    .right-form {
-      width: 5.1rem;
-      padding: 0.5rem;
-      box-sizing: border-box;
-      float: right;
-      .login-logo {
-        color: #2d9bfb;
-        text-align: center;
-        div {
-          width: 0.5rem;
-          height: 0.5rem;
-          margin: 0.1rem auto;
-          img {
-            width: 100%;
-            height: 100%;
-          }
-        }
-      }
-      .login-form {
-        margin-top: 0.2rem;
-        .remember-password {
-          margin-top: -0.2rem;
-          text-align: right;
-          input {
-            vertical-align: middle;
-            border-color: #2d9bfb;
-            background-color: #2d9bfb;
-          }
-        }
-        .login-button {
-          width: 100%;
-        }
-      }
+    .login-btn {
+      width: 80%;
+      margin: 30px auto;
+    }
+    .remember-password {
+      width: 80%;
+      margin: 0 auto;
+      text-decoration: underline;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .forget-password {
+      text-decoration: underline;
     }
   }
 }

@@ -21,9 +21,9 @@ export const device = (data) => GET(data, apiConfig.device);
 export const queryDevice = (data, restful) => GET(data, apiConfig.device, restful);
 
 /** 添加设备详情
- * @description - 添加设备只有通过导入添加，此接口暂时没用
+ * @description - 添加设备只有通过导入添加
  */
-export const addFactory = (data) => POST(data, apiConfig.device);
+export const addDevice = (data) => POST(data, apiConfig.device);
 
 /** 修改设备信息
  * @param {Object} data
@@ -48,7 +48,7 @@ export const addFactory = (data) => POST(data, apiConfig.device);
  * @param {String} data.workshopTeamId - 所属班组ID
  * @param {String} restful - 设备唯一标志
  */
-export const putDevice = (data, restful) => PUT(data, apiConfig.device, restful);
+export const putDevice = (data, restful) => PATCH(data, apiConfig.device, restful);
 
 
 /** 查询异常领用列表
@@ -118,10 +118,17 @@ export const addDeviceStatus = (data) => POST(data,apiConfig.deviceStatus);
  */
 export const changeDeviceStatus = (data,restful) => PUT(data,apiConfig.deviceStatus,restful);
 
-/** 获取设备生产线列表
- * @param {Object} data
+/**
+ * @description 导入设备信息
+ * @param {formData}  file 文件对象
  */
-export const getDeviceName = (data) => GET(data,apiConfig.getDeviceName);
+export const uploadDevice=(data)=>POST(data,`${apiConfig.device}/upload`)
+
+/**
+ * @description  导入bom
+ * @param {formData} file 文件对象
+ */
+export const uploadBom=(data)=>POST(data,`${apiConfig.device}/bom/upload`)
 
 
 // 设备管理
@@ -129,9 +136,10 @@ export const deviceManage = {
   add: (data) => POST(data, apiConfig.device),
   getLists: (data) => GET(data, apiConfig.device),
   getOne: (data, restful) => GET(data, apiConfig.device + '/' + restful),
-  remove: (data) => DELETE(data, apiConfig.device),
+  remove: (data, restful) => DELETE(data, apiConfig.device + '?ids=' + restful),
   edit: (data, restful) => PATCH(data, apiConfig.device + '/' + restful),
   getNames: (data) => GET(data, apiConfig.device + '/names'),
+  getQrcode:(data,ids)=>GET(data,apiConfig.device,ids)
 }
 
 export const bomManage = {
@@ -151,3 +159,5 @@ export const deviceStatusManage = {
   edit: (data, restful) => PATCH(data, apiConfig.deviceStatus + '/' + restful),
   getNames: (data) => GET(data, apiConfig.deviceStatus + '/names'),
 }
+
+

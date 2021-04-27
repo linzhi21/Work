@@ -3,7 +3,7 @@
         <el-row>
             <el-card class="spare-part-manage">
                 <!-- 头部导航菜单栏 -->
-                <el-menu :default-active="activeIndex" mode='horizontal' active-text-color='#2b91fc' text-color='#646464'> 
+                <el-menu :default-active="activeIndex" mode='horizontal' active-text-color='#0077C8' text-color='#909399'> 
                     <el-menu-item index="/repairManageContent" @click='jumpItem("repairManageContent","维修管理")'>维修管理</el-menu-item>
                     <el-menu-item index="/problemRisingManage" @click='jumpItem("problemRisingManage","维修管理/问题上升机制管理")'>问题上升机制管理</el-menu-item>
                     <el-menu-item index="/emergencyManage" @click='jumpItem("emergencyManage","维修管理/紧急程度管理")'>紧急程度管理</el-menu-item>

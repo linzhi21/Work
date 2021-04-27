@@ -19,7 +19,7 @@
           @inquireTableData='inquireTableData'
         >
           <template slot-scope="{row}">
-            <span class="button">编辑</span>
+            <span class="button cursor">编辑</span>
           </template>
         </tpms-table>
     </el-row>

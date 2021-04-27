@@ -7,7 +7,7 @@
           <el-form-item :label="item.label" v-for="(item,index) in arr" :key="index">
             <el-input :model="perisonList[item.name]" :placeholder="item.content"></el-input>
           </el-form-item>
-          <el-form-item label="头像">
+          <!-- <el-form-item label="头像">
                <el-upload
                 action="https://jsonplaceholder.typicode.com/posts/"
                 list-type="picture-card"
@@ -19,7 +19,7 @@
                 <el-dialog :visible.sync="dialogVisible">
                 <img width="100%" :src="dialogImageUrl" alt="">
                 </el-dialog>
-          </el-form-item>
+          </el-form-item> -->
           <el-form-item>
               <el-button type="primary">
                   <i class="el-icon-plus"></i>

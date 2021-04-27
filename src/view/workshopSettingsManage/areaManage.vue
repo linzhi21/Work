@@ -7,15 +7,16 @@
     </el-row>
     <el-row>
       <el-row class="buttom-group" type="flex" justify="end" align="middle">
-        <el-button class="button-more" type="primary" size="small" style="margin-right:29px" @click='addDialog()'>新增</el-button>
+        <el-button class="button-more" type="primary" size="small" @click='addDialog()'>新增</el-button>
       </el-row>
     </el-row>
     <el-row>
       <!-- 底部表格 -->
-      <tpms-table ref='tpmsTable' :total='total' :data='tableLists' :columns='tableHeaderList' :column_index='false'
+      <tpms-table ref='tpmsTable' :total='total' :data='tableLists' :columns='tableHeaderList' :column_index='true'
         @inquireTableData='inquireTableData' @getTableData='getTableData'>
-        <template slot-scope="{row}">
-          <span class="button" @click="editDialog(row)">编辑</span>
+        <template slot="operation" slot-scope="{row}">
+          <span class="button cursor" @click="editDialog(row)">编辑</span>
+           <span class="button cursor" @click="del(row)">删除</span>
         </template>
       </tpms-table>
     </el-row>
@@ -57,6 +58,18 @@
   } from "../../lib/api/workshopSettingsManage";
   export default {
     data() {
+      // 状态下拉
+      const statusList = [
+        { label: '启用', id: true },
+        { label: '禁用', id: false }
+      ];
+      
+      // 车间下拉
+      const workshopList =[];
+      workshopManage.getNames().then(res=>{
+        workshopList.push(...res.data);
+      });
+
       return {
         dialogVisible: false,
         dialogTitleTxt: '',
@@ -69,32 +82,11 @@
         tableLists: [],
         searchFormList: [
           //  渲染头部功能区的列表
-          {
-            label: "区域名称",
-            props: "name",
-            value: "",
-            placeholder: '',
-            type: 'input'
-          },
-          {
-            label: "状态",
-            props: "enable",
-            value: "",
-            placeholder: '请选择状态',
-            type: 'radio',
-            checkList: [{
-              label: '启用',
-              id: true
-            }, {
-              label: '禁用',
-              id: false
-            }]
-          },
+          { label: "区域名称", props: "name", value: "" },
+          { label: "状态", props: "enable", value: "", type: 'radio', checkList: statusList },
+          { label: "车间", props: "workshopId", value: "", type: 'radio', checkList: workshopList },
         ],
-        tableHeaderList: [{
-            props: 'id',
-            label: 'No.'
-          },
+        tableHeaderList: [
           {
             props: 'workshopName',
             label: '所属车间'
@@ -120,6 +112,12 @@
             label: '状态',
             translate: (value) => value ? '启用' : '禁用'
           },
+          {
+          label: "操作",
+          slotName: "operation",
+          fixed: "right",
+          width: "200px",
+        }
         ],
         form: {
           no: '',
@@ -183,11 +181,11 @@
             message: '请选择所属车间',
             trigger: 'change'
           }],
-          parentId: [{
-            required: true,
-            message: '请选择上级区域',
-            trigger: 'change'
-          }]
+          // parentId: [{
+          //   required: true,
+          //   message: '请选择上级区域',
+          //   trigger: 'change'
+          // }]
         }
       }
     },
@@ -226,17 +224,39 @@
           })
         })
         // this.workshopLists=workshopLists
-        this.formList.push({
-          props: 'parentId',
-          label: '上级区域',
-          span: 12,
-          type: 'checkbox',
-          checkList: workshopAreaLists,
-        })
+        // this.formList.push({
+        //   props: 'parentId',
+        //   label: '上级区域',
+        //   span: 12,
+        //   type: 'checkbox',
+        //   checkList: workshopAreaLists,
+        // })
       })
 
     },
     methods: {
+      /**删除**/
+      del(row) {
+        this.$confirm('确定是否删除?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          console.log(row)
+          workshopAreaManage.remove(row.id).then(res=>{
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            });
+            this.getTableData()
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });
+        });
+      },
       /** 点击查询按钮 */
       inquireTableData() {
         // 重置table页为第一页

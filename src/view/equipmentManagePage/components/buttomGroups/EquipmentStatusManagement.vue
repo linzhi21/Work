@@ -7,7 +7,7 @@
 
 <style lang="scss" scoped>
 .buttom-group{
-    padding: 20px calc(0.2rem + 30px) 20px 0;
+    padding: 20px 30px 20px 0;
     div,>button{
         margin-left: 10px;
     }

@@ -85,13 +85,13 @@
                 </el-table-column>
                 <el-table-column align="center" label="操作" width="180px">
                    <template slot-scope="scope">
-                        <span class="button">查看</span>
-                        <span class="button" v-if='scope.row.operate == 1'>返修</span>
-                        <span class="button" v-if='scope.row.operate == 2'>编辑</span>
-                        <span class="button" v-if='scope.row.operate == 3'>送修</span>
-                        <span class="button" v-if='scope.row.operate == 4'>确认</span>
-                        <span class="button" v-if='scope.row.operate == 5'>签收</span>
-                        <span class="button" v-if='scope.row.operate == 6'>验收</span>
+                        <span class="button cursor">查看</span>
+                        <span class="button cursor" v-if='scope.row.operate == 1'>返修</span>
+                        <span class="button cursor" v-if='scope.row.operate == 2'>编辑</span>
+                        <span class="button cursor" v-if='scope.row.operate == 3'>送修</span>
+                        <span class="button cursor" v-if='scope.row.operate == 4'>确认</span>
+                        <span class="button cursor" v-if='scope.row.operate == 5'>签收</span>
+                        <span class="button cursor" v-if='scope.row.operate == 6'>验收</span>
                    </template>
                 </el-table-column>
             </el-table>

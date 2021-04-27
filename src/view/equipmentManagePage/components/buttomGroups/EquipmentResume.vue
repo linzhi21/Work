@@ -2,9 +2,9 @@
 <template>
     <el-row class="buttom-group" type="flex" justify="end" align="middle">
       <el-button size="small" @click='downloadBom'>
-        下载BOM表单
+        下载BOM表单模版
       </el-button>
-      <el-upload
+     <!-- <el-upload
         action="http://47.102.146.110:8080/tpms/device/api/device/bom/upload"
         :headers='uploadHeaders'
         :disabled="BOMisUploading"
@@ -18,7 +18,8 @@
           BOM表单上传中
         </el-button>
         <el-button v-else class="upload-bom-btn" size="small">上传BOM表单</el-button>
-      </el-upload>
+      </el-upload> -->
+	   <tpms-choosefile style="margin-left:10px ;" size="small" @getFileData='uploadBom' type="default" text="上传BOM表单"></tpms-choosefile>
       <!-- 下拉选择框 -->
       <el-dropdown class="button-more">
         <el-button type="primary" size="small">
@@ -27,7 +28,7 @@
         </el-button>
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item>
-            <el-upload
+            <!-- <el-upload
               :action="action"
               :disabled="deviceIsUploading"
               :headers='uploadHeaders'
@@ -41,10 +42,16 @@
                 正在导入
               </el-button>
               <el-button class="border-none" v-else size="small">导入设备</el-button>
-            </el-upload>
+
+            </el-upload> -->
+             <tpms-choosefile @getFileData='uploadDevice' type="default" text="导入设备"></tpms-choosefile>
           </el-dropdown-item>
           <el-dropdown-item>
-            <el-button class="border-none" size="small" @click='downloadDevice'>导出设备</el-button>
+            <span @click='downloadDevice'>
+              <slot>
+                <el-button style="margin:0 10px"  size="small"  type="default">导出设备</el-button>
+              </slot>
+            </span>
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
@@ -53,7 +60,8 @@
 <script>
 import axios from 'axios';
 import apiConfig from '../../../../lib/api/apiConfig';
-//
+import tpmsChoosefile from '../../../../components/tpmsChoosefile.vue'
+import {uploadDevice,uploadBom} from '../../../../lib/api/device.js'
 export default {
   data() {
     return {
@@ -65,12 +73,42 @@ export default {
       uploadHeaders:{Authorization:'Bearer ' + localStorage.getItem('access_token')}
     };
   },
+  props:{
+    getHeaderData: {
+      type: Function,
+      default: () => ({})
+    }
+  },
+  components:{
+    tpmsChoosefile
+  },
   methods: {
+    uploadDevice(file){
+      let formData=new FormData();
+      formData.append('file',file);
+      this.$store.commit('SET_UPLOADING',true)
+      uploadDevice(formData).then(res=>{
+        this.$store.commit('SET_UPLOADING',false)
+        this.$emit('getTableData');
+
+      })
+    },
+    uploadBom(file){
+      let formData=new FormData();
+      formData.append('file',file);
+      this.$store.commit('SET_UPLOADING',true)
+      uploadBom(formData).then(res=>{
+        this.$store.commit('SET_UPLOADING',false)
+        this.$emit('getTableData')
+      })
+    },
     downloadDevice(){
-      let url = `${apiConfig.systemUrl}/tpms/device/api/device/download?IsModel=false`; //请求下载文件的地址
+      let url = `${apiConfig.deviceDownload}?IsModel=false`; //请求下载文件的地址
       let token = localStorage.getItem('access_token'); //获取token
+      const params = this.getHeaderData();
       axios
         .get(url, {
+          params,
           headers: {
             Authorization:'Bearer ' + token
           },
@@ -78,6 +116,14 @@ export default {
         })
         .then(res => {
           if (!res) return;
+
+          let fileName = 'device.xlsx';
+          const disposition = res.headers['content-disposition'];
+          if(disposition){
+            const name = disposition.split(";")[1].split("filename=")[1];
+            fileName = decodeURI(name);
+          }
+
           let blob = new Blob([res.data], {
             type: "application/vnd.ms-excel;charset=utf-8"
           });
@@ -85,7 +131,7 @@ export default {
           let aLink = document.createElement("a");
           aLink.style.display = "none";
           aLink.href = url;
-          aLink.setAttribute("download", "Device.xls"); // 下载的文件
+          aLink.setAttribute("download", fileName); // 下载的文件
           document.body.appendChild(aLink);
           aLink.click();
           document.body.removeChild(aLink);
@@ -96,7 +142,7 @@ export default {
         });
     },
     downloadBom(){
-        let url = `${apiConfig.systemUrl}/tpms/device/api/device/bom/download`; //请求下载文件的地址
+        let url = apiConfig.bomDownload; //请求下载文件的地址
         let token = localStorage.getItem('access_token'); //获取token
         axios
           .get(url, {
@@ -106,8 +152,15 @@ export default {
             responseType: "blob"
           })
           .then(res => {
-			  console.log(res)
             if (!res) return;
+
+            let fileName = 'bom.xlsx';
+            const disposition = res.headers['content-disposition'];
+            if(disposition){
+              const name = disposition.split(";")[1].split("filename=")[1];
+              fileName = decodeURI(name);
+            }
+
             let blob = new Blob([res.data], {
               type: "application/vnd.ms-excel;charset=utf-8"
             });
@@ -115,7 +168,7 @@ export default {
             let aLink = document.createElement("a");
             aLink.style.display = "none";
             aLink.href = url;
-            aLink.setAttribute("download", "Bom.xls"); // 下载的文件
+            aLink.setAttribute("download", fileName); // 下载的文件
             document.body.appendChild(aLink);
             aLink.click();
             document.body.removeChild(aLink);
@@ -131,9 +184,6 @@ export default {
     },
     /** BOM表单上传完成时钩子 */
     BOM_uploadSucess(res, file, fileList) {
-      console.log(res);
-      console.log(file);
-      console.log(fileList);
       this.BOMisUploading = false;
       this.$message({
         message: "BOM表单上传完成",
@@ -142,7 +192,6 @@ export default {
     },
     /** BOM表单上传错误时的钩子 */
     BOM_uploadError(err) {
-      console.log(err);
       this.BOMisUploading = false;
       this.$message({
         message: "BOM表单上传失败",
@@ -155,9 +204,6 @@ export default {
     },
     /** 设备信息上传完成时钩子 */
     device_uploadSucess(res, file, fileList) {
-      console.log(res);
-      console.log(file);
-      console.log(fileList);
       this.deviceIsUploading = false;
       this.$message({
         message: "设备信息上传完成",
@@ -166,7 +212,6 @@ export default {
     },
     /** 设备信息上传错误时的钩子 */
     device_uploadError(err) {
-      console.log(err);
       this.deviceIsUploading = false;
        // this.$msgbox({
        //  title: '消息',

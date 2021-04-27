@@ -8,7 +8,7 @@ export const workflowManage={
     getLists:(data) => GET(data, apiConfig.workflowManage),
     getOne:(data, restful) => GET(data, apiConfig.workflowManage+'/'+restful),
     remove:(data, restful) => DELETE(data, apiConfig.workflowManage+'/'+restful),
-    edit:(data) => PUT(data, apiConfig.workflowManage),
+    edit:(data) => PUT(data, apiConfig.workflowManage)
 }
 
 

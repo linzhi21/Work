@@ -10,10 +10,11 @@
     </el-row>
     <el-row>
       <!-- 底部表格 -->
-      <tpms-table ref='tpmsTable' :total='total' :data='tableLists' :columns='tableHeaderList' :column_index='false'
-        @inquireTableData='inquireTableData'>
-        <template slot-scope="{row}">
-          <span class="button" @click="editDialog(row)">编辑</span>
+      <tpms-table ref='tpmsTable' :total='total' :data='tableLists' :columns='tableHeaderList' :column_index='true'
+        @inquireTableData='inquireTableData' @getTableData="getTableData">
+        <template slot="operation" slot-scope="{row}">
+          <span class="button cursor" @click="editDialog(row)">编辑</span>
+           <span class="button cursor" @click="del(row)">删除</span>
         </template>
       </tpms-table>
     </el-row>
@@ -24,7 +25,7 @@
         <el-row>
           <el-col :span="item.span" v-for="(item,index) in formList" :key="index">
             <el-form-item :prop="item.props" :label="item.label" :label-width="item.labelWidth" style="width: 100%;">
-              <el-select clearable v-model="form[item.props]" v-if="item.type==='checkbox'" :placeholder="item.placeholder">
+              <el-select @change="getworkshopSection($event,item.props)" clearable v-model="form[item.props]" v-if="item.type==='checkbox'" :placeholder="item.placeholder">
                 <el-option v-for="(item,i) in item.checkList" :key="i" :label="item.key" :value="item.value"></el-option>
               </el-select>
               <el-input v-model="form[item.props]" v-else-if="item.type==='textarea'" :rows='item.rows' :type='item.type' />
@@ -111,10 +112,7 @@
             checkList: []
           },
         ],
-        tableHeaderList: [{
-            props: 'id',
-            label: 'No.'
-          },
+        tableHeaderList: [
           {
             props: 'workshopName',
             label: '所属车间'
@@ -131,7 +129,7 @@
             label: '班组描述'
           },
           {
-            props: 'workshopSectionId',
+            props: 'workshopSectionName',
             label: '所属工段'
           },
           {
@@ -139,6 +137,12 @@
             label: '状态',
             translate: (value) => value ? '启用' : '禁用'
           },
+          {
+          label: "操作",
+          slotName: "operation",
+          fixed: "right",
+          width: "120px",
+        }
         ],
         form: {
           no: '',
@@ -146,7 +150,8 @@
           description: '',
           workshopSectionId: null,
           workshopId: null,
-          enable: true
+          enable: true,
+          workshopSectionName:null
         },
         formList: [{
             props: 'name',
@@ -166,6 +171,22 @@
             span: 24,
             type: 'textarea'
           },
+          {
+          props: 'workshopName',
+          label: '所属车间',
+          span: 24,
+          type: 'checkbox',
+          filterable: true,
+          checkList: [],
+          },
+          {
+            props: 'workshopSectionName',
+            label: '所属工段',
+            span: 24,
+            type: 'checkbox',
+            filterable: true,
+            checkList: [],
+            },
           {
             props: 'enable',
             label: '班组状态',
@@ -196,11 +217,11 @@
             message: '请选择状态',
             trigger: 'change'
           }],
-          workshopId: [{
-            required: true,
-            message: '请选择所属车间',
-            trigger: 'change'
-          }],
+          // workshopId: [{
+          //   required: true,
+          //   message: '请选择所属车间',
+          //   trigger: 'change'
+          // }],
           workshopSectionId: [{
             required: true,
             message: '请选择所属工段',
@@ -214,7 +235,8 @@
       tpmsTable
     },
     mounted() {
-      this.getTableData()
+      this.getTableData();
+      this.getWorkShop()
       workshopManage['getLists']().then(res => {
         let workshopLists = [];
         res.data.content.forEach((val) => {
@@ -223,38 +245,92 @@
             value: val.id
           })
         })
-        this.formList.unshift({
-          props: 'workshopId',
-          label: '所属车间',
-          span: 24,
-          type: 'checkbox',
-          filterable: true,
-          checkList: workshopLists
-        })
+        // this.formList.unshift({
+        //   props: 'workshopId',
+        //   label: '所属车间',
+        //   span: 24,
+        //   type: 'checkbox',
+        //   filterable: true,
+        //   checkList: workshopLists
+        // })
       })
 
-      workshopSectionManage['getLists']().then(res => {
-        let workshopSectionLists = [];
-        res.data.content.forEach((val) => {
-          workshopSectionLists.push({
-            key: val.name,
-            value: val.id,
-            label:val.name,
-            id:val.id
-          })
-        })
-        this.searchFormList[3].checkList=workshopSectionLists;
-        this.formList.splice(3, 0, {
-          props: 'workshopSectionId',
-          label: '所属工段',
-          span: 24,
-          type: 'checkbox',
-          filterable: true,
-          checkList: workshopSectionLists
-        })
-      })
+      // workshopSectionManage['getLists']().then(res => {
+      //   let workshopSectionLists = [];
+      //   res.data.content.forEach((val) => {
+      //     workshopSectionLists.push({
+      //       key: val.name,
+      //       value: val.id,
+      //       label:val.name,
+      //       id:val.id
+      //     })
+      //   })
+      //   this.searchFormList[3].checkList=workshopSectionLists;
+      //   this.formList.splice(3, 0, {
+      //     props: 'workshopSectionId',
+      //     label: '所属工段',
+      //     span: 24,
+      //     type: 'checkbox',
+      //     filterable: true,
+      //     checkList: workshopSectionLists
+      //   })
+      // })
     },
     methods: {
+      getworkshopSection(id,props){
+        console.log(id,props)
+        if(props=='workshopName'){
+          this.form.workshopSectionName=''
+          workshopSectionManage['getLists']({workshopId:id}).then(res => {
+            let workshopSectionLists = [];
+            res.data.content.forEach((val) => {
+              workshopSectionLists.push({
+                key: val.name,
+                value: val.id,
+                label:val.name,
+                id:val.id
+              })
+            })
+            this.searchFormList[1].checkList=workshopSectionLists;
+            console.log(workshopSectionLists)
+            this.formList[4].checkList=workshopSectionLists
+          })
+        }
+      },
+      getWorkShop(){
+        workshopManage['getLists']().then(res => {
+          let workshopLists = [];
+          res.data.content.forEach((val) => {
+            workshopLists.push({
+              key: val.name,
+              value: val.id
+            })
+          })
+          this.formList[3].checkList=workshopLists;
+        })
+      },
+      /**删除**/
+      del(row) {
+        this.$confirm('确定是否删除?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          console.log(row)
+          workshopTeamManage.remove(row.id).then(res=>{
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            });
+            this.getTableData()
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });
+        });
+      },
       /** 点击查询按钮 */
       inquireTableData() {
         // 重置table页为第一页
@@ -271,7 +347,7 @@
           ...pageData
         }).then(res => {
           this.tableLists = res.data.content
-          this.total = this.tableLists.length
+          this.total = res.data.totalElements;
         })
       },
       addDialog() {
@@ -301,10 +377,15 @@
         }
       },
       ok(dialogType) {
-        var _self = this
+        var _self = this;
+        let form=this.form;
+        this.form.workshopId=this.form.workshopName;
+        this.form.workshopSectionId=this.form.workshopSectionName;
+        delete form.workshopName;
+        delete form.workshopSectionName
         this.$refs['ruleForm'].validate((valid) => {
           if (valid) {
-            workshopTeamManage[dialogType](this.form, this.form.id).then(res => {
+            workshopTeamManage[dialogType](form, form.id).then(res => {
               this.dialogVisible = false
               this.getTableData();
               this.form = {
@@ -313,7 +394,8 @@
                 description: '',
                 parentId: null,
                 workshopId: null,
-                enable: true
+                enable: true,
+                workshopSectionName:''
               }
             })
           } else {

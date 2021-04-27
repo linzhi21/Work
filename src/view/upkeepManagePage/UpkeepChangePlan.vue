@@ -1,146 +1,114 @@
 <template>
-    <div>
-        <el-row>
-            <el-form label-width="100px">
-                <el-col :span="10">
-                    <el-form-item label="设备名称">
-                        <el-input class="inline-block" type="text" v-model="partName"></el-input>
-                    </el-form-item>
-                </el-col>
-                <el-col :span="10">
-                    <el-form-item label="设备编号">
-                        <el-input class="inline-block" type="text" v-model="partNumber"></el-input>
-                    </el-form-item>
-                </el-col>
-                <el-col :span="14">
-                    <el-form-item label="新生效日期">
-                        <el-select v-model="leftDate" placeholder="">
-                            <el-option
-                            v-for="item in options"
-                            :key="item.value"
-                            :label="item.label"
-                            :value="item.value">
-                            </el-option>
-                        </el-select>
-                        <span>——</span>
-                        <el-select v-model="rightDate" placeholder="">
-                            <el-option
-                            v-for="item in options"
-                            :key="item.value"
-                            :label="item.label"
-                            :value="item.value">
-                            </el-option>
-                        </el-select>
-                    </el-form-item>
-                </el-col>
-                <el-col :span="8" :offset="2">
-                    <el-form-item label-width="20px">
-                        <el-button size="mini" type="primary">
-                            <i class="el-icon-edit"></i>
-                            查询
-                        </el-button>
-                        <el-button size="mini">
-                            <i class="el-icon-edit"></i>
-                            重置
-                        </el-button>
-                        <!-- 下拉选择框 -->
-                        <el-dropdown class="drop-down">
-                            <el-button size="mini">
-                                <i class="el-icon-arrow-down el-icon--right"></i>
-                                更多
-                            </el-button>
-                            <el-dropdown-menu slot="dropdown">
-                                <el-dropdown-item>导出</el-dropdown-item>
-                            </el-dropdown-menu>
-                        </el-dropdown>
-                    </el-form-item>
-                </el-col>
-            </el-form>
+  <div>
+    <el-row>
+        <!-- 头部功能区 -->
+        <tpms-header
+          ref="tpmsHeader"
+          :formData="equipmentFormList"
+          @inquireTableData="inquireTableData"
+          label-width="90px"
+          
+        />
+        <el-row class="buttom-group" type="flex" justify="end" align="middle">
+          <!-- <el-button class="button-more" size="small">导出</el-button> -->
         </el-row>
-       <el-row>
-            <!-- 表格区域 -->
-            <el-table :data='upkeepPlanTable'>
-                <el-table-column align="center" type="index" label="序号"></el-table-column>
-                <el-table-column align="center" width="100" prop="partNumber" label="设备编号"></el-table-column>
-                <el-table-column align="center" width="100" prop="partName" label="设备名称"></el-table-column>
-                <el-table-column align="center" label="更改前内容">
-                    <el-table-column prop="preUpkeepPart" label="保养部件"></el-table-column>
-                    <el-table-column prop="preUpkeepStation" label="保养位置"></el-table-column>
-                    <el-table-column prop="preUpkeepContent" label="保养内容细则"></el-table-column>
-                    <el-table-column prop="preUpkeepPeriod" label="保养周期"></el-table-column>
-                </el-table-column>
-                <el-table-column align="center" label="更改后内容">
-                    <el-table-column prop="lastUpkeepPart" label="保养部件"></el-table-column>
-                    <el-table-column prop="lastUpkeepStation" label="保养位置"></el-table-column>
-                    <el-table-column prop="lastUpkeepContent" label="保养内容细则"></el-table-column>
-                    <el-table-column prop="lastUpkeepPeriod" label="保养周期"></el-table-column>
-                </el-table-column>
-            </el-table>
-       </el-row>
-        <!-- 分页 -->
-          <el-pagination
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-        :current-page="1"
-        :page-sizes="[5, 10, 15, 20]"
-        :page-size="100"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="30">
-        </el-pagination>
-    </div>
+
+        <!-- 底部表格 -->
+        <tpms-table
+          class="table-more"
+          :column_index="true"
+          ref="tpmsTable"
+          :total="total"
+          :data="equipmentTableData"
+          :columns="equipmentTableList"
+          @inquireTableData="inquireTableData"
+          @getTableData='getTableData'
+        ></tpms-table>
+    </el-row>
+  </div>
 </template>
 <script>
+import { tpmsHeader, tpmsTable } from "../../components";
+import { maintainPlanChanges } from "../../lib/api/upkeepManagePage";
 export default {
-    data(){
-        return{
-            partName:'',        // 设备名称
-            partNumber:'',          // 设备编号
-            leftDate:'',            // 新生效日期左侧日期
-            rightDate:'',           // 新生效日期右侧日期
-            options:[               // 新生效日期下载选择框内容
-                    {
-                value: '选项2',
-                label: '双皮奶'
-                }, {
-                value: '选项3',
-                label: '蚵仔煎'
-                }
-            ],
-            upkeepPlanTable:[       // 表格数据
-                {partNumber:'123456',partName:'润滑油站',preUpkeepPart:'润滑油站',preUpkeepStation:'PHY-001',preUpkeepContent:'001',preUpkeepPeriod:'主机温度',lastUpkeepPart:'1300',lastUpkeepStation:'318531',lastUpkeepContent:'',lastUpkeepPeriod:''},
-                {partNumber:'123456',partName:'润滑油站',preUpkeepPart:'润滑油站',preUpkeepStation:'PHY-001',preUpkeepContent:'001',preUpkeepPeriod:'主机温度',lastUpkeepPart:'1300',lastUpkeepStation:'318531',lastUpkeepContent:'',lastUpkeepPeriod:''},
-                {partNumber:'123456',partName:'润滑油站',preUpkeepPart:'润滑油站',preUpkeepStation:'PHY-001',preUpkeepContent:'001',preUpkeepPeriod:'主机温度',lastUpkeepPart:'1300',lastUpkeepStation:'318531',lastUpkeepContent:'',lastUpkeepPeriod:''},
-                {partNumber:'123456',partName:'润滑油站',preUpkeepPart:'润滑油站',preUpkeepStation:'PHY-001',preUpkeepContent:'001',preUpkeepPeriod:'主机温度',lastUpkeepPart:'1300',lastUpkeepStation:'318531',lastUpkeepContent:'',lastUpkeepPeriod:''},
-                {partNumber:'123456',partName:'润滑油站',preUpkeepPart:'润滑油站',preUpkeepStation:'PHY-001',preUpkeepContent:'001',preUpkeepPeriod:'主机温度',lastUpkeepPart:'1300',lastUpkeepStation:'318531',lastUpkeepContent:'',lastUpkeepPeriod:''},
-                {partNumber:'123456',partName:'润滑油站',preUpkeepPart:'润滑油站',preUpkeepStation:'PHY-001',preUpkeepContent:'001',preUpkeepPeriod:'主机温度',lastUpkeepPart:'1300',lastUpkeepStation:'318531',lastUpkeepContent:'',lastUpkeepPeriod:''},
-                {partNumber:'123456',partName:'润滑油站',preUpkeepPart:'润滑油站',preUpkeepStation:'PHY-001',preUpkeepContent:'001',preUpkeepPeriod:'主机温度',lastUpkeepPart:'1300',lastUpkeepStation:'318531',lastUpkeepContent:'',lastUpkeepPeriod:''},
-                {partNumber:'123456',partName:'润滑油站',preUpkeepPart:'润滑油站',preUpkeepStation:'PHY-001',preUpkeepContent:'001',preUpkeepPeriod:'主机温度',lastUpkeepPart:'1300',lastUpkeepStation:'318531',lastUpkeepContent:'',lastUpkeepPeriod:''},
-                {partNumber:'123456',partName:'润滑油站',preUpkeepPart:'润滑油站',preUpkeepStation:'PHY-001',preUpkeepContent:'001',preUpkeepPeriod:'主机温度',lastUpkeepPart:'1300',lastUpkeepStation:'318531',lastUpkeepContent:'',lastUpkeepPeriod:''},
-                {partNumber:'123456',partName:'润滑油站',preUpkeepPart:'润滑油站',preUpkeepStation:'PHY-001',preUpkeepContent:'001',preUpkeepPeriod:'主机温度',lastUpkeepPart:'1300',lastUpkeepStation:'318531',lastUpkeepContent:'',lastUpkeepPeriod:''},
-            ]
-        }
+  data() {
+    return {
+      equipmentFormList: [
+        //  渲染头部功能区的列表
+        { label: "保养单编号", props: "planNo", value: "" }
+      ],
+      // 表格的数据
+      equipmentTableData: [],
+      equipmentTableList: [
+        { props: "planNo", label: "保养单编号" },
+        {
+          label: "更改前内容",
+          children: [
+            { props: "oldPlanDeviceNo", label: "设备编号", width: "140px" },
+            { props: "oldExecutionPart", label: "保养部位", width: "100px" },
+            { props: "oldExecutionNode", label: "保养位置", width: "100px" },
+            { props: "oldContent", label: "保养内容", width: "100px" },
+            { props: "oldCycleName", label: "计划名称", width: "100px" },
+            { props: "oldCycle", label: "计划ID", width: "100px" },
+          ]
+        },
+        {
+          label: "更改后内容",
+          children: [
+            { props: "newPlanDeviceNo", label: "设备编号", width: "140px" },
+            { props: "newExecutionPart", label: "保养部位", width: "100px" },
+            { props: "newExecutionNode", label: "保养位置", width: "100px" },
+            { props: "newContent", label: "保养内容", width: "100px" },
+            { props: "newCycleName", label: "计划名称", width: "100px" },
+            { props: "newCycle", label: "计划ID", width: "100px" },
+          ]
+        },
+        { props: "reason", label: "更改理由" },
+        { props: "createDate", label: "变更日期" }
+      ],
+      total: 0
+    };
+  },
+  components: {
+    tpmsHeader,
+    tpmsTable
+  },
+  mounted() {
+    this.getTableData();
+  },
+  methods: {
+    /** 点击查询按钮 */
+    inquireTableData() {
+      // 重置table页为第一页
+      this.$refs.tpmsTable.resetCurrentPage();
+
+      this.getTableData();
     },
-    methods:{
-         /**
-         * @description 分页器中pageSize 改变时触发的事件
-         * @param {val} 每页的条数
-         */
-         handleSizeChange(val) {
-        // console.log(`每页 ${val} 条`);
-      },
-       /**
-         * @description 分页器中currentPage 改变时触发的事件
-         * @param {val} 当前页
-         */
-      handleCurrentChange(val) {
-        // console.log(`当前页: ${val}`);
-      },
+    /** 加载页面表格数据 */
+    getTableData() {
+      // 获取头部搜索组数据
+      let data = this.$refs.tpmsHeader.getData();
+      console.log(data);
+      let pageData = this.$refs.tpmsTable.getData();
+      maintainPlanChanges({ ...data, ...pageData }).then(res => {
+        console.log(res);
+        this.total = res.data.totalElements;
+        this.equipmentTableData = res.data.content;
+        // console.log(this.equipmentTableData)
+      });
     }
-}
+  }
+};
 </script>
-<style lang="scss" scoped>
-    .inline-block{
-        display: inline-block;
-        width: 200px;
+
+<style lang="scss">
+.table-more{
+  table {
+    tr {
+      th {
+        background: #a6bbc8!important;
+      }
     }
+  }
+}
 </style>

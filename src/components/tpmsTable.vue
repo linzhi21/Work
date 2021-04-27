@@ -1,9 +1,9 @@
 // 设备履历
 <template>
   <el-row>
-    <el-table ref='table' :data="data" style="width: 100%" v-bind="$attrs" @selection-change='val=>selectionList=val' v-on="$listeners">
+    <el-table :height='data.length?620:"auto"' ref='table' :data="data" style="width: 100%" size="small" v-bind="$attrs" @selection-change='val=>selectionList=val' v-on="$listeners">
       <el-table-column v-if="columns.some(item=>item.type==='selection')" type="selection" width="55" v-bind="columns.filter(item=>item.type==='selection')[0]" />
-      <el-table-column v-if="column_index" align="center" type="index" label="序号" width="60px" />
+      <el-table-column v-if="column_index" align="center" type="index" label="NO." width="60px" />
       <el-table-column align="center" min-width="100px" v-for="(item,index) in columns.filter(item=>item.type!=='selection')" :key="index" :label="item.label"
         v-bind="item">
         <el-table-column v-for="(child,i) in item.children" :key="i" v-bind="child" align="center">
@@ -40,8 +40,13 @@
       </el-table-column>
     </el-table>
     <!-- 分页 -->
-    <el-pagination v-if="paginationIsShow" @size-change="handleSizeChange" @current-change="handleCurrentChange"
-      :current-page.sync="currentPage" :page-sizes="pageSizes" :page-size.sync="pageSize" layout="total, sizes, prev, pager, next, jumper"
+    <el-pagination v-if="paginationIsShow" 
+      @size-change="handleSizeChange" 
+      @current-change="handleCurrentChange"
+      :current-page.sync="currentPage" 
+      :page-sizes="pageSizes" 
+      :page-size.sync="pageSize" 
+      layout="total, sizes, prev, pager, next, jumper"
       :total="total"></el-pagination>
   </el-row>
 </template>

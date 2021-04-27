@@ -41,14 +41,14 @@
 export default {
   data() {
     return {
-      action:`${apiConfig.systemUrl}/tpms/device/api/device/upload`,
+      action:`${apiConfig.systemUrl}/device/api/device/bom/upload`,
       isUploading: false, //是否正在上传
       uploadHeaders:{Authorization:'Bearer ' + localStorage.getItem('access_token')}
     };
   },
   methods: {
     downloadDevice(){
-      let url = `${apiConfig.systemUrl}/tpms/device/api/device/download?IsModel=false`; //请求下载文件的地址
+      let url = `${apiConfig.systemUrl}/device/api/device/bom/download?isModel=true`; //请求下载文件的地址
       let token = localStorage.getItem('access_token'); //获取token
       axios
         .get(url, {
@@ -59,6 +59,14 @@ export default {
         })
         .then(res => {
           if (!res) return;
+
+          let fileName = 'spare.xlsx';
+          const disposition = res.headers['content-disposition'];
+          if(disposition){
+            const name = disposition.split(";")[1].split("filename=")[1];
+            fileName = decodeURI(name);
+          }
+            
           let blob = new Blob([res.data], {
             type: "application/vnd.ms-excel;charset=utf-8"
           });
@@ -66,7 +74,7 @@ export default {
           let aLink = document.createElement("a");
           aLink.style.display = "none";
           aLink.href = url;
-          aLink.setAttribute("download", "Device.xls"); // 下载的文件
+          aLink.setAttribute("download", fileName); // 下载的文件
           document.body.appendChild(aLink);
           aLink.click();
           document.body.removeChild(aLink);
@@ -77,7 +85,7 @@ export default {
         });
     },
     downloadBom(){
-        let url = `${apiConfig.systemUrl}/tpms/device/api/device/bom/download`; //请求下载文件的地址
+        let url = `${apiConfig.deviceBomDownload}`; //请求下载文件的地址
         let token = localStorage.getItem('access_token'); //获取token
         axios
           .get(url, {
@@ -88,6 +96,14 @@ export default {
           })
           .then(res => {
             if (!res) return;
+
+            let fileName = 'bom.xlsx';
+            const disposition = res.headers['content-disposition'];
+            if(disposition){
+              const name = disposition.split(";")[1].split("filename=")[1];
+              fileName = decodeURI(name);
+            }
+          
             let blob = new Blob([res.data], {
               type: "application/vnd.ms-excel;charset=utf-8"
             });
@@ -95,7 +111,7 @@ export default {
             let aLink = document.createElement("a");
             aLink.style.display = "none";
             aLink.href = url;
-            aLink.setAttribute("download", "BOM.xls"); // 下载的文件
+            aLink.setAttribute("download", fileName); // 下载的文件
             document.body.appendChild(aLink);
             aLink.click();
             document.body.removeChild(aLink);
@@ -108,33 +124,32 @@ export default {
     /** 设备上传之前的钩子 */
     beforeUpload() {
       this.isUploading = true;
+      this.$store.commit('SET_UPLOADING',true)
     },
     /** 上传完成时钩子 */
     uploadSucess(res, file, fileList) {
-      console.log(res);
-      console.log(file);
-      console.log(fileList);
       this.isUploading = false;
       this.$message({
         message: "导入完成",
         type: "success"
       });
+      this.$store.commit('SET_UPLOADING',false)
     },
     /** 上传错误时的钩子 */
     uploadError(err) {
-      console.log(err);
       this.isUploading = false;
       this.$message({
-        message: "导入失败",
+        message: JSON.parse(err.message).message || "导入失败",
         type: "error"
       });
+       this.$store.commit('SET_UPLOADING',false)
     }
   }
 };
 </script>
 <style lang="scss" scoped>
 .buttom-group{
-    padding: 20px calc(0.2rem + 30px) 20px 0;
+    // padding: 20px calc(0.2rem + 30px) 20px 0;
     div,>button{
         margin-left: 10px;
     }

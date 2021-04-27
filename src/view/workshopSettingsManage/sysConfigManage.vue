@@ -10,11 +10,11 @@
     </el-row>
     <el-row>
       <!-- 底部表格 -->
-      <tpms-table ref='tpmsTable' :data='tableLists' :columns='tableHeaderList' :total='total' :column_index='false'
-        @inquireTableData='inquireTableData'>
-        <template slot-scope="{row}">
-          <span class="button" @click="editDialog(row)">编辑</span>
-          <span class="button" @click="change(row)">{{row.enable?'禁用':'启用'}}</span>
+      <tpms-table ref='tpmsTable' :data='tableLists' :columns='tableHeaderList' :total='total' :column_index='true'
+        @inquireTableData='inquireTableData' @getTableData="getTableData">
+        <template slot="operation" slot-scope="{row}">
+          <span class="button cursor" @click="editDialog(row)">编辑</span>
+          <span class="button cursor" @click="change(row)">{{row.enable?'禁用':'启用'}}</span>
         </template>
       </tpms-table>
     </el-row>
@@ -146,10 +146,7 @@
             }]
           },
         ],
-        tableHeaderList: [{
-            props: 'id',
-            label: '序号'
-          },
+        tableHeaderList: [
           {
             props: 'functionalCode',
             label: '功能编号'
@@ -171,6 +168,12 @@
             label: '是否禁用',
             translate: (value) => value ? '启用' : '禁用',
           },
+          {
+          label: "操作",
+          slotName: "operation",
+          fixed: "right",
+          width: "120px",
+        }
         ],
         rules: {
           key: [{

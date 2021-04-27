@@ -8,6 +8,7 @@
           :formData="equipmentFormList"
           @inquireTableData="inquireTableData"
           label-width="100px"
+          @onValueChanged="onValueChanged"
         />
         <!-- 底部表格 -->
         <tpms-table
@@ -15,11 +16,13 @@
           :data="equipmentTableData"
           :columns="equipmentTableList"
           @inquireTableData="inquireTableData"
+          @getTableData="getTableData"
+          :total='total'
         >
-          <template slot-scope="scope">
-            <span class="button" @click="view(scope.row)">查看</span>
-            <span class="button" @click="stop(scope.row)" v-if="scope.row.status == '待接单'">暂停</span>
-            <span class="button" @click="view(scope.row)" v-if="scope.row.status == '已完成'">导出</span>
+          <template slot="operation" slot-scope="scope">
+            <span class="button cursor" @click="view(scope.row)">查看</span>
+            <span class="button cursor" @click="stop(scope.row)" v-if="scope.row.status == '待接单'">暂停</span>
+            <span class="button cursor" @click="view(scope.row)" v-if="scope.row.status == '已完成'">导出</span>
           </template>
         </tpms-table>
       </el-card>
@@ -71,27 +74,27 @@
                 <el-input v-model="item.workSectionName" disabled />
               </el-form-item>
             </el-col>
-            <el-col :span="11" :offset="2" v-if="item.workStationName">
+            <el-col :span="11" v-if="item.workStationName">
               <el-form-item label="工位（工段）">
                 <el-input v-model="item.workStationName" disabled />
               </el-form-item>
             </el-col>
-            <el-col :span="11">
+            <el-col :span="11" :offset="2">
               <el-form-item label="工时">
                 <el-input v-model="item.hour" disabled />
               </el-form-item>
             </el-col>
-            <el-col :span="11" :offset="2">
+            <el-col :span="11">
               <el-form-item label="设备(生产线)名称">
                 <el-input v-model="item.deviceName" disabled />
               </el-form-item>
             </el-col>
-            <el-col :span="11">
+            <el-col :span="11" :offset="2">
               <el-form-item label="编制人">
                 <el-input v-model="item.creatorName" disabled />
               </el-form-item>
             </el-col>
-            <el-col :span="11" :offset="2">
+            <el-col :span="11">
               <el-form-item label="编制日期">
                 <el-input v-model="item.createDate" disabled />
               </el-form-item>
@@ -121,53 +124,77 @@ import {
   stopWorkorders,
   planStatusSelect,
 } from "../../lib/api/checkPlan";
+import {
+  factoryManage,
+  workshopManage,
+  workStationManage,
+  workshopSectionManage,
+} from "../../lib/api/workshopSettingsManage";
 export default {
   data() {
-    // 类型列表
-    const typeList = [
-      { id: "1", label: "巡检计划" },
-      { id: "3", label: "日常保养" },
+    //待接单就是1,待处理就是2、3和7,审批中是4,5,已完成就是6
+    const statusList = [
+      { label: "待接单", id: "1" },
+      { label: "待处理", id: "2,3,7" },
+      { label: "审批中", id: "4,5" },
+      { label: "已完成", id: "6", },
     ];
-    let getListFuncs = [planStatusSelect];
-    let [statusList] = getListFuncs.map((getListFunc) => {
+    let getListFuncs = [
+      factoryManage.getNames,//工厂
+      workshopManage.getNames,//车间
+      workStationManage.getNames,//工位
+      workshopSectionManage.getNames,//工段
+    ];
+    let [factoryList, workshopList, stationList, sectionList] = getListFuncs.map((getListFunc) => {
       let arr = [];
       getListFunc(null).then((res) => {
         arr.push(...res.data);
       });
       return arr;
     });
+    /** 表格状态码转文字 */
+    function statusTranslate(val){
+      if(val == 1) return "待接单";
+      if(val == 2 || val == 3 || val ==7) return "待处理";
+      if(val == 4 || val ==5) return "审批中";
+      if(val == 6) return "已完成";
+    };
     return {
       equipmentFormList: [
-        //  渲染头部功能区的列表
-        { label: "巡检工单编号", props: "no", value: "" },
-        {
-          label: "类型",
-          props: "type",
-          value: "",
-          type: "radio",
-          checkList: typeList,
-        },
-        {
-          label: "状态",
-          props: "status",
-          value: "",
-          type: "radio",
-          checkList: statusList,
-        },
-        { label: "巡检计划名称", props: "planName", value: "" },
+        { label: "工厂", props: "factoryId", type: "radio", checkList: factoryList },
+        { label: "车间", props: "workshopId", type: "radio", checkList: [] },
+        { label: "工段", props: "workshopSectionId", type: "radio", checkList: [] },
+        { label: "工位", props: "workStationId", type: "radio", checkList: [] },
+        // { label: "状态", props: "status", value: "", type: "radio", checkList: statusList },
+        // { label: "工位/工段", props: "positionName" },
+        { label: "设备编号", props: "deviceNo", value: "" },
+        { label: "资产编号", props: "deviceAssetNo", value: "" },
+        { label: "开始时间", props: "startTime", type: "dateFrame", value: "" },
+        { label: "结束时间", props: "endTime", type: "dateFrame", value: "" },
         { label: "巡检计划编号", props: "planNo", value: "" },
       ],
       // 表格的数据
       equipmentTableData: [],
       // 渲染表格的表头
       equipmentTableList: [
-        { props: "no", label: "巡检工单编号" },
-        // { props: "type", label: "类型"},
-        { props: "planName", label: "巡检计划名称", width: "200px" },
-        { props: "planNo", label: "巡检计划编号", width: "200px" },
-        { props: "hour", label: "总工时" },
+        { props: "type", label: "类型"},
+        { props: "status", label: "状态", translate: statusTranslate},
+        { props: "deviceName", label: "设备名称"},
+        { props: "deviceAssetNo", label: "资产编号"},
+        { props: "workshopSectionName", label: "工段"},
+        { props: "receiverName", label: "接单人" },
+        { props: "completeTime", label: "完成时间", width: "200px" },
         { props: "createDate", label: "工单日期", width: "200px" },
-        { props: "statusStr", label: "状态" },
+        { props: "no", label: "点检工单编号" },
+        { props: "planName", label: "点检计划名称", width: "200px" },
+        { props: "planNo", label: "点检计划编号", width: "200px" },
+        { props: "hour", label: "总工时" },
+        {
+          label: "操作",
+          slotName: "operation",
+          fixed: "right",
+          width: "100px",
+        }
       ],
       orderDetailIsShow: false, //查看工单详情
       //工单详情
@@ -195,11 +222,58 @@ export default {
       // 获取头部搜索组数据
       let data = this.$refs.tpmsHeader.getData();
       let pageData = this.$refs.tpmsTable.getData();
-      checkWorkOrder({ ...data, ...pageData }).then((res) => {
+      checkWorkOrder({ ...data, ...pageData, type: '3' }).then((res) => {
         this.total = res.data.totalElements;
         console.log(res)
         this.equipmentTableData = res.data.content;
       });
+    },
+    /** 头部value变更回调 */
+    onValueChanged({props, value}) {
+      const { equipmentFormList } = this;
+      if(props === 'factoryId'){
+        // 选择工厂，重置车间及以下
+        workshopManage.getNames({factoryId: value}).then(res => {
+          equipmentFormList.forEach(item => {
+            if(item.props === 'workshopId'){
+              item.checkList = res.data;
+              item.value = '';
+            };
+            if(item.props === 'workshopSectionId' || item.props === 'workStationId'){
+              item.value = '';
+              item.checkList = [];
+            }
+          })
+        });
+      };
+
+      if(props === 'workshopId'){
+        // 选择车间，重置工段及以下
+        workshopSectionManage.getNames({workshopId: value}).then(res => {
+          equipmentFormList.forEach(item => {
+            if(item.props === 'workshopSectionId'){
+              item.checkList = res.data;
+              item.value = '';
+            };
+            if(item.props === 'workStationId'){
+              item.value = '';
+              item.checkList = [];
+            }
+          })
+        });
+      };
+
+      if(props === 'workshopSectionId'){
+        // 选择工段，重置工位
+        workshopSectionManage.getNames({workshopSectionId: value}).then(res => {
+          equipmentFormList.forEach(item => {
+            if(item.props === 'workStationId'){
+              item.checkList = res.data;
+              item.value = '';
+            }
+          })
+        });
+      };
     },
     /** 查看 */
     view(row) {

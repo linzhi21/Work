@@ -8,18 +8,22 @@
           :formData="equipmentFormList"
           @inquireTableData="inquireTableData"
           label-width="90px"
+          
         />
         <el-row class="buttom-group" type="flex" justify="end" align="middle">
-          <el-button class="button-more" size="small" style="margin-right:30px">导出</el-button>
+          <!-- <el-button class="button-more" size="small">导出</el-button> -->
         </el-row>
 
         <!-- 底部表格 -->
         <tpms-table
+          class="table-more"
+          :column_index="true"
           ref="tpmsTable"
           :total="total"
           :data="equipmentTableData"
           :columns="equipmentTableList"
           @inquireTableData="inquireTableData"
+          @getTableData='getTableData'
         ></tpms-table>
         <!-- 底部表格 -->
       </el-card>
@@ -31,10 +35,15 @@ import { tpmsHeader, tpmsTable } from "../../components";
 import { checkPlanChanges } from "../../lib/api/checkPlan";
 export default {
   data() {
+    const typeList = [
+        { label: "点检计划", id: "1" },
+        { label: "日常保养", id: "2" },
+    ];
     return {
       equipmentFormList: [
         //  渲染头部功能区的列表
-        { label: "点检单编号", props: "planNo", value: "" }
+        { label: "点检单编号", props: "planNo", value: "" },
+        { label: "类型", props: "type", value: "1", type: 'radio', checkList: typeList },
       ],
       // 表格的数据
       equipmentTableData: [],
@@ -43,33 +52,21 @@ export default {
         {
           label: "更改前内容",
           children: [
-            { props: "deviceName", label: "设备(生产线)名称", width: "140px" },
-            {
-              props: "stationName",
-              label: "工位(工段)",
-              translate: (val, row) => row.stationName || row.sectionName,
-              width: "100px"
-            },
-            { props: "oldExecutionNode", label: "点检部位" },
-            { props: "oldHour", label: "工时" },
-            { props: "oldContent", label: "点检内容" },
-            { props: "oldCycle", label: "周期" }
+            { props: "oldPlanDeviceNo", label: "设备(生产线)名称", width: "140px" },
+            { props: "oldExecutionNode", label: "时间部件", width: "100px" },
+            { props: "oldCycleName", label: "周期", width: "140px" },
+            { props: "oldMethod", label: "方法", width: "140px" },
+            { props: "oldContent", label: "内容" },
           ]
         },
         {
           label: "更改后内容",
           children: [
-            { props: "deviceName", label: "设备(生产线)名称", width: "140px" },
-            {
-              props: "stationName",
-              label: "工位(工段)",
-              translate: (val, row) => row.stationName || row.sectionName,
-              width: "100px"
-            },
-            { props: "newExecutionNode", label: "点检部位" },
-            { props: "newHour", label: "工时" },
-            { props: "newContent", label: "点检内容" },
-            { props: "newCycle", label: "周期" }
+            { props: "newPlanDeviceNo", label: "设备(生产线)名称", width: "140px" },
+            { props: "newExecutionNode", label: "时间部件", width: "100px" },
+            { props: "newCycleName", label: "周期", width: "140px" },
+            { props: "newMethod", label: "方法", width: "140px" },
+            { props: "newContent", label: "内容" },
           ]
         },
         { props: "reason", label: "更改理由" },
@@ -97,7 +94,10 @@ export default {
     getTableData() {
       // 获取头部搜索组数据
       let data = this.$refs.tpmsHeader.getData();
-      console.log(data);
+      if(!data.type){
+        this.$message.warning('请选择计划类型');
+        return;
+      }
       let pageData = this.$refs.tpmsTable.getData();
       checkPlanChanges({ ...data, ...pageData }).then(res => {
         console.log(res);
@@ -109,3 +109,15 @@ export default {
   }
 };
 </script>
+
+<style lang="scss">
+.table-more{
+  table {
+    tr {
+      th {
+        background: #a6bbc8!important;
+      }
+    }
+  }
+}
+</style>

@@ -10,10 +10,11 @@
     </el-row>
     <el-row>
       <!-- 底部表格 -->
-      <tpms-table ref='tpmsTable' :total='total' :data='tableLists' :columns='tableHeaderList' :column_index='false'
-        @inquireTableData='inquireTableData'>
-        <template slot-scope="{row}">
-          <span class="button" @click="editDialog(row)">编辑</span>
+      <tpms-table ref='tpmsTable' :total='total' :data='tableLists' :columns='tableHeaderList' :column_index='true'
+        @inquireTableData='inquireTableData' @getTableData="getTableData">
+        <template slot="operation" slot-scope="{row}">
+          <span class="button cursor" @click="editDialog(row)">编辑</span>
+           <span class="button cursor" @click="del(row)">删除</span>
         </template>
       </tpms-table>
     </el-row>
@@ -96,10 +97,7 @@
             }]
           },
         ],
-        tableHeaderList: [{
-            props: 'id',
-            label: 'No.'
-          },
+        tableHeaderList: [
           {
             props: 'workshopName',
             label: '所属车间'
@@ -120,6 +118,12 @@
             label: '状态',
             translate: (value) => value ? '启用' : '禁用'
           },
+          {
+          label: "操作",
+          slotName: "operation",
+          fixed: "right",
+          width: "120px",
+        }
         ],
         form: {
           name: '',
@@ -127,7 +131,8 @@
           workshopId: null,
           enable: true,
           startTime: null,
-          endTime: null
+          endTime: null,
+		      workshopName:''
         },
 
         formList: [{
@@ -219,7 +224,7 @@
 
         // this.workshopLists=workshopLists
         this.formList.unshift({
-          props: 'workshopId',
+          props: 'workshopName',
           label: '所属车间',
           span: 24,
           type: 'checkbox',
@@ -229,6 +234,28 @@
       })
     },
     methods: {
+      /**删除**/
+      del(row) {
+        this.$confirm('确定是否删除?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          console.log(row)
+          workshopShiftManage.remove(row.id).then(res=>{
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            });
+            this.getTableData()
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });
+        });
+      },
       /** 点击查询按钮 */
       inquireTableData() {
         // 重置table页为第一页
@@ -244,9 +271,9 @@
         workshopShiftManage['getLists']({ ...data,
           ...pageData
         }).then(res => {
-
+          this.total = res.data.totalElements;
           this.tableLists = res.data.content
-          console.log(this.tableLists)
+          // console.log(this.tableLists)
         })
       },
       addDialog() {
@@ -255,6 +282,7 @@
         this.dialogType = 'add'
       },
       editDialog(row){
+        console.log(row)
         this.form = deepClone(row)
         let startTime=this.form.startTime.split(':');
         let endTime=this.form.endTime.split(':');
@@ -285,8 +313,10 @@
       },
       ok(dialogType) {
         var _self = this
-
-
+        let form=this.form;
+        form.workshopId=this.form.workshopName;
+        delete form.workshopName
+        console.log(this.form)
         this.$refs['ruleForm'].validate((valid) => {
           if (valid) {
             let startTimeH=new Date(this.form.startTime).getHours()<10?'0'+new Date(this.form.startTime).getHours():new Date(this.form.startTime).getHours();
@@ -297,7 +327,8 @@
             let endTimes=new Date(this.form.endTime).getSeconds()<10?'0'+new Date(this.form.endTime).getSeconds():new Date(this.form.endTime).getSeconds();
             this.form.startTime=startTimeH+':'+startTimeM+':'+startTimes;
             this.form.endTime=endTimeH+':'+endTimeM+':'+endTimes;
-            workshopShiftManage[dialogType](this.form, this.form.id).then(res => {
+            workshopShiftManage[dialogType](form, form.id).then(res => {
+              this.$message.success('操作成功')
               this.dialogVisible = false
               this.getTableData();
               this.form = {

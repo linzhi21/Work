@@ -4,7 +4,7 @@
     <el-card>
       <el-row type="flex" align="middle">
         <span>BOM关联备件设置：</span>
-        <el-switch v-model="enable" active-color="#13ce66" inactive-color="#ff4949" @change='beforeChange' />
+        <el-switch v-model="enable" active-color="#84BD00" inactive-color="#CB333B" @change='beforeChange' />
         &nbsp;&nbsp;&nbsp;{{enable?'开':'关'}}
       </el-row>
       <el-row>
@@ -13,10 +13,12 @@
       <el-row>
         <h3>BOM开关历史记录</h3>
         <tpmsTable
+        :column_index="true"
           ref='tpmsTable'
           :data='bomHistory'
           :total='total'
-          @inquireTableData='getBomHistory'
+          @inquireTableData='inquireTableData'
+           @getTableData="getBomHistory"
           :columns="[
             {props:'bomSwitch',label:'操作状态',translate:val=>val?'关->开':'开->关'},
             {props:'creatorName',label:'操作人'},
@@ -76,6 +78,11 @@ export default {
 
   },
   methods: {
+    inquireTableData() {
+      // 重置table页为第一页
+      this.$refs.tpmsTable.resetCurrentPage();
+      this.getBomHistory();
+    },
     /** 获取BOM备件状态开关 */
     getEnableBom(){
       workshopManage['getBom']('',this.userInfo.principal.workshopId).then(res => {
@@ -96,6 +103,7 @@ export default {
     },
     /** 改变BOM备件开关 */
     change(){
+      console.log({bomSwitch:this.enable,bomReason:this.formData.bomReason})
         workshopManage['edit']({bomSwitch:this.enable,bomReason:this.formData.bomReason},this.userInfo.principal.workshopId).then(res=>{
           this.dialogVisible=false;
           this.getBomHistory();

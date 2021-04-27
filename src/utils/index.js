@@ -388,3 +388,45 @@ export function getExamineStatus(status) {
   }
   return res
 }
+
+/**
+ * 获取指定日期是第几周
+ * @param {String} dt  	日期
+ */
+export function getWeek(dt) {
+  var totalDays = 0;
+  var now = new Date(dt);
+  var years = now.getFullYear()
+  if (years < 1000)
+    years += 1900
+  var days = new Array(12);
+  days[0] = 31;
+  days[2] = 31;
+  days[3] = 30;
+  days[4] = 31;
+  days[5] = 30;
+  days[6] = 31;
+  days[7] = 31;
+  days[8] = 30;
+  days[9] = 31;
+  days[10] = 30;
+  days[11] = 31;
+  //判断是否为闰年，针对2月的天数进行计算
+  if (Math.round(now.getFullYear() / 4) == now.getFullYear() / 4) {
+    days[1] = 29
+  } else {
+    days[1] = 28
+  }
+  if (now.getMonth() == 0) {
+    totalDays = totalDays + now.getDate();
+  } else {
+    var curMonth = now.getMonth();
+    for (var count = 1; count <= curMonth; count++) {
+      totalDays = totalDays + days[count - 1];
+    }
+    totalDays = totalDays + now.getDate();
+  }
+  //得到第几周
+  var week = Math.ceil(totalDays / 7);
+  return week;
+}

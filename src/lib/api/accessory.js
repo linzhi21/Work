@@ -33,7 +33,7 @@ export const downloadAccessory = (data, restful) => GET(data, apiConfig.download
 * @param {Object} data
  * @param {String} module - 所属模块，1：用户基础数据模块；2：设备模块；4：备件模块；8：资料库；16：专家智库；32：统计；64：其他 
 */
-export const uploadAccessory = (data) => POST(data, apiConfig.uploadAccessory);
+export const uploadAccessory = (data,ids) => POST(data, apiConfig.uploadAccessory,ids);
 
 /** 上传多个附件
 * @param {Object} data

@@ -43,7 +43,7 @@ export const workshopAreaManage = (data, restful) => GET(data, apiConfig.worksho
  */
 export const workshopManage = (data, restful) => GET(data, apiConfig.workshopManage, restful);
 
-/** 查询工段列表
+/** 查询工段列表下拉列表
  * @param {Null} data
  */
 export const workshopSectionSelect = (data) => GET(data, apiConfig.workshopSectionSelect);
@@ -169,14 +169,6 @@ export const stopWorkorders = (data, restful) => PATCH(data, apiConfig.checkWork
  */
 export const checkPlanChanges = (data) => GET(data, apiConfig.checkPlanChanges);
 
-/**
- * @description  导入单个文件
- * @param {Object} data
- * @param {String} data.file  导入的excel
- * @param {String} data.workshopName 车间名
- * 
- */
-export const importPlanFile = (data) => POST(data, apiConfig.importPlanFile)
 
 /**
  * @description 导出excel表

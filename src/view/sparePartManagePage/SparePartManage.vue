@@ -3,7 +3,7 @@
         <el-row>
             <el-card class="spare-part-manage">
                 <!-- 头部导航菜单栏 -->
-                <el-menu :default-active="activeIndex" mode='horizontal' active-text-color='#2b91fc' text-color='#646464'> 
+                <el-menu :default-active="activeIndex" mode='horizontal' active-text-color='#0077C8' text-color='#909399'> 
                     <el-menu-item index="/sparePartContent" @click='jumpItem("sparePartContent","备件管理/常用备件管理")'>常用备件管理</el-menu-item>
                     <el-submenu index="/sparePartDamage">
                         <template slot="title">损坏备件管理</template>

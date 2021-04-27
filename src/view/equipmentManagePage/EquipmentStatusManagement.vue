@@ -11,14 +11,15 @@
           ref="tpmsTable"
           :data='equipmentTableData'
           :total="total"
-          :column_index='false'
+          :column_index='true'
           :columns='equipmentTableList'
           @inquireTableData='inquireTableData'
           @getTableData='getTableData'
         >
           <template slot-scope="{row}">
-            <span class="button" @click="edit(row)">编辑</span>
-            <span class="button" @click="changeStatus(row)">启用/禁用</span>
+            <span class="button cursor" @click="edit(row)">编辑</span>
+            <el-divider direction="vertical"></el-divider>
+            <span class="button cursor" @click="changeStatus(row)">启用/禁用</span>
           </template>
         </tpmsTable>
         <!-- 底部表格 -->
@@ -140,7 +141,7 @@ export default {
       ],
       equipmentTableList: [
         // 渲染表格的表头
-         { props: "id", label: "序号"},
+         // { props: "id", label: "序号"},
         { props: "status", label: "状态名称" },
         { props: "description", label: "状态描述" },
         { props: "enable", label: "使用状态", translate:(value)=>value?'启用':'禁用' }
@@ -159,6 +160,9 @@ export default {
         //新增设备状态管理数据验证规则
         no:[
           { required: true, message: "请输入状态编号", trigger: "blur" }
+        ],
+        status:[
+          { required: true, message: "请输入状态", trigger: "blur" }
         ]
       },
       editIsShow:false,//编辑设备 模态框

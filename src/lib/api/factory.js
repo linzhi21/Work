@@ -32,7 +32,6 @@ export const patchFactory = (data, restful) => PATCH(data, apiConfig.factory, re
 /** 查询单个车间
  * @param {String} restful - 车间唯一标志
  */
-console.log(apiConfig.workshop)
 export const queryWorkShop = (data, restful) => GET(data, apiConfig.workshop, restful);
 
 /** 新增车间
@@ -126,6 +125,18 @@ export const getWorkShopTeam = (data, restful) => GET(data, apiConfig.workshopTe
  */
 export const addWorkShopTeam = (data, restful) => POST(data, apiConfig.workshopTeam);
 
-/** 查询车间下拉列表
+/** 
+ * 查询工厂下拉列表
+ */
+export const factorySelect = (data) => GET(data, `${apiConfig.factory}/names`);
+/** 
+ * 查询车间下拉列表
  */
 export const workshopSelect = (data) => GET(data, apiConfig.workshopSelect);
+/** 
+ * 查询班次下拉列表
+ */
+export const workshopShiftSelect = (data) => GET(data, `${apiConfig.workshopShiftManage}/names`);
+
+
+

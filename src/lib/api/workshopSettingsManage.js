@@ -16,7 +16,7 @@ export const workshopAreaManage = {
   add: (data) => POST(data, apiConfig.workshopAreaManage),
   getLists: (data) => GET(data, apiConfig.workshopAreaManage),
   getOne: (data, restful) => GET(data, apiConfig.workshopAreaManage + '/' + restful),
-  remove: (data) => DELETE(data, apiConfig.workshopAreaManage),
+  remove: (ids) => DELETE(ids, `${apiConfig.workshopAreaManage}?ids=${ids}`),
   edit: (data, restful) => PATCH(data, apiConfig.workshopAreaManage + '/' + restful),
   getNames: (data) => GET(data, apiConfig.workshopAreaManage + '/names')
 }
@@ -37,7 +37,7 @@ export const sysPositionManage = {
   add: (data) => POST(data, apiConfig.sysPositionManage),
   getLists: (data) => GET(data, apiConfig.sysPositionManage),
   getOne: (data, restful) => GET(data, apiConfig.sysPositionManage + '/' + restful),
-  remove: (data) => DELETE(data, apiConfig.sysPositionManage),
+  remove: (ids) => DELETE(ids, `${apiConfig.sysPositionManage}?ids=${ids}`),
   edit: (data, restful) => PATCH(data, apiConfig.sysPositionManage + '/' + restful),
   getNames: (data) => GET(data, apiConfig.sysPositionManage + '/names')
 }
@@ -47,7 +47,7 @@ export const workStationManage = {
   add: (data) => POST(data, apiConfig.workStationManage),
   getLists: (data) => GET(data, apiConfig.workStationManage),
   getOne: (data, restful) => GET(data, apiConfig.workStationManage + '/' + restful),
-  remove: (data) => DELETE(data, apiConfig.workStationManage),
+  remove: (ids) => DELETE(ids, `${apiConfig.workStationManage}?ids=${ids}`),
   edit: (data, restful) => PATCH(data, apiConfig.workStationManage + '/' + restful),
   getNames: (data) => GET(data, apiConfig.workStationManage + '/names')
 }
@@ -57,7 +57,7 @@ export const factoryManage = {
   add: (data) => POST(data, apiConfig.factoryManage),
   getLists: (data) => GET(data, apiConfig.factoryManage),
   getOne: (data, restful) => GET(data, apiConfig.factoryManage + '/' + restful),
-  remove: (data) => DELETE(data, apiConfig.factoryManage),
+  remove: (data,ids) => DELETE(data, `${apiConfig.factoryManage}?ids=${ids}`),
   edit: (data, restful) => PATCH(data, apiConfig.factoryManage + '/' + restful),
   getNames: (data) => GET(data, apiConfig.factoryManage + '/names')
 }
@@ -67,7 +67,7 @@ export const workshopSectionManage = {
   add: (data) => POST(data, apiConfig.workshopSectionManage),
   getLists: (data) => GET(data, apiConfig.workshopSectionManage),
   getOne: (data, restful) => GET(data, apiConfig.workshopSectionManage + '/' + restful),
-  remove: (data) => DELETE(data, apiConfig.workshopSectionManage),
+  remove: (ids) => DELETE(ids, `${apiConfig.workshopSectionManage}?ids=${ids}`),
   edit: (data, restful) => PATCH(data, apiConfig.workshopSectionManage + '/' + restful),
   getNames: (data) => GET(data, apiConfig.workshopSectionManage + '/names')
 }
@@ -77,7 +77,7 @@ export const workshopShiftManage = {
   add: (data) => POST(data, apiConfig.workshopShiftManage),
   getLists: (data) => GET(data, apiConfig.workshopShiftManage),
   getOne: (data, restful) => GET(data, apiConfig.workshopShiftManage + '/' + restful),
-  remove: (data) => DELETE(data, apiConfig.workshopShiftManage),
+  remove: (ids) => DELETE(ids, `${apiConfig.workshopShiftManage}?ids=${ids}`),
   edit: (data, restful) => PATCH(data, apiConfig.workshopShiftManage + '/' + restful),
   getNames: (data) => GET(data, apiConfig.workshopShiftManage + '/names')
 }
@@ -87,8 +87,8 @@ export const workshopTeamManage = {
   add: (data) => POST(data, apiConfig.workshopTeamManage),
   getLists: (data) => GET(data, apiConfig.workshopTeamManage),
   getOne: (data, restful) => GET(data, apiConfig.workshopTeamManage + '/' + restful),
-  remove: (data) => DELETE(data, apiConfig.workshopTeamManage),
-  edit: (data) => PUT(data, apiConfig.workshopTeamManage),
+  remove: (ids) => DELETE(ids, `${apiConfig.workshopTeamManage}?ids=${ids}`),
+  edit: (data, restful) => PATCH(data, apiConfig.workshopTeamManage, restful),
   getNames: (data) => GET(data, apiConfig.workshopTeamManage + '/names')
 }
 
@@ -98,16 +98,18 @@ export const roleManage = {
   getLists: (data) => GET(data, apiConfig.roleManage),
   getOne: (data, restful) => GET(data, apiConfig.roleManage + '/' + restful),
   remove: (data) => DELETE(data, apiConfig.roleManage),
-  edit: (data) => PUT(data, apiConfig.roleManage),
-  getNames: (data) => GET(data, apiConfig.roleManage + '/names')
+  edit: (data, restful) => PATCH(data, apiConfig.roleManage + '/' + restful),
+  getNames: (data) => GET(data, apiConfig.roleManage + '/drop-down-list'),
+  epxort: (data) => GET(data, `${apiConfig.roleManage}/export`),
 }
 
 // 车间管理
 export const workshopManage = {
   add: (data) => POST(data, apiConfig.workshopManage),
   getLists: (data) => GET(data, apiConfig.workshopManage),
+  getNames: (data) => GET(data, apiConfig.workshopManage + '/names'),
   getOne: (data, restful) => GET(data, apiConfig.workshopManage + '/' + restful),
-  remove: (data) => DELETE(data, apiConfig.workshopManage),
+  remove: (data,ids) => DELETE(data, `${apiConfig.workshopManage}?ids=${ids}`),
   edit: (data, restful) => PATCH(data, apiConfig.workshopManage + '/' + restful),
   getBom:(data, restful) => GET(data, apiConfig.workshopManage + '/' + restful+'/switch'),
   getBomHistory:(data, restful) => GET(data, apiConfig.workshopManage + '/' + restful+'/switch/history'),
@@ -123,6 +125,7 @@ export const authManage = {
 
   getParentChild: (data, restful) => GET(data, apiConfig.authManage + '/' + restful + '/children'),
   getRoot: (data) => GET(data, apiConfig.authManage + '/root'),
+  getTree: (data) => GET(data, apiConfig.authManage + '/tree'),
 }
 
 // 周期管理
@@ -130,7 +133,7 @@ export const cycleManage = {
   add: (data) => POST(data, apiConfig.cycleManage),
   getLists: (data) => GET(data, apiConfig.cycleManage),
   getOne: (data, restful) => GET(data, apiConfig.cycleManage + '/' + restful),
-  remove: (data) => DELETE(data, apiConfig.cycleManage),
+  remove: (data,ids) => DELETE(data,`${apiConfig.cycleManage}?ids=${ids}`),
   edit: (data, restful) => PATCH(data, apiConfig.cycleManage+ '/' + restful),
   getWorkShopNames:(data,restful) => GET(data, apiConfig.cycleManage+ '/' + restful+'/cycle/names'),
 }
@@ -147,3 +150,10 @@ export const handoverManage = {
 
 /** 查询权限列表 */
 export const getAuthLists = (data) => GET(data, apiConfig.authManage);
+
+
+/**
+ * 导入基础信息
+ * @param {*} data 
+ */
+export const baseImport = (data) => POST(data, apiConfig.baseImport);

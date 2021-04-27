@@ -9,8 +9,8 @@
       <!-- 底部表格 -->
       <tpms-table ref='tpmsTable' :total='total' :data='tableLists' :columns='tableHeaderList' :column_index='false'
         @inquireTableData='inquireTableData' @getTableData='getTableData'>
-        <template slot-scope="{row}">
-          <span class="button" @click="editDialog(row)">查看</span>
+        <template slot="operation" slot-scope="{row}">
+          <span class="button cursor" @click="editDialog(row)">查看</span>
         </template>
       </tpms-table>
     </el-row>
@@ -96,6 +96,12 @@
             props: 'id',
             label: '状态'
           },
+           {
+          label: "操作",
+          slotName: "operation",
+          fixed: "right",
+          width: "120px",
+        }
         ],
         form: {
           content: '',
@@ -225,7 +231,6 @@
         }).then(res => {
           this.tableLists = res.data.content
           this.total=res.data.totalElements
-          console.log(res)
         })
       },
       addDialog() {
@@ -243,7 +248,6 @@
           this.dialogTitleTxt = '查看'
           this.dialogType='edit'
           this.form.workshopId-=0
-          console.log(this.form)
         })
       },
       ok(dialogType) {

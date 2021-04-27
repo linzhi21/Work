@@ -46,9 +46,9 @@
                 <el-table-column align="center" width="140" v-for="(item,index) in sparePartTableList" :key='index' :label="item.name" :prop="item.props"></el-table-column>
                 <el-table-column align="center" label="操作" width="180px">
                    <template slot-scope="scope">
-                        <span class="button" v-if='scope.row.operate==0'>查看</span>
-                        <span class="button">编辑</span>
-                        <span class="button" v-if='scope.row.operate==4'>修复</span>
+                        <span class="button cursor" v-if='scope.row.operate==0'>查看</span>
+                        <span class="button cursor">编辑</span>
+                        <span class="button cursor" v-if='scope.row.operate==4'>修复</span>
                    </template>
                 </el-table-column>
             </el-table>

@@ -22,16 +22,6 @@ export default {
                 {label:'区域',name:'equipmentArea'},
             ],
             equipmentTableData:[            // 表格的数据
-                {equipmentNumber:'123456',equipmentName:'润滑油站',wokrshop:'润滑油站',equipmentArea:'PHY-001',sectionName:'001',team:'主机温度',jobNumber:'1300',manufacturer:'1100',codeNumber:'1400',enable:'2020-09-06',whether:'34'},
-                {equipmentNumber:'123456',equipmentName:'润滑油站',wokrshop:'润滑油站',equipmentArea:'PHY-001',sectionName:'001',team:'主机温度',jobNumber:'1300',manufacturer:'1100',codeNumber:'1400',enable:'2020-09-06',whether:'34'},
-                {equipmentNumber:'123456',equipmentName:'润滑油站',wokrshop:'润滑油站',equipmentArea:'PHY-001',sectionName:'001',team:'主机温度',jobNumber:'1300',manufacturer:'1100',codeNumber:'1400',enable:'2020-09-06',whether:'34'},
-                {equipmentNumber:'123456',equipmentName:'润滑油站',wokrshop:'润滑油站',equipmentArea:'PHY-001',sectionName:'001',team:'主机温度',jobNumber:'1300',manufacturer:'1100',codeNumber:'1400',enable:'2020-09-06',whether:'34'},
-                {equipmentNumber:'123456',equipmentName:'润滑油站',wokrshop:'润滑油站',equipmentArea:'PHY-001',sectionName:'001',team:'主机温度',jobNumber:'1300',manufacturer:'1100',codeNumber:'1400',enable:'2020-09-06',whether:'34'},
-                {equipmentNumber:'123456',equipmentName:'润滑油站',wokrshop:'润滑油站',equipmentArea:'PHY-001',sectionName:'001',team:'主机温度',jobNumber:'1300',manufacturer:'1100',codeNumber:'1400',enable:'2020-09-06',whether:'34'},
-                {equipmentNumber:'123456',equipmentName:'润滑油站',wokrshop:'润滑油站',equipmentArea:'PHY-001',sectionName:'001',team:'主机温度',jobNumber:'1300',manufacturer:'1100',codeNumber:'1400',enable:'2020-09-06',whether:'34'},
-                {equipmentNumber:'123456',equipmentName:'润滑油站',wokrshop:'润滑油站',equipmentArea:'PHY-001',sectionName:'001',team:'主机温度',jobNumber:'1300',manufacturer:'1100',codeNumber:'1400',enable:'2020-09-06',whether:'34'},
-                {equipmentNumber:'123456',equipmentName:'润滑油站',wokrshop:'润滑油站',equipmentArea:'PHY-001',sectionName:'001',team:'主机温度',jobNumber:'1300',manufacturer:'1100',codeNumber:'1400',enable:'2020-09-06',whether:'34'},
-                {equipmentNumber:'123456',equipmentName:'润滑油站',wokrshop:'润滑油站',equipmentArea:'PHY-001',sectionName:'001',team:'主机温度',jobNumber:'1300',manufacturer:'1100',codeNumber:'1400',enable:'2020-09-06',whether:'34'}
             ],
             equipmentTableList:[                // 渲染表格的表头
                 {props:'equipmentNumber',name:'设备编号'},

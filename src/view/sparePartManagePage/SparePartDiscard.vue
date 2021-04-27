@@ -72,9 +72,9 @@
                 </el-table-column>
                 <el-table-column align="center" label="操作" width="180px">
                    <template slot-scope="scope">
-                        <span class="button" @click="showDiscardDetailsDialog">查看</span>
-                        <span class="button" v-if='scope.row.operate == 1' @click="showDiscardReceiveDialog">接收</span>
-                        <span class="button" v-if='scope.row.operate == 2' @click="showDiscardDialog">转交</span>
+                        <span class="button cursor" @click="showDiscardDetailsDialog">查看</span>
+                        <span class="button cursor" v-if='scope.row.operate == 1' @click="showDiscardReceiveDialog">接收</span>
+                        <span class="button cursor" v-if='scope.row.operate == 2' @click="showDiscardDialog">转交</span>
                    </template>
                 </el-table-column>
             </el-table>

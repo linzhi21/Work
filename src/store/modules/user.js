@@ -1,9 +1,12 @@
 const state = {
-  userInfo: {},
+  userInfo: JSON.parse(localStorage.getItem('user_info')) || {},
   access_token: '',
   token_type: '',
   refresh_token: '',
-  workshopName: ''
+  workshopName: '',
+  uploadLoading:false,
+  loadingText:'加载中...',
+  menus: JSON.parse(localStorage.getItem('menus')) ||[],
 };
 
 const mutations = {
@@ -25,6 +28,13 @@ const mutations = {
   SET_WORKSHOPNAME: (state, workshopName)=> {
     state.workshopName = workshopName;
     localStorage.setItem('workshopName', workshopName);
+  },
+  SET_UPLOADING(state,option){
+    state.uploadLoading=option
+  },
+  SET_MENUS(state,menus){
+    state.menus = menus;
+    localStorage.setItem('menus', JSON.stringify(menus));
   }
 };
 

@@ -8,16 +8,21 @@
         <buttomGroup />
         <!-- 底部表格 -->
         <tpmsTable
+        :column_index="true"
           ref="tpmsTable"
           :data='equipmentTableData'
           :columns='equipmentTableList'
           :total='total'
+           @inquireTableData="inquireTableData"
+           @getTableData="getTableData"
         >
-          <template slot='detail' slot-scope="{row}">
-            <span class="button" @click="seeEquipmentDetail(row)">详情</span>
-          </template>
-          <template slot-scope="{row}">
-            <span class="button" @click="seeSparePart(row)">查看</span>
+          <!-- <template slot='detail' slot-scope="{row}">
+            <span class="button cursor" @click="seeEquipmentDetail(row)">详情</span>
+          </template> -->
+          <template slot="operation" slot-scope="{row}">
+            <!-- <span class="buton cursor">download</span> -->
+            <span class="button cursor" @click="seeEquipmentDetail(row)">详情</span>
+            <span class="button cursor" @click="seeSparePart(row)">查看</span>
           </template>
         </tpmsTable>
       </el-card>
@@ -66,11 +71,11 @@
         <el-form :model="sparePartDetail" label-position="left" label-width="120px">
           <el-col :span="11" :offset="index%2?2:0" v-for='(item,index) in equipmentTableList.filter(item=>item.props)' :key='item.label'>
             <el-form-item :label="item.label">
-              <el-radio-group v-if="item.type==='radio'" v-model="sparePartDetail[item.props]" disabled>
+              <el-radio-group v-if="item.type==='radio'" v-model="sparePartDetail[item.props]" readonly>
                 <el-radio :label="true" >启用</el-radio>
                 <el-radio :label="false">禁用</el-radio>
               </el-radio-group>
-              <el-input v-else disabled v-model="sparePartDetail[item.props]" />
+              <el-input v-else readonly v-model="sparePartDetail[item.props]" />
             </el-form-item>
           </el-col>
         </el-form>
@@ -105,7 +110,7 @@
         :paginationIsShow='false'
       >
         <template slot='record' slot-scope="{row}">
-            <span class="button" slot="reference" @click="seeSparePartsRecord(row)">查看</span>
+            <span class="button cursor" slot="reference" @click="seeSparePartsRecord(row)">查看</span>
         </template>
       </tpmsTable>
       <el-dialog width="70%" title="维修详情" :visible.sync="sparePartIsShow" center append-to-body>
@@ -126,7 +131,7 @@
           :paginationIsShow='false'
         >
           <template slot='record' slot-scope="{row}">
-              <span class="button" slot="reference" @click="seeSparePartsRecord(row)">查看</span>
+              <span class="button cursor" slot="reference" @click="seeSparePartsRecord(row)">查看</span>
           </template>
         </tpmsTable>
       </el-dialog>
@@ -161,7 +166,13 @@ export default {
         { props: "enable", label: "状态", translate:(value)=>value?'启用':'禁用', type:'radio' },
         { props: "unitPrice", label: "原值" },
         { props: "number", label: "维修次数" },
-        { slotName:'detail', label: "维修记录", }
+        { slotName:'detail', label: "维修记录", },
+         {
+          label: "操作",
+          slotName: "operation",
+          fixed: "right",
+          width: "240px",
+        }
       ],
       addSparePartIsShow: false, //新增备件模态框
       addSparePartData: {

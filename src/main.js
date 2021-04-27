@@ -5,14 +5,20 @@ import App from './App'
 import router from './router'
 import store from './store'
 
+import 'babel-polyfill';
 import axios from 'axios';
 Vue.prototype.$http=axios
-import '../node_modules/swiper/css/swiper.min.css';
+// import '../node_modules/swiper/css/swiper.min.css';
+
+import VCharts from 'v-charts'
+Vue.use(VCharts);
 
 // 引入rem.js
 import './tool/rem.js'
 // 引入全局样式表
 import '@/assets/global.css'
+
+
 
 import './public/element'    // 引入elementUi组件库
 import './style/theme/index.css'

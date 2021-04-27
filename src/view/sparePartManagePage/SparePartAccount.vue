@@ -7,17 +7,16 @@
           ref="tpmsHeader"
           :formData="equipmentFormList"
           @inquireTableData="inquireTableData"
-          label-width="100px"
         />
         <el-row class="buttom-group" type="flex" justify="end" align="middle">
-          <el-button class="button-more" size="small">导出</el-button>
+          <!-- <el-button class="button-more" size="small">导出</el-button>
           <el-button
             class="button-more"
             type="primary"
             size="small"
             style="margin-right:30px"
             @click="add"
-          >导入</el-button>
+          >导入</el-button> -->
         </el-row>
         <!-- 底部表格 -->
         <tpms-table
@@ -27,8 +26,8 @@
           @inquireTableData="inquireTableData"
         >
           <template slot-scope="scope">
-            <span class="button" @click="view(scope.row)">查看</span>
-            <span class="button" @click="edit(scope.row)">编辑</span>
+            <span class="button cursor" @click="view(scope.row)">查看</span>
+            <span class="button cursor" @click="edit(scope.row)">编辑</span>
           </template>
         </tpms-table>
       </el-card>

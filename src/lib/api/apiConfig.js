@@ -16,6 +16,12 @@ export default {
     principal: `${urls.oauth2}/principal`,
     //
     client: `${urls.oauth2}/client`,
+    // 用户可以看见的菜单列表
+    userMenus:`${urls.oauth2}/menus`,
+    //GET - 获取用户所有所属车间工厂
+    userWorkshops: `${urls.oauth2}/workshops`,
+    //GET - 将用户切换至该工厂下,并返回新的权限
+    userWorkshop: `${urls.oauth2}/workshop`,
 
     changPassword: '/api/changPassword',
 
@@ -50,8 +56,6 @@ export default {
     getBomDetail: `${urls.device}/getBomDetail`,
     // GET - 获取设备状态列表|设备状态详情； POST - 新增设备状态； PUT - 修改设备状态；
     deviceStatus: `${urls.device}/status`,
-    // GET - 获取设备生产线列表
-    getDeviceName: `${urls.device}/names`,
 
     //GET - 获取BOM开关状态
     getEnableBom: `${urls.device}/getEnableBom`,
@@ -59,49 +63,67 @@ export default {
     enableBom: `${urls.device}/enableBom`,
     // GET - BOM开关历史记录
     bomHistory: `${urls.device}/bomHistory`,
+    // GET - 下载bom表单
+    bomDownload: `${urls.device}/bom/download`,
+    // GET - 导出设备
+    deviceDownload: `${urls.device}/download`,
+    // GET - 导出bom备件
+    deviceBomDownload: `${urls.device}/bom/download`,
 
 
     // GET - 查询通用备件列表｜查询单个通用备件详情； POST - 添加通用备件； PUT - 修改通用备件； PATCH - 启用/禁用通用备件
     universalSpare: `${urls.spare}/spare/universalSpare`,
-
+    spairRrepair:`${urls.spare}spair-repair`,
     // GET - 查询备件列表｜查询单个备件详情；
-    spare: `${urls.spare}/spare`,
+    spare: `${urls.spare}api/spare`,
     // GET  - 查询返修上限列表; PATCH - 修改返修上限
-    repairLimit: `${urls.spare}/spare/repairLimit`,
+    repairLimit: `${urls.spare}api/spare/repairLimit`,
+    // GET - 手动同步东昌备件数据
+    syncDcData: `${urls.spare}api/spare/sync-dc-data`,
     // POST - 单个备件损坏登记
-    breakDownRegister: `${urls.spare}/spareBreakDown/BreakDownRegister`,
+    breakDownRegister: `${urls.spare}api/spareBreakDown`,
     // POST - 批量备件损坏登记
-    breakDownRegisterBatch: `${urls.spare}/spareBreakDown/BreakDownRegisterBatch`,
+    breakDownRegisterBatch: `${urls.spare}api/spareBreakDown/BreakDownRegisterBatch`,
     //  GET  - 查询常用备件频次； PATCH - 修改常用备件频次
-    commonSpare: `${urls.spare}/spare/commonSpare`,
+    commonSpare: `${urls.spare}api/spare/commonSpare`,
     // GET - 备件批准列表管理； POST - 添加备件批准； PUT - 修改备件批准
-    spareApprove: `${urls.spare}/spareApprove`,
+    spareApprove: `${urls.spare}api/spareApprove`,
     // GET - 单个备件批准详情
-    spareApproveDetail: `${urls.spare}/spareApprove/detail`,
+    spareApproveDetail: `${urls.spare}api/spareApprove/detail`,
     // GET - 备件领用列表｜单个备件领用详情；
-    spareConsuming: `${urls.spare}/spareConsuming`,
+    spareConsuming: `${urls.spare}api/spareConsuming`,
     // PATCH - 备件领用审批；
-    approval: `${urls.spare}/spareConsuming/approval`,
-    // GET - 损坏备件列表｜单个损坏备件详情
-    breakdown: `${urls.spare}/spare/breakdown`,
+    approval: `${urls.spare}api/spareConsuming/approval`,
     // GET - 损坏备件处理列表
-    spareBreakdown: `${urls.spare}/spareBreakDown`,
+    spareBreakdown: `${urls.spare}api/spareBreakDown`,
     // GET - 查询单个工业垃圾详情
-    rubbish: `${urls.spare}/spareBreakDown/rubbish`,
+    rubbish: `${urls.spare}api/spareBreakDown/rubbish`,
     // GET - 查询单个报废备件详情
-    scrap: `${urls.spare}/spareBreakDown/scrap`,
+    scrap: `${urls.spare}api/spareBreakDown/scrap`,
     // PATCH - 工业垃圾审批
-    rubbishApproval: `${urls.spare}/spareBreakDown/rubbishApproval`,
+    rubbishApproval: `${urls.spare}api/spareBreakDown/rubbishApproval`,
     // PATCH - 备件报废审批
-    scrapApproval: `${urls.spare}/spareBreakDown/scrapApproval`,
+    scrapApproval: `${urls.spare}api/spareBreakDown/scrapApproval`,
     // PATCH - 委内维修审批
-    inRepairApproval: `${urls.spare}/spareBreakDown/inRepairApproval`,
+    inRepairApproval: `${urls.spare}api/spareBreakDown/inRepairApproval`,
     // PATCH - 备件报废转移
-    scrapTransfer: `${urls.spare}/spareBreakDown/scrapTransfer`,
+    scrapTransfer: `${urls.spare}api/spareBreakDown/scrapTransfer`,
+    sap: `${urls.sap}`,
+    sapUsername: `${urls.sapUsername}`,
+    sapPassword: `${urls.sapPassword}`,
+    sapUrl: `${urls.spare}`,
 
 
     // 维修管理
     maintenanceManage:`${urls.business}/maintenance`,
+    // 问题上升设置管理
+    problemUp:`${urls.business}/problem-up`,
+    // 大故障时间管理
+    bigFaultTime:`${urls.business}/maintenance/big-fault-time-config`,
+    // 故障类型管理
+    faultType:`${urls.business}/fault-type`,
+    // 紧急程度管理
+    emergencyDegree:`${urls.business}/emergency-degree`,
     systemUrl:`${urls.systemUrl}`,
     // 用户管理
     userManage: `${urls.system}/user`,
@@ -135,6 +157,15 @@ export default {
     workStationSelect: `${urls.system}/workStation/names`,
     //字典表管理
     sysConfigManage: `${urls.system}/sysConfig`,
+    //字典表管理
+    message: `${urls.system}/message`,
+    //导入基础信息
+    baseImport: `${urls.system}/base/import`,
+    //导出基础信息模板
+    baseDownload: `${urls.system}/base/download`,
+    // 时限管理
+    timeLimit: `${urls.system}/time-limit-config`,
+    
     // 周期管理
     cycleManage: `${urls.business}/cycle`,
 
@@ -160,16 +191,17 @@ export default {
     cycleSelect: `${urls.business}/workshop`,
     // 同步图示库
     updatePlanPicture: `${urls.business}/web/plan/picture`,
-    // 导入单个文件
-    importPlanFile: `${urls.business}/web/plan/import`,
     // 批量导入文件
-    importURLPlanFile: `${urls.business}/web/plan/importURL`,
+    importURLPlanFile: `${urls.business}/web/plan/import`,
     // GET - 查询点检工单列表;
     checkWorkOrder: `${urls.business}/web/workOrder`,
     // GET - 查询点检计划更改记录列表
     checkPlanChanges: `${urls.business}/web/plan/planChanges`,
-    // GET - 导出计划excel
-    exportExcel:`${urls.business}/web/plan/download`,
+    // GET - 导出单个计划excel /web/plan/{id}/download
+    exportExcel:`${urls.business}/web/plan`,
+    // GET - 导出多个计划excel
+    exportPlans:`${urls.business}/web/plan/download`,
+
 
     // 附件管理
     //附件  delete  /accessory/{ids}
@@ -177,14 +209,46 @@ export default {
     //下载附件   get /accessory/download/{id}
     downloadAccessory: `${urls.accessory}/accessory/download`,
     //上传单个附件  post  /accessory/upload/{module}
+    // module 所属模块，1：用户基础数据模块；2：设备模块；4：备件模块；8：资料库；16：专家智库；32：统计；64：图示库；128：其他
     uploadAccessory: `${urls.accessory}/accessory/upload`,
     //批量上传附件  post /accessory/upload/batch/{module}
     uploadAccessoryBatch: `${urls.accessory}/accessory/upload/batch`,
 
     //保养管理
-
     maintainPlan:`${urls.business}/maintainPlan`,
+    //保养变更记录
+    maintainPlanChanges:`${urls.business}/maintainPlan/planChanges`,
     //保养工单
-    maintainWorkOrder:`${urls.business}/maintainWorkOrder`
+    maintainWorkOrder:`${urls.business}/maintainWorkOrder`,
+    // GET - 导出单个保养计划excel  /maintainPlan/{id}/download
+    exportMaintainPlan:`${urls.business}/maintainPlan`,
+    // GET - 导出多个保养计划excel
+    exportMaintainPlans:`${urls.business}/maintainPlan/download`,
 
+    // 资料库
+    dataBase: `${urls.database}/deviceDataBases`,
+    dataBasePreview: `${urls.database}/deviceDataBases/preview`,
+    dataBaseType: `${urls.database}/deviceDataBaseType`,
+    dataBaseTypeName: `${urls.database}/deviceDataBaseType/name`,
+
+    // 专家智库
+    theme: `${urls.expert}/theme`,
+    // 主题类型
+    themeType: `${urls.expert}/themeType`,
+    // 主题类型
+    expertType: `${urls.expert}/expertType`,
+
+    // 日志
+    log: `${urls.log}/log`,
+    
+    // 统计分析
+    inspectionCountBasedOnArea: `${urls.business}/statistics/inspectionCountBasedOnArea`,
+    statisticsForMaintain: `${urls.business}/statistics/maintain/receivedCount`,
+    maintainCountBasedOnArea: `${urls.business}/statistics/maintainCountBasedOnArea`, //保养根据区域统计接单数量
+    statisticsForMaintenanceCost: `${urls.business}/statistics/maintenance-cost`,
+    statisticsForMaintenanceRepairList: `${urls.business}/statistics/maintenance-repair-list`,
+    statisticsForMaintenanceSubmitList: `${urls.business}/statistics/maintenance-submit-list`,
+    pointCheckCountBasedOnArea: `${urls.business}/statistics/pointCheckCountBasedOnArea`,
+    statisticsForReceivedHour: `${urls.business}/statistics/receivedHour`,
+    statisticsForWorkOrder: `${urls.business}/statistics/workOrder`,
 }

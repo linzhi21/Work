@@ -12,10 +12,11 @@
     </el-row>
     <el-row>
       <!-- 底部表格 -->
-      <tpms-table ref='tpmsTable' :total='total' :data='tableLists' :columns='tableHeaderList' :column_index='false'
-        @inquireTableData='inquireTableData'>
-        <template slot-scope="{row}">
-          <span class="button" @click="editDialog(row)">编辑</span>
+      <tpms-table ref='tpmsTable' :total='total' :data='tableLists' :columns='tableHeaderList' :column_index='true'
+        @inquireTableData='inquireTableData' @getTableData="getTableData">
+        <template slot="operation" slot-scope="{row}">
+          <span class="button cursor" @click="editDialog(row)">编辑</span>
+          <span class="button cursor" @click="del(row)">删除</span>
         </template>
       </tpms-table>
     </el-row>
@@ -24,15 +25,15 @@
         <el-row>
           <el-col :span="item.span" v-for="(item,index) in formList" :key="index">
             <el-form-item :prop="item.props" :label="item.label" :label-width="item.labelWidth" style="width: 100%;">
-              <el-select v-model="form[item.props]" v-if="item.type==='checkbox'" :placeholder="item.placeholder">
+              <el-select style="width: 100%;"  v-model="form[item.props]" v-if="item.type==='checkbox'" :placeholder="item.placeholder">
                 <el-option v-for="(item,i) in item.checkList" :key="i" :label="item.label" :value="item.id"></el-option>
               </el-select>
-              <el-input v-model="form[item.props]" v-else-if="item.type==='textarea'" :rows='item.rows' :type='item.type' />
+              <el-input  v-model="form[item.props]" v-else-if="item.type==='textarea'" :rows='item.rows' :type='item.type' />
               <el-radio v-model="form[item.props]" v-else-if="item.type==='radio'" :label='radio.id' v-for="(radio,i) in item.radioList"
                 :key="i">
                 {{radio.label}}
               </el-radio>
-              <el-input v-model="form[item.props]" v-else />
+              <el-input  v-model="form[item.props]" v-else />
             </el-form-item>
           </el-col>
         </el-row>
@@ -90,31 +91,34 @@
             }]
           },
         ],
-        tableHeaderList: [{
-            props: 'id',
-            label: 'No.'
-          },
+        tableHeaderList: [
           {
             props: 'workshopName',
             label: '所属车间'
           },
           {
             props: 'name',
-            label: '岗位'
+            label: '岗位名称'
           },
           {
             props: 'description',
             label: '岗位描述'
           },
-          {
-            props: 'parentName',
-            label: '上级岗位'
-          },
+          // {
+          //   props: 'parentName',
+          //   label: '上级岗位'
+          // },
           {
             props: 'enable',
             label: '状态',
             translate: (value) => value ? '启用' : '禁用'
           },
+          {
+          label: "操作",
+          slotName: "operation",
+          fixed: "right",
+          width: "120px",
+        }
         ],
         form: {
           name: '',
@@ -135,15 +139,8 @@
           {
             props: 'name',
             label: '岗位名称',
-            span: 12,
+            span:24,
             type: 'input'
-          },
-          {
-            props: 'parentId',
-            label: '上级岗位',
-            span: 12,
-            type: 'checkbox',
-            checkList: []
           },
           {
             props: 'description',
@@ -185,12 +182,8 @@
             required: true,
             message: '请选择所属车间',
             trigger: 'change'
-          }],
-          parentId: [{
-            required: true,
-            message: '请选择上级区域',
-            trigger: 'change'
           }]
+
         }
       }
 
@@ -216,6 +209,28 @@
       })
     },
     methods: {
+      /**删除**/
+      del(row) {
+        this.$confirm('确定是否删除?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          console.log(row)
+          sysPositionManage.remove(row.id).then(res=>{
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            });
+            this.getTableData()
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });
+        });
+      },
       /** 点击查询按钮 */
       inquireTableData() {
         // 重置table页为第一页

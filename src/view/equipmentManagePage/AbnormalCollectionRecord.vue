@@ -14,7 +14,7 @@
           :columns="equipmentTableList"
         >
           <template slot-scope="{row}">
-            <span class="button" @click="seeDeatil(row)">查看</span>
+            <span class="button cursor" @click="seeDeatil(row)">查看</span>
           </template>
         </tpms-table>
         <!-- 分页 -->

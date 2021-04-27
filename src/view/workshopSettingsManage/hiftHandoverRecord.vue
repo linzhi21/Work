@@ -10,10 +10,10 @@
     </el-row>
     <el-row>
       <!-- 底部表格 -->
-      <tpms-table ref='tpmsTable' :total='total' :data='tableLists' :columns='tableHeaderList' :column_index='false'
+      <tpms-table ref='tpmsTable' :total='total' :data='tableLists' :columns='tableHeaderList' :column_index='true'
         @inquireTableData='inquireTableData' @getTableData='getTableData'>
-        <template slot-scope="{row}">
-          <span class="button" @click="editDialog(row)">查看</span>
+        <template slot="operation" slot-scope="{row}">
+          <span class="button cursor" @click="editDialog(row)">查看</span>
         </template>
       </tpms-table>
     </el-row>
@@ -80,10 +80,7 @@
             }]
           },
         ],
-        tableHeaderList:[{
-            props: 'id',
-            label: 'No.'
-          },
+        tableHeaderList:[
           {
             props: 'createDate',
             label: '日期'
@@ -113,6 +110,12 @@
             label: '检查情况',
             translate: (value) => value ? '正常' : '异常'
           },
+          {
+          label: "操作",
+          slotName: "operation",
+          fixed: "right",
+          width: "100px",
+        }
         ],
         form: {
           content: '',

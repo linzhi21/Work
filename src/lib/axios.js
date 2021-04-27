@@ -6,12 +6,12 @@ const service = axios.create({
     // withCredentials: true, // send cookies when cross-domain requests
     timeout: 200000 // request timeout
 });
-
+import store from '../store/index.js'
 // request interceptor
 service.interceptors.request.use(
 
     config => {
-        const access_token = localStorage.getItem('access_token');;
+        const access_token = localStorage.getItem('access_token');
         config.headers.Authorization = 'Bearer ' + access_token;
         const newurl =config.url.substring(config.url.length-9);
         if (newurl == "importURL") {
@@ -62,7 +62,15 @@ service.interceptors.response.use(
               })
               route.push('/login')
               // refreshToken()
+          }else{
+            Notification({
+                title: '',
+                message: responseData.error,
+                type: 'warning'
+            })
+            store.commit('SET_UPLOADING',false)
           }
+
           return Promise.reject(responseData.error, error);
         }
     }
@@ -80,7 +88,6 @@ service.interceptors.response.use(
             return config;
         },
         error => {
-            console.log(error) // for debug
             return Promise.reject(error)
         }
     );
@@ -90,7 +97,6 @@ service.interceptors.response.use(
             return res;
         },
         error => {
-            console.log('err' + error.toJSON());
             const responseData = error.response.data;
             if (error.response.status === 400) {
             }
@@ -118,6 +124,7 @@ function request({ method, url, params, data = {}, restful }, myService = servic
         });
     };
 };
+
 
 
 export const GET = (params, url, restful) => request({ method: 'GET', url, params, restful });

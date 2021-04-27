@@ -11,8 +11,9 @@
           label-width="90px"
         />
         <el-row class="buttom-group" type="flex" justify="end" align="middle">
-          <el-button class="button-more" size="small">下载</el-button>
-          <el-button class="button-more" size="small" type="primary">新增</el-button>
+          <!-- <el-button class="button-more" size="small">下载</el-button> -->
+          <!-- <el-button class="button-more" size="small" type="primary">新增</el-button> -->
+           <tpms-choosefile accept="image/*"   size="small" text='新增' @getFileData='getMutipleFileData($event)'></tpms-choosefile>     
         </el-row>
         <!-- 主题内容区 -->
         <el-row>
@@ -26,9 +27,9 @@
                 alt
               />
               <div class="img-icon flex-wrap">
-                <i class="el-icon-delete flex-icon" @click="del(item)"></i>
+                <i class="el-icon-delete flex-icon cursor" @click="del(item)"></i>
                 <!-- <i class="el-icon-edit flex-icon" @click="edit(item)"></i> -->
-                <i class="el-icon-download flex-icon" @click="download(item)"></i>
+                <i class="el-icon-download flex-icon cursor" @click="download(item)"></i>
               </div>
             </el-card>
           </el-col>
@@ -39,7 +40,7 @@
           @current-change="handleCurrentChange"
           :current-page="currentPage"
           :page-sizes="[5, 10, 15, 20]"
-          :page-size="100"
+          :page-size="pageSize"
           layout="total, sizes, prev, pager, next, jumper"
           :total="total"
         ></el-pagination>
@@ -48,7 +49,7 @@
   </div>
 </template>
 <script>
-import { tpmsHeader } from "../../components";
+import { tpmsHeader,tpmsChoosefile } from "../../components";
 import axios from 'axios';
 import apiConfig from '../../lib/api/apiConfig';
 import {
@@ -64,9 +65,10 @@ export default {
     return {
       equipmentFormList: [
         //  渲染头部功能区的列表
-        { label: "名称", props: "originName", value: "" },
+        { label: "文件名", props: "originName", value: "" },
       ],
       currentPage:1,
+      pageSize:10,
       total: 0,
       // 表格的数据
       equipmentTableData: [],
@@ -74,17 +76,31 @@ export default {
     };
   },
   components: {
-    tpmsHeader,
+    tpmsHeader,tpmsChoosefile 
   },
   mounted() {
     this.getTableData();
   },
   methods: {
+    // 批量新增多个文件
+    getMutipleFileData(files){
+       let formData = new FormData();
+       formData.append('file',files)
+        formData.append('module','128');
+         this.$store.commit('SET_UPLOADING',true)
+        uploadAccessory(formData,128).then(res=>{
+          console.log(res)
+           this.$store.commit('SET_UPLOADING',false);
+           this.getTableData();
+        })
+    },
     /**
      * @description 分页器中pageSize 改变时触发的事件
      * @param {val} 每页的条数
      */
     handleSizeChange(val) {
+      this.pageSize=val;
+      this.getTableData()
       // console.log(`每页 ${val} 条`);
     },
     /**
@@ -93,6 +109,7 @@ export default {
      */
     handleCurrentChange(val) {
        this.currentPage=val
+       this.getTableData()
       // console.log(`当前页: ${val}`);
     },
     /**查询*/
@@ -105,7 +122,11 @@ export default {
     getTableData() {
       // 获取头部搜索组数据
       let data = this.$refs.tpmsHeader.getData();
-      accessoryList({ module:64,...data }).then((res) => {
+      let page={
+        page:this.currentPage-1,
+        size:this.pageSize
+      }
+      accessoryList({ module:128,...data,...page}).then((res) => {
         this.total = res.data.totalElements;
         this.equipmentTableData = res.data.content;
       });
@@ -202,7 +223,7 @@ export default {
   cursor: pointer;
 }
 .flex-icon.el-icon-delete{
-  color:#f53d3d;
+  color:#CB333B;
 }
 .flex-icon.el-icon-download{
   color:#0077DC;

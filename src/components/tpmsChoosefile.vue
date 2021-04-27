@@ -4,7 +4,7 @@
     <input  :accept="accept" @change="sendFileData" ref='singleFile' v-show="false" type="file" >
     <span @click='chooseFile'>
       <slot>
-        <el-button plain="plain" :size='size'  type="primary">{{text}}</el-button>
+        <el-button style="margin:0 10px"  :size='size'  :type="type">{{text}}</el-button>
       </slot>
     </span>
 
@@ -24,15 +24,11 @@
       },
       accept:{
         type:String,
-        default:'.xlsx,xls'
+        default:'.xlsx,.xls'
       },
       size:{
         type:String,
         default:'mini'
-      },
-      plain:{
-        type:Boolean,
-        default:false
       },
       isMutiple:{
         type:Boolean,
@@ -44,6 +40,7 @@
       chooseFile(){
         let inp=this.isMutiple?'mutipleFile':'singleFile';
         this.$refs[inp].click();
+
       },
       sendFileData(){
         let inp=this.isMutiple?'mutipleFile':'singleFile'
@@ -58,6 +55,7 @@
         }else{
           this.$emit('getFileData',fileData[0])
         }
+        this.$refs[inp].value='';
       }
     }
 
