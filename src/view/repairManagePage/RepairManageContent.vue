@@ -24,16 +24,21 @@
         :total="total"
         :columns="[
             { props: 'no', label: '维修单号' },
-            { props: 'workshopName', label: '车间', width: 120 },
+            { props: 'workshopName', label: '车间', width: 100 },
             { props: 'deviceNo', label: '设备编号' },
             { props: 'deviceName', label: '设备名称' },
-            { props: 'areaName', label: '报修区域' },
-            { props: 'address', label: '报修地址' },
             { props: 'applicantName', label: '委托人' },
+            { props: 'receiverName', label: '接单人' },
+            { props: 'status', label: '状态', translate: (value) => {
+              if(value == 1) value = '待接单'
+              if(value == 2 || value == 32) value = '已接单'
+              if(value == 4 || value == 8) value = '待审批'
+              if(value == 16) value = '已完成'
+              return value
+            }},
             { props: 'workshopSectionName', label: '工段' },
-            { props: 'workshopShiftName', label: '班次' },
-            { props: 'emergencyDegreeName', label: '紧急程度' },
-            { props: 'description', label: '故障描述' },
+            { props: 'areaName', label: '报修区域' },
+            { props: 'content', label: '故障描述' },
             { props: 'stopLine', label: '是否停线修理', translate: (value) => (value ? '是' : '否'), width: 120, },
             { props: 'breakdownTime', label: '报修时间', width: 120 },
             { label: '操作', slotName: 'operation', fixed: 'right', width: '120px', },
@@ -310,13 +315,10 @@ export default {
           value: "",
           type: "radio",
           checkList: [
-            { label: "待接单", id: 1 },
-            { label: "待维修", id: 2 },
-            { label: "待验收", id: 4 },
-            { label: "待补充", id: 8 },
-            { label: "已退回", id: 16 },
-            { label: "待确认", id: 32 },
-            { label: "已完成", id: 64 },
+            { label: "待接单", id: [1] },
+            { label: "已接单", id: [2, 32] },
+            { label: "待审批", id: [4, 8] },
+            { label: "已完成", id: [16] },
           ],
         },
       ],

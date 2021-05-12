@@ -28,7 +28,7 @@
 </template>
 <script>
 import { login, principal, refreshToken } from "../../lib/api/user";
-import { getUserMenus } from '../../lib/api/userManage';
+import { getUserMenus } from "../../lib/api/userManage";
 import { factory } from "../../lib/api/factory";
 export default {
   data() {
@@ -61,16 +61,18 @@ export default {
         password
       })
         .then(res => {
-          // 获取用户信息
-          principal().then(()=>{
-            this.$router.push("/home");
-            // 检查是否要记住密码
-            this.storagePassword();
-            getUserMenus();
-          });
+          if (res.access_token) {
+            // 获取用户信息
+            principal().then(() => {
+              this.$router.push("/home");
+              // 检查是否要记住密码
+              this.storagePassword();
+              getUserMenus();
+            });
+          }
         })
         .catch(fail => {
-          this.$message.error("账号或者密码输入错误");
+          this.$message.error(fail);
           console.log(fail);
         });
     },
@@ -96,7 +98,7 @@ export default {
   .bg {
     width: 50%;
     height: 100%;
-    background: rgb(0,119,200);
+    background: rgb(0, 119, 200);
     border-top-right-radius: 250px;
     border-bottom-right-radius: 250px;
     position: absolute;
@@ -120,7 +122,7 @@ export default {
       margin: 40px 0;
       font-weight: 600;
       font-size: 22px;
-      color: rgb(0,119,200);
+      color: rgb(0, 119, 200);
     }
     .inp-wrap {
       width: 80%;
@@ -129,14 +131,14 @@ export default {
       line-height: 1.8;
       box-sizing: border-box;
       background-image: linear-gradient(#fff, #fff),
-        linear-gradient(to bottom right, rgb(0,119,200), rgb(0,119,200));
+        linear-gradient(to bottom right, rgb(0, 119, 200), rgb(0, 119, 200));
       font-weight: 300;
       padding: 0.5px;
       border-radius: 10px;
       background-clip: content-box, padding-box;
       i {
         float: left;
-        color: rgb(0,119,200);
+        color: rgb(0, 119, 200);
         font-weight: 600;
         font-size: 24px;
         margin: 10px;

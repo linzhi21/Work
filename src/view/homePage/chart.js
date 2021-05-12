@@ -14,7 +14,7 @@ export function workorderDashboard(p) {
       waitCompletedCount: data.singleWaitCompletedCount,
       allCount: data.singleAllCount,
       completedCount: data.singleCompletedCount,
-      rate: (data.singleAllCount==0) ? 0 : Number((data.singleCompletedCount/data.singleAllCount).toFixed(2)*100) 
+      rate: (data.singleAllCount==0) ? 0 : (data.singleCompletedCount/data.singleAllCount*100).toFixed(0)
     },
     {
       orderType: 'patrol',
@@ -22,7 +22,7 @@ export function workorderDashboard(p) {
       waitCompletedCount: data.patrolWaitCompletedCount,
       allCount: data.patrolAllCount,
       completedCount: data.patrolCompletedCount,
-      rate: (data.patrolAllCount==0) ? 0 : Number((data.patrolCompletedCount/data.patrolAllCount).toFixed(2)*100) 
+      rate: (data.patrolAllCount==0) ? 0 : (data.patrolCompletedCount/data.patrolAllCount*100).toFixed(0)
     },
     {
       orderType: 'maintain',
@@ -30,7 +30,7 @@ export function workorderDashboard(p) {
       waitCompletedCount: data.maintainWaitCompletedCount,
       allCount: data.maintainAllCount,
       completedCount: data.maintainCompletedCount,
-      rate: (data.maintainAllCount==0) ? 0 : Number((data.maintainCompletedCount/data.maintainAllCount).toFixed(2)*100) 
+      rate: (data.maintainAllCount==0) ? 0 : (data.maintainCompletedCount/data.maintainAllCount*100).toFixed(0)
     },
     {
       orderType: 'repair',
@@ -38,7 +38,7 @@ export function workorderDashboard(p) {
       waitCompletedCount: data.repairWaitCompletedCount,
       allCount: data.repairAllCount,
       completedCount: data.repairCompletedCount,
-      rate: (data.repairAllCount==0) ? 0 : Number((data.repairCompletedCount/data.repairAllCount).toFixed(2)*100) 
+      rate: (data.repairAllCount==0) ? 0 : (data.repairCompletedCount/data.repairAllCount*100).toFixed(0)
     }
   ];
   return orders;
@@ -67,10 +67,10 @@ export function deviceAndEquipment(p) {
 
 export function wordorderNums(data) {
   const nums = data;
-  nums.singleRate = (data.singleAllCount==0) ? 0 : Number((data.singleCompletedCount/data.singleAllCount).toFixed(2)*100);
-  nums.patrolRate = (data.patrolAllCount==0) ? 0 : Number((data.patrolCompletedCount/data.patrolAllCount).toFixed(2)*100);
-  nums.maintainRate = (data.maintainAllCount==0) ? 0 : Number((data.maintainCompletedCount/data.maintainAllCount).toFixed(2)*100);
-  nums.repairRate = (data.repairAllCount==0) ? 0 : Number((data.repairCompletedCount/data.repairAllCount).toFixed(2)*100);
+  nums.singleRate = (data.singleAllCount==0) ? 0 : Number((data.singleCompletedCount/data.singleAllCount*100).toFixed(0));
+  nums.patrolRate = (data.patrolAllCount==0) ? 0 : Number((data.patrolCompletedCount/data.patrolAllCount*100).toFixed(0));
+  nums.maintainRate = (data.maintainAllCount==0) ? 0 : Number((data.maintainCompletedCount/data.maintainAllCount*100).toFixed(0));
+  nums.repairRate = (data.repairAllCount==0) ? 0 : Number((data.repairCompletedCount/data.repairAllCount*100).toFixed(0));
 
   return nums;
 }
