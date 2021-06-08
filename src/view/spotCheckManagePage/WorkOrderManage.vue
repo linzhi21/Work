@@ -19,18 +19,34 @@
           :columns="equipmentTableList"
           :total="total"
           @inquireTableData="inquireTableData"
-          @getTableData='getTableData'
+          @getTableData="getTableData"
         >
           <template slot="operation" slot-scope="scope">
-            <span class="button cursor" @click="view(scope.row)">查看</span>
-            <span class="button cursor" @click="stop(scope.row)" v-if="scope.row.status == '待接单'">暂停</span>
-            <span class="button cursor" @click="view(scope.row)" v-if="scope.row.status == '已完成'">导出</span>
+            <span class="button cursor" @click="view(scope.row, '查看')">查看</span>
+            <span
+              class="button cursor"
+              @click="view(scope.row, '审批')"
+              v-if="scope.row.statusStr == '待审批'"
+              >审批</span
+            >
+            <span
+              class="button cursor"
+              @click="stop(scope.row)"
+              v-if="scope.row.status == '待接单'"
+              >暂停</span
+            >
+            <span
+              class="button cursor"
+              @click="view(scope.row)"
+              v-if="scope.row.status == '已完成'"
+              >导出</span
+            >
           </template>
         </tpms-table>
       </el-card>
     </el-row>
     <!-- 查看工单详情 -->
-    <el-dialog :visible.sync="orderDetailIsShow" width="70%" title="查看">
+    <el-dialog :visible.sync="orderDetailIsShow" width="70%" :title="title">
       <el-row>
         <el-form :model="orderDetail" label-position="left" label-width="120px">
           <el-row>
@@ -62,9 +78,9 @@
             </el-col>
           </el-row>
           <el-row
-            v-for="(item,index) in orderDetail.workOrderDevices"
+            v-for="(item, index) in orderDetail.workOrderDevices"
             :key="index"
-            style="background: #f5f5f5;padding: 0.2rem"
+            style="background: #f5f5f5; padding: 0.2rem"
           >
             <el-col :span="11">
               <el-form-item label="版本">
@@ -103,18 +119,64 @@
             </el-col>
 
             <!-- 表格区 -->
-            <el-table :data="item.workOrderContents" style="width:100%" border>
-              <el-table-column align="center" type="index" label="项目" width="50"></el-table-column>
-              <el-table-column align="center" prop="executionNode" label="时间/部件" width="150"></el-table-column>
-              <el-table-column align="center" prop="content" label="内容" width="300"></el-table-column>
-              <el-table-column align="center" prop="hour" label="工时(s)"></el-table-column>
-              <el-table-column align="center" prop="cycleName" label="周期" width="110"></el-table-column>
-              <el-table-column align="center" prop="photoDisplay" label="图示"></el-table-column>
-              <el-table-column align="center" prop="status" label="状态"></el-table-column>
+            <el-table :data="item.workOrderContents" style="width: 100%" border>
+              <el-table-column
+                align="center"
+                type="index"
+                label="项目"
+                width="50"
+              ></el-table-column>
+              <el-table-column
+                align="center"
+                prop="executionNode"
+                label="时间/部件"
+                width="150"
+              ></el-table-column>
+              <el-table-column
+                align="center"
+                prop="content"
+                label="内容"
+                width="300"
+              ></el-table-column>
+              <el-table-column
+                align="center"
+                prop="hour"
+                label="工时(s)"
+              ></el-table-column>
+              <el-table-column
+                align="center"
+                prop="cycleName"
+                label="周期"
+                width="110"
+              ></el-table-column>
+              <el-table-column
+                align="center"
+                prop="photoDisplay"
+                label="图示"
+              ></el-table-column>
+              <el-table-column
+                align="center"
+                prop="status"
+                label="状态"
+              ></el-table-column>
             </el-table>
           </el-row>
         </el-form>
       </el-row>
+
+      <div
+        v-if="title === '审批'"
+        slot="footer"
+        class="dialog-footer"
+      >
+        <el-button @click="orderDetailIsShow = false">取 消</el-button>
+        <el-button type="warning" @click="approval(orderDetail, 7)"
+          >驳回</el-button
+        >
+        <el-button type="primary" @click="approval(orderDetail, 5)"
+          >审批通过</el-button
+        >
+      </div>
     </el-dialog>
   </div>
 </template>
@@ -125,6 +187,7 @@ import {
   queryWorkorders,
   stopWorkorders,
   planStatusSelect,
+  updateOrderStatus,
 } from "../../lib/api/checkPlan";
 import {
   factoryManage,
@@ -144,15 +207,17 @@ export default {
       { label: "待接单", id: "1" },
       { label: "待处理", id: "2" },
       { label: "审批中", id: "4" },
-      { label: "已完成", id: "6", },
+      { label: "已完成", id: "6" },
     ];
     let getListFuncs = [
-      factoryManage.getNames,//工厂
+      factoryManage.getNames, //工厂
       // workshopManage.getNames,//车间
       // workStationManage.getNames,//工位
       // workshopSectionManage.getNames,//工段
     ];
-    let [factoryList, /** workshopList, stationList, sectionList */] = getListFuncs.map((getListFunc) => {
+    let [
+      factoryList /** workshopList, stationList, sectionList */,
+    ] = getListFuncs.map((getListFunc) => {
       let arr = [];
       getListFunc(null).then((res) => {
         arr.push(...res.data);
@@ -160,21 +225,57 @@ export default {
       return arr;
     });
     /** 表格状态码转文字 */
-    function statusTranslate(val){
-      if(val == 1) return "待接单";
-      if(val == 2 || val == 3 || val ==7) return "待处理";
-      if(val == 4 || val ==5) return "审批中";
-      if(val == 6) return "已完成";
-    };
+    function statusTranslate(val) {
+      if (val == 1) return "待接单";
+      if (val == 2 || val == 3 || val == 7) return "待处理";
+      if (val == 4 || val == 5) return "审批中";
+      if (val == 6) return "已完成";
+    }
     return {
       equipmentFormList: [
-        { label: "工厂", props: "factoryId", value: "", type: "radio", checkList: factoryList },
-        { label: "车间", props: "workshopId", value: "", type: "radio", checkList: [] },
-        { label: "工段", props: "workshopSectionId", value: "", type: "radio", checkList: [] },
-        { label: "工位", props: "workStationId", value: "", type: "radio", checkList: [] },
+        {
+          label: "工厂",
+          props: "factoryId",
+          value: "",
+          type: "radio",
+          checkList: factoryList,
+        },
+        {
+          label: "车间",
+          props: "workshopId",
+          value: "",
+          type: "radio",
+          checkList: [],
+        },
+        {
+          label: "工段",
+          props: "workshopSectionId",
+          value: "",
+          type: "radio",
+          checkList: [],
+        },
+        {
+          label: "工位",
+          props: "workStationId",
+          value: "",
+          type: "radio",
+          checkList: [],
+        },
         // { label: "工位/工段", props: "positionName" },
-        { label: "类型", props: "type", value: "", type: "radio", checkList: typeList },
-        { label: "状态", props: "status", value: "", type: "radio", checkList: statusList },
+        {
+          label: "类型",
+          props: "type",
+          value: "",
+          type: "radio",
+          checkList: typeList,
+        },
+        {
+          label: "状态",
+          props: "status",
+          value: "",
+          type: "radio",
+          checkList: statusList,
+        },
         { label: "设备编号", props: "deviceNo", value: "" },
         { label: "资产编号", props: "deviceAssetNo", value: "" },
         { label: "开始时间", props: "startTime", type: "dateFrame", value: "" },
@@ -185,11 +286,11 @@ export default {
       equipmentTableData: [],
       // 渲染表格的表头
       equipmentTableList: [
-        { props: "type", label: "类型"},
-        { props: "status", label: "状态", translate: statusTranslate},
-        { props: "deviceName", label: "设备名称"},
-        { props: "deviceAssetNo", label: "资产编号"},
-        { props: "workshopSectionName", label: "工段"},
+        { props: "type", label: "类型" },
+        { props: "status", label: "状态", translate: statusTranslate },
+        { props: "deviceName", label: "设备名称" },
+        { props: "deviceAssetNo", label: "资产编号" },
+        { props: "workshopSectionName", label: "工段" },
         { props: "receiverName", label: "接单人" },
         { props: "completeTime", label: "完成时间", width: "200px" },
         { props: "createDate", label: "工单日期", width: "200px" },
@@ -202,12 +303,13 @@ export default {
           slotName: "operation",
           fixed: "right",
           width: "100px",
-        }
+        },
       ],
       orderDetailIsShow: false, //查看工单详情
       //工单详情
       orderDetail: {},
       total: 0,
+      title: '查看',
     };
   },
   components: {
@@ -233,68 +335,74 @@ export default {
       const requestData = {
         ...data,
         ...pageData,
-        type: data.type || '1,2',
-      }
+        type: data.type || "1,2",
+      };
       checkWorkOrder(requestData).then((res) => {
         this.total = res.data.totalElements;
-        console.log(res)
+        console.log(res);
         this.equipmentTableData = res.data.content;
       });
     },
     /** 头部value变更回调 */
-    onValueChanged({props, value}) {
+    onValueChanged({ props, value }) {
       const { equipmentFormList } = this;
-      if(props === 'factoryId'){
+      if (props === "factoryId") {
         // 选择工厂，重置车间及以下
-        workshopManage.getNames({factoryId: value}).then(res => {
-          equipmentFormList.forEach(item => {
-            if(item.props === 'workshopId'){
+        workshopManage.getNames({ factoryId: value }).then((res) => {
+          equipmentFormList.forEach((item) => {
+            if (item.props === "workshopId") {
               item.checkList = res.data;
-              item.value = '';
-            };
-            if(item.props === 'workshopSectionId' || item.props === 'workStationId'){
-              item.value = '';
+              item.value = "";
+            }
+            if (
+              item.props === "workshopSectionId" ||
+              item.props === "workStationId"
+            ) {
+              item.value = "";
               item.checkList = [];
             }
-          })
+          });
         });
-      };
+      }
 
-      if(props === 'workshopId'){
+      if (props === "workshopId") {
         // 选择车间，重置工段及以下
-        workshopSectionManage.getNames({workshopId: value}).then(res => {
-          equipmentFormList.forEach(item => {
-            if(item.props === 'workshopSectionId'){
+        workshopSectionManage.getNames({ workshopId: value }).then((res) => {
+          equipmentFormList.forEach((item) => {
+            if (item.props === "workshopSectionId") {
               item.checkList = res.data;
-              item.value = '';
-            };
-            if(item.props === 'workStationId'){
-              item.value = '';
+              item.value = "";
+            }
+            if (item.props === "workStationId") {
+              item.value = "";
               item.checkList = [];
             }
-          })
+          });
         });
-      };
+      }
 
-      if(props === 'workshopSectionId'){
+      if (props === "workshopSectionId") {
         // 选择工段，重置工位
-        workshopSectionManage.getNames({workshopSectionId: value}).then(res => {
-          equipmentFormList.forEach(item => {
-            if(item.props === 'workStationId'){
-              item.checkList = res.data;
-              item.value = '';
-            }
-          })
-        });
-      };
+        workshopSectionManage
+          .getNames({ workshopSectionId: value })
+          .then((res) => {
+            equipmentFormList.forEach((item) => {
+              if (item.props === "workStationId") {
+                item.checkList = res.data;
+                item.value = "";
+              }
+            });
+          });
+      }
     },
     /** 查看 */
-    view(row) {
+    view(row, title) {
       queryWorkorders(null, row.id).then((res) => {
-        console.log(res)
+        console.log(res);
         this.orderDetail = res.data;
       });
       this.orderDetailIsShow = true;
+      this.title = title;
     },
     /** 暂停 */
     stop(row) {
@@ -322,6 +430,30 @@ export default {
             type: "info",
             message: "已取消重暂!",
           });
+        });
+    },
+    /**
+     * 审批
+     */
+    approval(row, status) {
+      const data = {
+        ids: [row.id],
+        status: status,
+      };
+      updateOrderStatus(data)
+        .then((res) => {
+          this.$message({
+            type: "success",
+            message: "审批成功!",
+          });
+          this.orderDetailIsShow = false;
+        })
+        .catch((e) => {
+          this.$message({
+            type: "error",
+            message: e.message,
+          });
+          this.orderDetailIsShow = false;
         });
     },
   },

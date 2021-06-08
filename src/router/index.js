@@ -160,7 +160,7 @@ const route = new Router({
                 {
                   path: '/photoLibrary',
                   name: 'PhotoLibrary',
-                  meta: { title: '图示库' },
+                  meta: { title: '计划资料库' },
                   component: () => import('@/view/spotCheckManagePage/PhotoLibrary'),
                   hidden: true
                 },
@@ -198,7 +198,7 @@ const route = new Router({
                 {
                   path: '/inSpectionPhotoLibrary',
                   name: 'InspectionPhotoLibrary',
-                  meta: { title: '图示库' },
+                  meta: { title: '计划资料库' },
                   component: () => import('@/view/inspectionManagePage/PhotoLibrary'),
                   hidden: true
                 },
@@ -236,7 +236,7 @@ const route = new Router({
                 {
                   path: '/upKeepPhotoLibrary',
                   name: 'UpkeepPhotoLibrary',
-                  meta: { title: '图示库' },
+                  meta: { title: '计划资料库' },
                   component: () => import('@/view/upkeepManagePage/PhotoLibrary'),
                   hidden: true
                 },

@@ -20,7 +20,13 @@
           :total='total'
         >
           <template slot="operation" slot-scope="scope">
-            <span class="button cursor" @click="view(scope.row)">查看</span>
+            <span class="button cursor" @click="view(scope.row, '查看')">查看</span>
+            <span
+              class="button cursor"
+              @click="view(scope.row, '审批')"
+              v-if="scope.row.statusStr == '待审批'"
+              >审批</span
+            >
             <span class="button cursor" @click="stop(scope.row)" v-if="scope.row.status == '待接单'">暂停</span>
             <span class="button cursor" @click="view(scope.row)" v-if="scope.row.status == '已完成'">导出</span>
           </template>
@@ -28,7 +34,7 @@
       </el-card>
     </el-row>
     <!-- 查看工单详情 -->
-    <el-dialog :visible.sync="orderDetailIsShow" width="70%" title="查看">
+    <el-dialog :visible.sync="orderDetailIsShow" width="70%" :title="title">
       <el-row>
         <el-form :model="orderDetail" label-position="left" label-width="120px">
           <el-row>
@@ -113,6 +119,19 @@
           </el-row>
         </el-form>
       </el-row>
+      <div
+        v-if="title === '审批'"
+        slot="footer"
+        class="dialog-footer"
+      >
+        <el-button @click="orderDetailIsShow = false">取 消</el-button>
+        <el-button type="warning" @click="approval(orderDetail, 7)"
+          >驳回</el-button
+        >
+        <el-button type="primary" @click="approval(orderDetail, 5)"
+          >审批通过</el-button
+        >
+      </div>
     </el-dialog>
   </div>
 </template>
@@ -123,6 +142,7 @@ import {
   queryWorkorders,
   stopWorkorders,
   planStatusSelect,
+  updateOrderStatus
 } from "../../lib/api/checkPlan";
 import {
   factoryManage,
@@ -200,6 +220,7 @@ export default {
       //工单详情
       orderDetail: {},
       total: 0,
+      title: '查看',
     };
   },
   components: {
@@ -276,12 +297,13 @@ export default {
       };
     },
     /** 查看 */
-    view(row) {
+    view(row, title) {
       queryWorkorders(null, row.id).then((res) => {
         console.log(res)
         this.orderDetail = res.data;
       });
       this.orderDetailIsShow = true;
+      this.title = title;
     },
     /** 暂停 */
     stop(row) {
@@ -309,6 +331,31 @@ export default {
             type: "info",
             message: "已取消重暂!",
           });
+        });
+    },
+    
+    /**
+     * 审批
+     */
+    approval(row, status) {
+      const data = {
+        ids: [row.id],
+        status: status,
+      };
+      updateOrderStatus(data)
+        .then((res) => {
+          this.$message({
+            type: "success",
+            message: "审批成功!",
+          });
+          this.orderDetailIsShow = false;
+        })
+        .catch((e) => {
+          this.$message({
+            type: "error",
+            message: e.message,
+          });
+          this.orderDetailIsShow = false;
         });
     },
   },

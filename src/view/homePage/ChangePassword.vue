@@ -28,7 +28,8 @@
   </div>
 </template>
 <script>
-import * as user from "../../lib/api/user";
+// import * as user from "../../lib/api/user";
+import * as user from '../../lib/api/userManage'
 export default {
   data() {
     return {
@@ -84,12 +85,25 @@ export default {
     },
     /* 调用修改密码接口 */
     changePassword() {
-      user.changPassword().then(res=>{
-
-      });
-      this.$message({
-        type: "info",
-        message: "xiugaimima "
+       const {
+        newPassword,
+        confirmNewPassword
+      } = this.passwordForm;
+      const param  = {
+        password: newPassword,
+        repeatPassword: confirmNewPassword,
+        userId: this.$store.state.user.userInfo.principal.id
+      };
+      user.editUserPassword(param).then(res=>{
+        this.$message({
+          type: "success",
+          message: "密码修改成功！ "
+        });
+      }).catch(err => {
+        this.$message({
+          type: "error",
+          message: "密码修改失败！ "
+        });
       });
       this.clear();
     },
