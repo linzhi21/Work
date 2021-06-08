@@ -110,6 +110,7 @@ export const importURLPlanFile = (data) => POST(data, apiConfig.importURLPlanFil
  * @param {String} data.hour - 工时
  */
 export const addPlan = (data) => POST(data, apiConfig.plan);
+export const addChildPlan = (data) => POST(data, apiConfig.childPlan);
 
 /** 编辑点检计划
  * @param {Object} data
@@ -135,6 +136,7 @@ export const addPlan = (data) => POST(data, apiConfig.plan);
  * @param {String} restful - 设备唯一标志id
  */
 export const patchPlan = (data, restful) => PATCH(data, apiConfig.plan, restful);
+export const postChildPlan = (data, restful) => PATCH(data, apiConfig.childPlan, restful);
 
 
 /** 查询点检工单列表
@@ -176,3 +178,10 @@ export const checkPlanChanges = (data) => GET(data, apiConfig.checkPlanChanges);
  * @param {String} data.planId  
  */
 export const exportExcel = (data) => GET(data, apiConfig.exportExcel)
+
+/**
+ * 操作工单
+ * @param {*} data 
+ * @returns 
+ */
+export const updateOrderStatus = (data) => PATCH(data, apiConfig.updateOrderStatus)

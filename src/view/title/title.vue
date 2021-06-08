@@ -26,8 +26,8 @@
         >
           <i class="el-icon-message" @click="jumpMessage"></i>
         </el-badge>
-        <i class="el-icon-s-tools" @click="jumpChangePassword"></i>
-        <el-dropdown :hide-on-click="false">
+        <i class="el-icon-s-cooperation" @click="jumpChangePassword"></i>
+        <el-dropdown :hide-on-click="false" trigger="click">
           <i class="el-icon-user-solid"></i>
           <span style="font-size:16px;">{{username}}</span>
           <el-dropdown-menu slot="dropdown">

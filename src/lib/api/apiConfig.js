@@ -22,8 +22,8 @@ export default {
     userWorkshops: `${urls.oauth2}/workshops`,
     //GET - 将用户切换至该工厂下,并返回新的权限
     userWorkshop: `${urls.oauth2}/workshop`,
-
-    changPassword: '/api/changPassword',
+    // PATCH - 修改密码
+    changPassword: `${urls.oauth2}/user/update-password`,
 
 
     // GET - 查询工厂列表|查询单个工厂; POST - 添加工厂; PATCH - 修改工厂信息;
@@ -201,6 +201,11 @@ export default {
     exportExcel:`${urls.business}/web/plan`,
     // GET - 导出多个计划excel
     exportPlans:`${urls.business}/web/plan/download`,
+    // PATCH - 操作工单
+    updateOrderStatus: `${urls.business}/mobile/workorders/status`,
+    
+    childPlan: `${urls.business}/web/plan/child`,
+    
 
 
     // 附件管理

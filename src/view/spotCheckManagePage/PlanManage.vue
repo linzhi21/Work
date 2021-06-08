@@ -12,10 +12,22 @@
           label-width="95px"
         />
         <el-row class="buttom-group" type="flex" justify="end" align="middle">
-          <el-button @click="releaseMore" class="button-more" size="small">批量发布</el-button>
-          <el-button @click="deleteMore" class="button-more" size="small">批量删除</el-button>
-          <el-button @click="exportPlans" class="button-more" size="small">导出</el-button>
-          <el-button class="button-more" type="primary" size="small" @click="add">新增计划</el-button>
+          <el-button @click="releaseMore" class="button-more" size="small"
+            >批量发布</el-button
+          >
+          <el-button @click="deleteMore" class="button-more" size="small"
+            >批量删除</el-button
+          >
+          <el-button @click="exportPlans" class="button-more" size="small"
+            >导出</el-button
+          >
+          <el-button
+            class="button-more"
+            type="primary"
+            size="small"
+            @click="add"
+            >新增计划</el-button
+          >
         </el-row>
         <!-- 底部表格 -->
         <tpms-table
@@ -31,7 +43,12 @@
             { props: 'creatorName', label: '制定人' },
             { props: 'createDate', label: '制定日期', width: '200px' },
             { props: 'status', label: '状态' },
-            { label: '操作', slotName: 'operation', fixed: 'right', width: '240px' }
+            {
+              label: '操作',
+              slotName: 'operation',
+              fixed: 'right',
+              width: '240px',
+            },
           ]"
           @inquireTableData="inquireTableData"
           @getTableData="getTableData"
@@ -43,58 +60,75 @@
               class="button cursor"
               @click="approval(scope.row)"
               v-if="scope.row.buttons.includes('approval')"
-            >审批</span>
+              >审批</span
+            >
             <span
               class="button cursor"
               @click="viewWorkOrder(scope.row)"
-              v-if="scope.row.status == '已发布' || scope.row.status == '已取消'"
-            >查看工单</span>
+              v-if="
+                scope.row.status == '已发布' || scope.row.status == '已取消'
+              "
+              >查看工单</span
+            >
             <span
               class="button cursor"
               @click="edit(scope.row)"
               v-if="scope.row.buttons.includes('launch')"
-            >编辑</span>
+              >编辑</span
+            >
             <span
               class="button cursor"
               @click="del(scope.row)"
               v-if="scope.row.buttons.includes('delete')"
-            >删除</span>
+              >删除</span
+            >
             <span
               class="button cursor"
               @click="release(scope.row)"
               v-if="scope.row.buttons.includes('release')"
-            >发布</span>
+              >发布</span
+            >
             <span
               class="button cursor"
               @click="cancel(scope.row)"
               v-if="scope.row.buttons.includes('canceled')"
-            >取消计划</span>
+              >取消计划</span
+            >
             <span
               class="button cursor"
               @click="newApproval(scope.row)"
               v-if="scope.row.buttons.includes('launch')"
-            >重新发起审批</span>
-            <span class="button cursor" @click="exportFile(scope.row)">导出</span>
+              >重新发起审批</span
+            >
+            <span class="button cursor" @click="exportFile(scope.row)"
+              >导出</span
+            >
           </template>
         </tpms-table>
       </el-card>
     </el-row>
 
     <!-- 查看工单 -->
-    <el-dialog width="90%" title="查看工单" :visible.sync="oneWorkOrderIsShow" center append-to-body>
+    <el-dialog
+      width="90%"
+      title="查看工单"
+      :visible.sync="oneWorkOrderIsShow"
+      center
+      append-to-body
+    >
       <tpms-table
         ref="oneWorkOrderTable"
         height="50vh"
         :data="oneWorkOrderData.data"
-        :total="oneWorkOrderData.totalElements||0"
+        :total="oneWorkOrderData.totalElements || 0"
         :columns="[
-              {props:'no',label:'工单编号'},
-              {props:'planNo',label:'点检计划编号'},
-              {props:'planName',label:'点检计划名称'},
-              {props:'createDate',label:'生成日期'},
-              {props:'status',label:'状态'},
-              {props:'receiverName',label:'接单人'}
-            ]"
+          { props: 'no', label: '工单编号' },
+          { props: 'planNo', label: '点检计划编号' },
+          { props: 'planName', label: '点检计划名称' },
+          { props: 'createDate', label: '生成日期' },
+          { props: 'status', label: '状态' },
+          { props: 'receiverName', label: '接单人' },
+        ]"
         @getTableData="viewWorkOrder"
       />
     </el-dialog>
@@ -110,8 +144,13 @@
       :before-close="handleClose"
     >
       <!-- 头部表单 -->
-      <el-row style="margin-top:40px">
-        <el-form :model="form" ref="form" label-width="140px" label-position="left">
+      <el-row style="margin-top: 40px">
+        <el-form
+          :model="form"
+          ref="form"
+          label-width="140px"
+          label-position="left"
+        >
           <el-row>
             <el-col :span="11">
               <el-form-item label="类型" required="required">
@@ -138,6 +177,7 @@
                     size="small"
                     isMutiple
                     text="选择文件"
+                    accept=".xlsx,.xls"
                     @getFileData="getFileData($event)"
                   ></tpms-choosefile>
                   <!-- <el-button type="default" size="small" @click="addPlanDevice">批量</el-button> -->
@@ -151,9 +191,9 @@
             </el-col>
           </el-row>
           <el-row
-            v-for="(item,index) in form.planDevices"
+            v-for="(item, index) in form.planDevices"
             :key="index"
-            style="background: #f5f5f5;padding: 0.2rem;margin: 15px 0;"
+            style="background: #f5f5f5; padding: 0.2rem; margin: 15px 0"
           >
             <el-col :span="11">
               <el-form-item label="版本" required="required">
@@ -216,8 +256,12 @@
                   :file-list="item.planPictures"
                   :action="uploadImgUrl"
                   :headers="uploadHeaders"
-                  :on-success="(res,file)=>handleAvatarSuccess(res,file, item)"
-                  :on-remove="(file,fileList)=>handleRemove(file,fileList,item)"
+                  :on-success="
+                    (res, file) => handleAvatarSuccess(res, file, item)
+                  "
+                  :on-remove="
+                    (file, fileList) => handleRemove(file, fileList, item)
+                  "
                   :before-upload="beforeAvatarUpload"
                 >
                   <el-button size="small" type="file">点击上传图示</el-button>
@@ -226,25 +270,42 @@
             </el-col>
             <!-- 表格区 -->
             <el-table
+              ref="planContentTable"
               :data="item.planContents"
-              style="width:100%"
+              style="width: 100%"
               row-key="content"
               border
-              lazy
-              :load="load"
-              :tree-props="{children: 'childPlanContents', hasChildren: 'hasChildren'}"
+              :tree-props="{
+                children: 'childPlanContents',
+                hasChildren: 'hasChildren',
+              }"
             >
-              <el-table-column align="center" type="index" label="项目" width="80"></el-table-column>
+              <el-table-column
+                align="center"
+                type="index"
+                label="项目"
+                width="80"
+              ></el-table-column>
               <el-table-column align="center" label="时间/部件" width="150">
                 <template slot-scope="scope">
-                  <el-input v-show="scope.row.editShow" v-model="scope.row.executionNode"></el-input>
-                  <span v-show="!scope.row.editShow">{{scope.row.executionNode}}</span>
+                  <el-input
+                    v-show="scope.row.editShow"
+                    v-model="scope.row.executionNode"
+                  ></el-input>
+                  <span v-show="!scope.row.editShow">{{
+                    scope.row.executionNode
+                  }}</span>
                 </template>
               </el-table-column>
               <el-table-column align="center" label="内容" width="300">
                 <template slot-scope="scope">
-                  <el-input v-show="scope.row.editShow" v-model="scope.row.content"></el-input>
-                  <span v-show="!scope.row.editShow">{{scope.row.content}}</span>
+                  <el-input
+                    v-show="scope.row.editShow"
+                    v-model="scope.row.content"
+                  ></el-input>
+                  <span v-show="!scope.row.editShow">{{
+                    scope.row.content
+                  }}</span>
                 </template>
               </el-table-column>
               <el-table-column align="center" label="工时(s)">
@@ -254,20 +315,25 @@
                     v-model="scope.row.hour"
                     @change="calcTime(item)"
                   ></el-input>
-                  <span v-show="!scope.row.editShow">{{scope.row.hour}}</span>
+                  <span v-show="!scope.row.editShow">{{ scope.row.hour }}</span>
                 </template>
               </el-table-column>
               <el-table-column align="center" label="方法">
                 <template slot-scope="scope">
-                  <el-input v-show="scope.row.editShow" v-model="scope.row.method"></el-input>
-                  <span v-show="!scope.row.editShow">{{scope.row.method}}</span>
+                  <el-input
+                    v-show="scope.row.editShow"
+                    v-model="scope.row.method"
+                  ></el-input>
+                  <span v-show="!scope.row.editShow">{{
+                    scope.row.method
+                  }}</span>
                 </template>
               </el-table-column>
               <el-table-column align="center" label="周期" width="110">
                 <template slot-scope="scope">
                   <el-select
                     v-model="scope.row.cycleId"
-                    style="width:100%"
+                    style="width: 100%"
                     :disabled="!scope.row.editShow"
                   >
                     <el-option
@@ -283,7 +349,7 @@
                 <template slot-scope="scope">
                   <el-select
                     v-model="scope.row.sort"
-                    style="width:100%"
+                    style="width: 100%"
                     :disabled="!scope.row.editShow"
                   >
                     <el-option
@@ -304,16 +370,28 @@
                     class="avatar"
                   />
                 </template>
-              </el-table-column>-->
-              <el-table-column align="center" width="300" label="操作" fixed="right">
+              </el-table-column>     -->
+              <el-table-column
+                align="center"
+                width="300"
+                label="操作"
+                fixed="right"
+              >
                 <template slot-scope="scope">
-                  <el-button size="small" @click="scope.row.editShow = true">编辑</el-button>
-                  <el-button size="small" @click="scope.row.editShow = false">保存</el-button>
+                  <el-button size="small" @click="scope.row.editShow = true"
+                    >编辑</el-button
+                  >
+                  <el-button size="small" @click="scope.row.editShow = false"
+                    >保存</el-button
+                  >
                   <el-button
                     size="small"
-                    @click.native.prevent="deleteRow(scope.$index, item.planContents),calcTime(item)"
-                    style="margin-right:10px"
-                  >删除</el-button>
+                    @click.native.prevent="
+                      deleteRow(scope.$index, item.planContents), calcTime(item)
+                    "
+                    style="margin-right: 10px"
+                    >删除</el-button
+                  >
                   <!-- <div style="display: inline-block;" @click="uploadImg(index,scope.$index)">
                     <el-upload
                       class="avatar-uploader"
@@ -332,16 +410,26 @@
             <el-row type="flex" justify="center">
               <i
                 class="el-icon-circle-plus"
-                style="font-size: 30px; color: #0077DC;"
+                style="font-size: 30px; color: #0077dc"
                 @click="addTableRow(item.planContents)"
               ></i>
               <!-- <el-button type="primary" icon="el-icon-circle-plus"></el-button> -->
             </el-row>
           </el-row>
-          <el-col :span="7" :offset="17" style="margin-top:20px">
+          <el-col :span="7" :offset="17" style="margin-top: 20px">
             <el-form-item>
-              <el-button v-if="newAddDialogTitle==='新增'" type="primary" @click="submitForm()">提交</el-button>
-              <el-button v-if="newAddDialogTitle==='编辑'" type="primary" @click="changePlan()">保存</el-button>
+              <el-button
+                v-if="newAddDialogTitle === '新增'"
+                type="primary"
+                @click="submitForm()"
+                >提交</el-button
+              >
+              <el-button
+                v-if="newAddDialogTitle === '编辑'"
+                type="primary"
+                @click="changePlan()"
+                >保存</el-button
+              >
               <el-button @click="newAddDialog = false">取 消</el-button>
             </el-form-item>
           </el-col>
@@ -356,7 +444,12 @@
             <el-col :span="11">
               <el-form-item label="类型">
                 <!-- <el-input v-model="orderDetail.type" disabled /> -->
-                <el-select v-model="orderDetail.type" placeholder style="width: 100%;" disabled>
+                <el-select
+                  v-model="orderDetail.type"
+                  placeholder
+                  style="width: 100%"
+                  disabled
+                >
                   <el-option label="点检计划" :value="1"></el-option>
                   <el-option label="日常保养" :value="2"></el-option>
                 </el-select>
@@ -379,9 +472,9 @@
             </el-col>
           </el-row>
           <el-row
-            v-for="(item,index) in orderDetail.planDevices"
+            v-for="(item, index) in orderDetail.planDevices"
             :key="index"
-            style="background: #f5f5f5;padding: 0.2rem"
+            style="background: #f5f5f5; padding: 0.2rem"
           >
             <el-col :span="11">
               <el-form-item label="版本">
@@ -417,7 +510,7 @@
               <el-form-item label="图示">
                 <div>
                   <el-image
-                    v-for="(img) in item.planPictures"
+                    v-for="img in item.planPictures"
                     :key="img.accessoryId"
                     :src="img.url"
                     fit="fill"
@@ -428,17 +521,48 @@
             <!-- 表格区 -->
             <el-table
               :data="item.planContents"
-              style="width:100%"
+              style="width: 100%"
               border
               default-expand-all
-              :tree-props="{children: 'childPlanContents', hasChildren: 'hasChildren'}"
+              :tree-props="{
+                children: 'childPlanContents',
+                hasChildren: 'hasChildren',
+              }"
             >
-              <el-table-column align="center" type="index" label="项目" width="50"></el-table-column>
-              <el-table-column align="center" prop="executionNode" label="时间/部件" width="150"></el-table-column>
-              <el-table-column align="center" prop="content" label="内容" width="300"></el-table-column>
-              <el-table-column align="center" prop="hour" label="工时(s)"></el-table-column>
-              <el-table-column align="center" prop="method" label="方法"></el-table-column>
-              <el-table-column align="center" prop="cycleName" label="周期" width="110"></el-table-column>
+              <el-table-column
+                align="center"
+                type="index"
+                label="项目"
+                width="50"
+              ></el-table-column>
+              <el-table-column
+                align="center"
+                prop="executionNode"
+                label="时间/部件"
+                width="150"
+              ></el-table-column>
+              <el-table-column
+                align="center"
+                prop="content"
+                label="内容"
+                width="300"
+              ></el-table-column>
+              <el-table-column
+                align="center"
+                prop="hour"
+                label="工时(s)"
+              ></el-table-column>
+              <el-table-column
+                align="center"
+                prop="method"
+                label="方法"
+              ></el-table-column>
+              <el-table-column
+                align="center"
+                prop="cycleName"
+                label="周期"
+                width="110"
+              ></el-table-column>
               <!-- <el-table-column align="center" prop="photoDisplay" label="图示">
                 <template slot-scope="scope">
                   <img
@@ -455,19 +579,34 @@
       </el-row>
     </el-dialog>
     <!-- 提交审批 -->
-    <el-dialog width="30%" title="审批" :visible.sync="approvalIsShow" center append-to-body>
+    <el-dialog
+      width="30%"
+      title="审批"
+      :visible.sync="approvalIsShow"
+      center
+      append-to-body
+    >
       <el-form :model="form">
         <el-form-item label="审批理由" prop="reason">
-          <el-input v-model="form.reason" placeholder="审批驳回必须填写理由"></el-input>
+          <el-input
+            v-model="form.reason"
+            placeholder="审批驳回必须填写理由"
+          ></el-input>
         </el-form-item>
       </el-form>
-      <div style="text-align: center;">
+      <div style="text-align: center">
         <el-button type="primary" @click="adopt()">审批通过</el-button>
         <el-button type="primary" @click="reject()">审批驳回</el-button>
       </div>
     </el-dialog>
     <!-- 批量导入文件 -->
-    <el-dialog width="50%" title="批量导入文件" :visible.sync="uploadFileIsShow" center append-to-body>
+    <el-dialog
+      width="50%"
+      title="批量导入文件"
+      :visible.sync="uploadFileIsShow"
+      center
+      append-to-body
+    >
       <div>
         <el-upload
           class="upload-demo"
@@ -480,14 +619,19 @@
           accept=".xls, .xlsx"
           :auto-upload="false"
         >
-          <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+          <el-button slot="trigger" size="small" type="primary"
+            >选取文件</el-button
+          >
           <el-button
-            style="margin-left: 10px;"
+            style="margin-left: 10px"
             size="small"
             type="success"
             @click="submitUpload"
-          >上传到服务器</el-button>
-          <div slot="tip" class="el-upload__tip">只能上传.xls/.xlsx文件，且不超过30M</div>
+            >上传到服务器</el-button
+          >
+          <div slot="tip" class="el-upload__tip">
+            只能上传.xls/.xlsx文件，且不超过30M
+          </div>
         </el-upload>
       </div>
     </el-dialog>
@@ -514,31 +658,32 @@ import {
   planNewNo,
   cycleSelect,
   updatePlanPicture,
-  importURLPlanFile
+  importURLPlanFile,
 } from "../../lib/api/checkPlan";
 import {
   factoryManage,
   workshopManage as workshopManageAll,
   workStationManage,
-  workshopSectionManage
+  workshopSectionManage,
 } from "../../lib/api/workshopSettingsManage";
+import { log } from "../../../environment.dev";
 export default {
   data() {
     // 类型列表
     const typeList = [
       { id: "1", label: "点检计划" },
-      { id: "2", label: "日常保养" }
+      { id: "2", label: "日常保养" },
     ];
     // 获取头部搜索组下拉选择的list
     let getListFuncs = [
       planStatusSelect, //状态
-      factoryManage.getNames //工厂
+      factoryManage.getNames, //工厂
       // workshopManageAll.getNames,//车间
     ];
     let [statusList, factoryList /** workshopList */] = getListFuncs.map(
-      getListFunc => {
+      (getListFunc) => {
         let arr = [];
-        getListFunc(null).then(res => {
+        getListFunc(null).then((res) => {
           arr.push(...res.data);
         });
         return arr;
@@ -549,9 +694,9 @@ export default {
       loading: false,
       planDevicesIndex: 0,
       planContentsIndex: 0,
-      User_info: JSON.parse(localStorage.getItem("user_info")),
+      userInfo: JSON.parse(localStorage.getItem("user_info")),
       uploadHeaders: {
-        Authorization: "Bearer " + localStorage.getItem("access_token")
+        Authorization: "Bearer " + localStorage.getItem("access_token"),
       },
       uploadImgUrl: apiConfig.uploadAccessory + "/64",
       cycleList: [], // 周期列表
@@ -563,21 +708,21 @@ export default {
           props: "factoryId",
           value: "",
           type: "radio",
-          checkList: factoryList
+          checkList: factoryList,
         },
         {
           label: "车间",
           props: "workshopId",
           value: "",
           type: "radio",
-          checkList: []
+          checkList: [],
         },
         {
           label: "类型",
           props: "type",
           value: "",
           type: "radio",
-          checkList: typeList
+          checkList: typeList,
         },
         { label: "工位/工段", props: "positionName", value: "" },
         { label: "设备名称", props: "deviceName", value: "" },
@@ -587,8 +732,8 @@ export default {
           props: "status",
           value: "",
           type: "radio",
-          checkList: statusList
-        }
+          checkList: statusList,
+        },
       ],
       total: 0,
       // 表格的数据
@@ -630,29 +775,29 @@ export default {
                 method: "", //方法
                 childPlanContents: [
                   //可展开的子节点
-                ]
-              }
-            ]
-          }
-        ]
+                ],
+              },
+            ],
+          },
+        ],
       },
       planDevicesIndex: "",
       orderDetailIsShow: false, //查看点检计划详情弹窗
       orderDetail: {}, //查看点检计划详情数据
       approvalIsShow: false,
       importFileData: {
-        workshopName: "PFMB"
+        workshopName: "PFMB",
       },
       uploadFileIsShow: false,
       importURLFileUrl: apiConfig.importURLPlanFile,
       fileList: [],
-      planId: ""
+      planId: "",
     };
   },
   components: {
     tpmsHeader,
     tpmsTable,
-    tpmsChoosefile
+    tpmsChoosefile,
   },
   created() {},
   mounted() {
@@ -666,11 +811,11 @@ export default {
       axios
         .get(url, {
           headers: {
-            Authorization: "Bearer " + token
+            Authorization: "Bearer " + token,
           },
-          responseType: "blob"
+          responseType: "blob",
         })
-        .then(res => {
+        .then((res) => {
           if (!res) return;
 
           let fileName = "plan.zip";
@@ -681,7 +826,7 @@ export default {
           }
 
           let blob = new Blob([res.data], {
-            type: "application/vnd.ms-excel;charset=utf-8"
+            type: "application/vnd.ms-excel;charset=utf-8",
           });
           let url = window.URL.createObjectURL(blob);
           let aLink = document.createElement("a");
@@ -693,7 +838,7 @@ export default {
           document.body.removeChild(aLink);
           window.URL.revokeObjectURL(url);
         })
-        .catch(error => {
+        .catch((error) => {
           this.$message.error(error);
         });
     },
@@ -706,11 +851,11 @@ export default {
         .get(url, {
           params: { ...searchData, type: "1,2" },
           headers: {
-            Authorization: "Bearer " + token
+            Authorization: "Bearer " + token,
           },
-          responseType: "blob"
+          responseType: "blob",
         })
-        .then(res => {
+        .then((res) => {
           if (!res) return;
 
           let fileName = "plans.zip";
@@ -721,7 +866,7 @@ export default {
           }
 
           let blob = new Blob([res.data], {
-            type: "application/vnd.ms-excel;charset=utf-8"
+            type: "application/vnd.ms-excel;charset=utf-8",
           });
           let url = window.URL.createObjectURL(blob);
           let aLink = document.createElement("a");
@@ -733,7 +878,7 @@ export default {
           document.body.removeChild(aLink);
           window.URL.revokeObjectURL(url);
         })
-        .catch(error => {
+        .catch((error) => {
           this.$message.error(error);
         });
     },
@@ -747,13 +892,13 @@ export default {
     getMutipleFileData(files, index) {
       this.loading = true;
       let formData = new FormData();
-      files.forEach(function(file) {
+      files.forEach(function (file) {
         formData.append("file", file, file.name);
       });
 
       // formData.append('file',file);
       formData.append("workshopName", "PFMB");
-      importURLPlanFile(formData).then(res => {
+      importURLPlanFile(formData).then((res) => {
         console.log(res);
         this.loading = false;
         let data = res.data;
@@ -778,27 +923,27 @@ export default {
       if (!this.form.type) {
         this.$message({
           message: "请先选择计划类型",
-          type: "warning"
+          type: "warning",
         });
         return;
       }
       this.loading = true;
       let formData = new FormData();
       let workshopName = localStorage.getItem("workshopName");
-      files.map(file => formData.append("file", file));
+      files.map((file) => formData.append("file", file));
       formData.append("module", this.form.type); //{1:'点检',2:'日常保养',3:'巡检',4:'保养'};
       importURLPlanFile(formData)
-        .then(res => {
+        .then((res) => {
           // console.log(res,item)
           this.loading = false;
           let datas = res.data;
-          datas.map(data => {
-            data.planContents.forEach(item => (item.editShow = false));
+          datas.map((data) => {
+            data.planContents.forEach((item) => (item.editShow = false));
             delete data.planPictures;
           });
           this.form.planDevices = datas;
         })
-        .catch(err => {
+        .catch((err) => {
           this.loading = false;
         });
     },
@@ -807,7 +952,7 @@ export default {
      */
     releaseMore() {
       const selected = this.$refs.tpmsTable.getSelectionList();
-      const ids = selected.map(item => item.id);
+      const ids = selected.map((item) => item.id);
 
       if (ids.length === 0) {
         this.$message.warning("请先选择需要发布的计划");
@@ -817,24 +962,24 @@ export default {
       this.$confirm("批量发布点检计划, 是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
-        type: "warning"
+        type: "warning",
       })
         .then(() => {
           const l = ids.length;
           ids.forEach((id, i) => {
             patchPlan({ status: 5 }, row.id)
-              .then(res => {
+              .then((res) => {
                 if (i == l - 1) {
                   this.$message({
                     type: "success",
-                    message: "发布成功!"
+                    message: "发布成功!",
                   });
                 }
               })
               .catch(() => {
                 this.$message({
                   type: "error",
-                  message: "发布失败"
+                  message: "发布失败",
                 });
               });
           });
@@ -843,7 +988,7 @@ export default {
         .catch(() => {
           this.$message({
             type: "info",
-            message: "已取消发布"
+            message: "已取消发布",
           });
         });
     },
@@ -852,7 +997,7 @@ export default {
      */
     deleteMore() {
       const selected = this.$refs.tpmsTable.getSelectionList();
-      const ids = selected.map(item => item.id);
+      const ids = selected.map((item) => item.id);
 
       if (ids.length === 0) {
         this.$message.warning("请先选择需要删除的计划");
@@ -861,22 +1006,22 @@ export default {
       this.$confirm("批量删除点检计划, 是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
-        type: "warning"
+        type: "warning",
       })
         .then(() => {
           const l = ids.length;
           ids.forEach((id, i) => {
             delPlan(null, row.id)
-              .then(res => {
+              .then((res) => {
                 this.$message({
                   type: "success",
-                  message: "删除成功!"
+                  message: "删除成功!",
                 });
               })
               .catch(() => {
                 this.$message({
                   type: "error",
-                  message: "删除失败"
+                  message: "删除失败",
                 });
               });
           });
@@ -885,18 +1030,18 @@ export default {
         .catch(() => {
           this.$message({
             type: "info",
-            message: "已取消删除"
+            message: "已取消删除",
           });
         });
     },
     /** 获取周期列表 */
     getCycleList(val) {
-      var workshopId = this.User_info.principal.workshopId;
+      var workshopId = this.userInfo.principal.workshopId;
       const data = {
-        module: val //{1:'点检',2:'日常保养',3:'巡检',4:'保养'};
+        module: val, //{1:'点检',2:'日常保养',3:'巡检',4:'保养'};
       };
       this.cycleList = [];
-      cycleSelect(data, workshopId + "/cycle/names").then(res => {
+      cycleSelect(data, workshopId + "/cycle/names").then((res) => {
         console.log("周期列表", res);
         this.cycleList = res.data;
       });
@@ -913,7 +1058,7 @@ export default {
       let data = this.$refs.tpmsHeader.getData();
       let pageData = this.$refs.tpmsTable.getData();
       data.type = data.type || "1,2";
-      planList({ ...data, ...pageData }).then(res => {
+      planList({ ...data, ...pageData }).then((res) => {
         console.log(res);
         this.total = res.data.totalElements;
         this.equipmentTableData = res.data.content;
@@ -923,8 +1068,8 @@ export default {
     onValueChanged({ props, value }) {
       if (props === "factoryId") {
         // 选择工厂，重置车间
-        workshopManageAll.getNames({ factoryId: value }).then(res => {
-          this.equipmentFormList.forEach(item => {
+        workshopManageAll.getNames({ factoryId: value }).then((res) => {
+          this.equipmentFormList.forEach((item) => {
             if (item.props === "workshopId") {
               item.checkList = res.data;
               item.value = "";
@@ -935,10 +1080,10 @@ export default {
     },
     /** 查看点检计划详情  */
     view(row) {
-      queryPlan(null, row.id).then(res => {
-        res.data.planDevices.map(item => {
+      queryPlan(null, row.id).then((res) => {
+        res.data.planDevices.map((item) => {
           item.planPictures &&
-            item.planPictures.forEach(ever => {
+            item.planPictures.forEach((ever) => {
               ever.name = ever.accessoryId;
               ever.url = this.apiConfig.accessoryFile + ever.accessoryUrl;
               console.log("这是图片地址");
@@ -994,11 +1139,11 @@ export default {
                 childPlanContents: [
                   //可展开的子节点
                 ],
-                sort: 1
-              }
-            ]
-          }
-        ]
+                sort: 1,
+              },
+            ],
+          },
+        ],
       };
       this.uploadHeaders.Authorization =
         "Bearer " + localStorage.getItem("access_token");
@@ -1006,7 +1151,7 @@ export default {
     },
     // 同步图示库
     syncPictureFun() {
-      updatePlanPicture(this.form).then(res => {
+      updatePlanPicture(this.form).then((res) => {
         this.form = res.data;
       });
     },
@@ -1037,19 +1182,19 @@ export default {
     // 删除单个文件
     handleRemove(file, fileList, item) {
       if (file.id) {
-        item.planPictures = item.planPictures.filter(ever => {
+        item.planPictures = item.planPictures.filter((ever) => {
           return ever.accessoryId !== file.response.id;
         });
       } else {
-        item.planPictures = item.planPictures.filter(ever => {
+        item.planPictures = item.planPictures.filter((ever) => {
           return ever.name !== file.name;
         });
       }
     },
     /**  获取区域名称 */
     getWorkshopAreaManage() {
-      workshopAreaManage(null, this.User_info.principal.workshopAreaId).then(
-        res => {
+      workshopAreaManage(null, this.userInfo.principal.workshopAreaId).then(
+        (res) => {
           // console.log(res);
           this.form.areaName = res.data.name;
           var areaNo = res.data.no;
@@ -1059,7 +1204,7 @@ export default {
     },
     /**  获取车间名称 */
     getWorkshopManage(areaNo) {
-      workshopManage(null, this.User_info.principal.workshopId).then(res => {
+      workshopManage(null, this.userInfo.principal.workshopId).then((res) => {
         console.log("workshopName", res.data.name);
         // this.form.workshopName = res.data.name;
         // this.importFileData.workshopName = res.data.name;
@@ -1074,30 +1219,42 @@ export default {
       var data = {
         type: this.form.type,
         workshopNo: workshopNo,
-        areaNo: areaNo
+        areaNo: areaNo,
       };
       // console.log(data);
-      planNewNo(data).then(res => {
+      planNewNo(data).then((res) => {
         // console.log(res);
         this.form.no = res.data;
       });
     },
     /** 编辑点检计划 */
     edit(row) {
-      queryPlan(null, row.id).then(res => {
+      queryPlan(null, row.id).then((res) => {
         let data = res.data;
+        this.getCycleList(data.type);
         for (var j = 0; j < data.planDevices.length; j++) {
           for (var i = 0; i < data.planDevices[j].planContents.length; i++) {
             data.planDevices[j].planContents[i].editShow = false;
           }
         }
-        res.data.planDevices.map(item => {
+        res.data.planDevices.map((item) => {
+          item.deletedContents = [];
+          // 图示卡信息
           item.planPictures &&
-            item.planPictures.forEach(ever => {
+            item.planPictures.forEach((ever) => {
               ever.name = ever.accessoryId;
               ever.url = this.apiConfig.accessoryFile + ever.accessoryUrl;
             });
-        });
+          // 内容信息
+          const planContents = item.planContents;
+          for (let i = 0; i < planContents.length; i++) {
+            const content = planContents[i];
+            if(content.deleted) {
+              item.deletedContents.push(content);
+              delete item.planContents[i];
+            }
+          }
+        });debugger
         this.form.status = "";
         this.form = data;
       });
@@ -1113,14 +1270,14 @@ export default {
       //   this.$message.warning("缺少必填项!");
       //   return false;
       // }
-      const validateDevices = form.planDevices.filter(item => {
+      const validateDevices = form.planDevices.filter((item) => {
         if (!item.version) return true;
         if (!item.deviceNos) return true;
         if (!item.sectionOrStationName) return true;
         // if (!item.hour) return true;
         // if (!item.qrPicId) return true;
         // if (!item.repairTimes) return true;
-        const validateee = item.planContents.filter(itemm => {
+        const validateee = item.planContents.filter((itemm) => {
           if (!itemm.executionNode) return true;
           if (!itemm.content) return true;
           if (!itemm.hour) return true;
@@ -1150,7 +1307,7 @@ export default {
         return;
       }
       console.log(JSON.stringify(form));
-      addPlan(form).then(res => {
+      addPlan(form).then((res) => {
         console.log(res);
         this.newAddDialog = false;
         this.getTableData();
@@ -1159,6 +1316,10 @@ export default {
 
     /** 修改计划 */
     changePlan() {
+      // 合并所有内容
+      this.form.planDevices.map((item, i) => {
+        item.planContents.concat(item.deletedContents);
+      });debugger
       const validate = this.form.planDevices.some(({ planContents }) => {
         const arr = planContents.map(({ sort }) => sort);
         return new Set(arr).size !== arr.length;
@@ -1169,7 +1330,7 @@ export default {
       }
       console.log(JSON.stringify(this.form));
       delete this.form.status;
-      patchPlan(this.form, this.form.id).then(res => {
+      patchPlan(this.form, this.form.id).then((res) => {
         this.newAddDialog = false;
         this.getTableData();
       });
@@ -1200,14 +1361,24 @@ export default {
             childPlanContents: [
               //可展开的子节点
             ],
-            sort: 1
-          }
-        ]
+            sort: 1,
+          },
+        ],
       });
     },
-    //删除planContents里的一条数据
+    /**
+     * 删除planContents里的一条数据
+     */
     deleteRow(index, rows) {
       rows.splice(index, 1);
+      this.form.planDevices.forEach((item, i) => {
+        if (index === i) {
+          item.planContents[i].deleted = true;
+          item.deletedContents.push(item.planContents[i]);
+        }
+      });
+debugger
+      console.log(this.form.planDevices);
     },
     /** 计算工时 */
     calcTime(item) {
@@ -1215,7 +1386,7 @@ export default {
       const { planContents } = item;
       window.planContents = planContents;
       const sum = planContents
-        .map(row => row.hour)
+        .map((row) => row.hour)
         .reduce((a, b) => {
           const pre = parseInt(a) || 0;
           const next = parseInt(b) || 0;
@@ -1239,13 +1410,13 @@ export default {
         childPlanContents: [
           //可展开的子节点
         ],
-        sort: table.length + 1
+        sort: table.length + 1,
       });
     },
     //审批点检计划
     approval(row) {
       // console.log(row);
-      queryPlan(null, row.id).then(res => {
+      queryPlan(null, row.id).then((res) => {
         // console.log(res);
         this.form = res.data;
       });
@@ -1254,12 +1425,12 @@ export default {
     //审批通过
     adopt() {
       this.form.status = 2;
-      patchPlan(this.form, this.form.id).then(res => {
+      patchPlan(this.form, this.form.id).then((res) => {
         // console.log(res);
         this.getTableData();
         this.$message({
           type: "success",
-          message: "已同意审批!"
+          message: "已同意审批!",
         });
         this.approvalIsShow = false;
       });
@@ -1267,12 +1438,12 @@ export default {
     //审批驳回
     reject() {
       this.form.status = 3;
-      patchPlan(this.form, this.form.id).then(res => {
+      patchPlan(this.form, this.form.id).then((res) => {
         // console.log(res);
         this.getTableData();
         this.$message({
           type: "success",
-          message: "已驳回审批!"
+          message: "已驳回审批!",
         });
         this.approvalIsShow = false;
       });
@@ -1283,27 +1454,27 @@ export default {
       this.$confirm("重新发起审批, 是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
-        type: "warning"
+        type: "warning",
       })
         .then(() => {
-          queryPlan(null, row.id).then(res => {
+          queryPlan(null, row.id).then((res) => {
             // console.log(res);
             this.form = res.data;
           });
           this.form.status = 1;
-          patchPlan(this.form, row.id).then(res => {
+          patchPlan(this.form, row.id).then((res) => {
             // console.log(res);
             this.getTableData();
             this.$message({
               type: "success",
-              message: "重新发起审批成功!"
+              message: "重新发起审批成功!",
             });
           });
         })
         .catch(() => {
           this.$message({
             type: "info",
-            message: "已取消重新发起审批!"
+            message: "已取消重新发起审批!",
           });
         });
     },
@@ -1319,11 +1490,11 @@ export default {
           id = this.oneWorkOrderData.planId;
         }
         const pageData = this.$refs.oneWorkOrderTable.getData();
-        oneWorkorders(pageData, id + "/workorders").then(res => {
+        oneWorkorders(pageData, id + "/workorders").then((res) => {
           this.oneWorkOrderData = {
             data: res.data.content,
             planId: id,
-            totalElements: res.data.totalElements
+            totalElements: res.data.totalElements,
           };
         });
       });
@@ -1334,22 +1505,22 @@ export default {
       this.$confirm("此操作将删除点检计划, 是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
-        type: "warning"
+        type: "warning",
       })
         .then(() => {
-          delPlan(null, row.id).then(res => {
+          delPlan(null, row.id).then((res) => {
             // console.log(res);
             this.getTableData();
             this.$message({
               type: "success",
-              message: "删除成功!"
+              message: "删除成功!",
             });
           });
         })
         .catch(() => {
           this.$message({
             type: "info",
-            message: "已取消删除"
+            message: "已取消删除",
           });
         });
     },
@@ -1358,25 +1529,25 @@ export default {
       this.$confirm("发布点检计划, 是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
-        type: "warning"
+        type: "warning",
       })
         .then(() => {
-          queryPlan(null, row.id).then(res => {
+          queryPlan(null, row.id).then((res) => {
             this.form = res.data;
           });
           this.form.status = 5;
-          patchPlan(this.form, row.id).then(res => {
+          patchPlan(this.form, row.id).then((res) => {
             this.getTableData();
             this.$message({
               type: "success",
-              message: "发布成功!"
+              message: "发布成功!",
             });
           });
         })
         .catch(() => {
           this.$message({
             type: "info",
-            message: "已取消发布"
+            message: "已取消发布",
           });
         });
     },
@@ -1386,27 +1557,27 @@ export default {
       this.$confirm("取消点检计划, 是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
-        type: "warning"
+        type: "warning",
       })
         .then(() => {
-          queryPlan(null, row.id).then(res => {
+          queryPlan(null, row.id).then((res) => {
             // console.log(res);
             this.form = res.data;
           });
           this.form.status = 6;
-          patchPlan(this.form, row.id).then(res => {
+          patchPlan(this.form, row.id).then((res) => {
             // console.log(res);
             this.getTableData();
             this.$message({
               type: "success",
-              message: "取消点检计划成功!"
+              message: "取消点检计划成功!",
             });
           });
         })
         .catch(() => {
           this.$message({
             type: "info",
-            message: "已取消取消点检计划"
+            message: "已取消取消点检计划",
           });
         });
     },
@@ -1435,7 +1606,7 @@ export default {
         accessoryUrl: `/${res.path + res.name}`,
         // 这是element组件回显用的
         name: res.id,
-        url: `${this.apiConfig.accessoryFile}/${res.path + res.name}`
+        url: `${this.apiConfig.accessoryFile}/${res.path + res.name}`,
       };
       console.log("上传完成");
       console.log(img);
@@ -1452,8 +1623,8 @@ export default {
         this.$message.error("上传头像图片大小不能超过 10M!");
       }
       return isLt10M;
-    }
-  }
+    },
+  },
 };
 </script>
 <style lang="scss" scoped>
