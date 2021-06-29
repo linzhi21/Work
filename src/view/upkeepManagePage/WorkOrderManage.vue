@@ -8,6 +8,9 @@
       label-width="100px"
       @onValueChanged="onValueChanged"
     />
+    <el-row class="buttom-group" type="flex" justify="end" align="middle">
+      <el-button @click="exportWorkOrders" class="button-more" size="small">导出</el-button>
+    </el-row>
 
     <!-- 表格 -->
     <el-row>
@@ -117,14 +120,10 @@
 </template>
 <script>
 import {
-  workshopSectionSelect,
-  workStationSelect,
-  planStatusSelect
-} from "../../lib/api/checkPlan";
-import {
   maintainWorkOrder, //工单
   maintainWorkOrderDetail,
-  updateMaintainWorkOrder
+  updateMaintainWorkOrder,
+  generate
 } from "../../lib/api/upkeepManagePage";
 import { tpmsHeader, tpmsTable } from "../../components";
 import {
@@ -133,6 +132,8 @@ import {
   workStationManage,
   workshopSectionManage
 } from "../../lib/api/workshopSettingsManage";
+import apiConfig from "../../lib/api/apiConfig";
+import axios from "axios";
 export default {
   data() {
     //待接单就是1,待处理就是2、3和7,审批中是4,5,已完成就是6
@@ -289,6 +290,40 @@ export default {
             message: "已取消激活"
           });
         });
+    },
+    /**
+     * @description 导出 5周 工单内容 
+     */
+    exportWorkOrders() {
+      let url = apiConfig.maintainWorkOrder + '/advance/excel'; //请求下载文件的地址
+      let token = localStorage.getItem("access_token"); //获取token
+      generate()
+      .then(res => {
+        if (!res) return
+        window.open(`${apiConfig.accessoryFile}/${res}`);
+          // let fileName = 'plans.zip';
+          // const disposition = res.headers['content-disposition'];
+          // if(disposition){
+          //   const name = disposition.split(";")[1].split("filename=")[1];
+          //   fileName = decodeURI(name);
+          // }
+
+          // let blob = new Blob([res.data], {
+          //   type: "application/vnd.ms-excel;charset=utf-8"
+          // });
+          // let url = window.URL.createObjectURL(blob);
+          // let aLink = document.createElement("a");
+          // aLink.style.display = "none";
+          // aLink.href = url;
+          // aLink.setAttribute("download", fileName); // 下载的文件
+          // document.body.appendChild(aLink);
+          // aLink.click();
+          // document.body.removeChild(aLink);
+          // window.URL.revokeObjectURL(url);
+      })
+      .catch(error => {
+        this.$message.error(error);
+      })
     }
   }
 };

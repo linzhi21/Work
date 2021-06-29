@@ -234,6 +234,13 @@ const route = new Router({
                   hidden: true
                 },
                 {
+                  path: '/unPlanManage',
+                  name: 'UnPlanManage',
+                  meta: { title: '临时保养' },
+                  component: () => import('@/view/upkeepManagePage/UnPlanManage'),
+                  hidden: true
+                },
+                {
                   path: '/upKeepPhotoLibrary',
                   name: 'UpkeepPhotoLibrary',
                   meta: { title: '计划资料库' },
