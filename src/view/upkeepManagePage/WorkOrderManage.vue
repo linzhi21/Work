@@ -9,7 +9,12 @@
       @onValueChanged="onValueChanged"
     />
     <el-row class="buttom-group" type="flex" justify="end" align="middle">
-      <el-button @click="exportWorkOrders" class="button-more" size="small">导出</el-button>
+      <el-button @click="export5WorkOrders" class="button-more" size="small"
+        >导出后5周内容</el-button
+      >
+      <el-button @click="exportWorkOrders" class="button-more" size="small"
+        >导出概览</el-button
+      >
     </el-row>
 
     <!-- 表格 -->
@@ -24,12 +29,23 @@
           @inquireTableData="inquireTableData"
           @getTableData="getData"
         >
-          <template slot="status" slot-scope="{row}">
-            <span>{{statusTranslate(row.status)}}</span>
+          <template slot="status" slot-scope="{ row }">
+            <span>{{ statusTranslate(row.status) }}</span>
           </template>
-          <template slot="operation" slot-scope="{row}">
+          <template slot="operation" slot-scope="{ row }">
             <span class="button cursor" @click="showPlanDetail(row)">查看</span>
-            <span class="button cursor" v-if="row.status === 10" @click="turnOn(row)">激活</span>
+            <span class="button cursor" @click="exportNowMonthWorkOrder(row)"
+              >导出记录卡</span
+            >
+            <span class="button cursor" @click="previewNowMonthWorkOrder(row)"
+              >月度情况</span
+            >
+            <span
+              class="button cursor"
+              v-if="row.status === 10"
+              @click="turnOn(row)"
+              >激活</span
+            >
           </template>
         </tpms-table>
       </el-card>
@@ -37,8 +53,13 @@
     <!-- 详情 -->
     <el-dialog title="查看详情" :visible.sync="detailModal" width="80%">
       <!-- 头部表单 -->
-      <el-row style="margin-top:40px">
-        <el-form :model="detail" ref="form" label-width="140px" label-position="left">
+      <el-row style="margin-top: 40px">
+        <el-form
+          :model="detail"
+          ref="form"
+          label-width="140px"
+          label-position="left"
+        >
           <el-row>
             <el-col :span="11">
               <el-form-item label="保养工单" required="required">
@@ -62,9 +83,9 @@
             </el-col>
           </el-row>
           <el-row
-            v-for="(v,i) in detail.maintainWorkOrderColonies"
+            v-for="(v, i) in detail.maintainWorkOrderColonies"
             :key="i"
-            style="background: #f5f5f5;padding: 0.2rem"
+            style="background: #f5f5f5; padding: 0.2rem"
           >
             <el-col :span="11">
               <el-form-item label="设备名称" required="required">
@@ -79,36 +100,54 @@
 
             <el-table
               :data="v.maintainWorkOrderContents"
-              style="width:100%"
+              style="width: 100%"
               border
               row-key="id"
               default-expand-all
-              :tree-props="{children: 'childPlanContents', hasChildren: 'hasChildren'}"
+              :tree-props="{
+                children: 'childPlanContents',
+                hasChildren: 'hasChildren',
+              }"
             >
-              <el-table-column align="center" type="index" label="项目" width="80"></el-table-column>
+              <el-table-column
+                align="center"
+                type="index"
+                label="项目"
+                width="80"
+              ></el-table-column>
               <el-table-column align="center" label="保养部位" width="150">
                 <template slot-scope="scope">
-                  <span v-show="!scope.row.editShow">{{scope.row.executionPart}}</span>
+                  <span v-show="!scope.row.editShow">{{
+                    scope.row.executionPart
+                  }}</span>
                 </template>
               </el-table-column>
               <el-table-column align="center" label="保养位置">
                 <template slot-scope="scope">
-                  <span v-show="!scope.row.editShow">{{scope.row.executionNode}}</span>
+                  <span v-show="!scope.row.editShow">{{
+                    scope.row.executionNode
+                  }}</span>
                 </template>
               </el-table-column>
               <el-table-column align="center" label="保养内容">
                 <template slot-scope="scope">
-                  <span v-show="!scope.row.editShow">{{scope.row.content}}</span>
+                  <span v-show="!scope.row.editShow">{{
+                    scope.row.content
+                  }}</span>
                 </template>
               </el-table-column>
               <el-table-column align="center" label="周期">
                 <template slot-scope="scope">
-                  <span v-show="!scope.row.editShow">{{scope.row.cycleName}}</span>
+                  <span v-show="!scope.row.editShow">{{
+                    scope.row.cycleName
+                  }}</span>
                 </template>
               </el-table-column>
               <el-table-column align="center" label="周期ID">
                 <template slot-scope="scope">
-                  <span v-show="!scope.row.editShow">{{scope.row.cycleId}}</span>
+                  <span v-show="!scope.row.editShow">{{
+                    scope.row.cycleId
+                  }}</span>
                 </template>
               </el-table-column>
             </el-table>
@@ -123,14 +162,17 @@ import {
   maintainWorkOrder, //工单
   maintainWorkOrderDetail,
   updateMaintainWorkOrder,
-  generate
+  generate,
+  exportWorkOrders,
+  exportNowMonthWorkOrder,
+  previewNowMonthWorkOrder,
 } from "../../lib/api/upkeepManagePage";
 import { tpmsHeader, tpmsTable } from "../../components";
 import {
   factoryManage,
   workshopManage,
   workStationManage,
-  workshopSectionManage
+  workshopSectionManage,
 } from "../../lib/api/workshopSettingsManage";
 import apiConfig from "../../lib/api/apiConfig";
 import axios from "axios";
@@ -141,24 +183,23 @@ export default {
       { label: "待接单", id: "1" },
       { label: "待处理", id: "2,3,7" },
       { label: "审批中", id: "4,5" },
-      { label: "已完成", id: "6" }
+      { label: "已完成", id: "6" },
     ];
     // 获取头部搜索组下拉选择的list
     let getListFuncs = [
-      factoryManage.getNames //工厂
+      factoryManage.getNames, //工厂
       // workshopManage.getNames,//车间
       // workStationManage.getNames,//工位
       // workshopSectionManage.getNames,//工段
     ];
-    let [
-      factoryList /** workshopList, stationList, sectionList */
-    ] = getListFuncs.map(getListFunc => {
-      let arr = [];
-      getListFunc(null).then(res => {
-        arr.push(...res.data);
+    let [factoryList /** workshopList, stationList, sectionList */] =
+      getListFuncs.map((getListFunc) => {
+        let arr = [];
+        getListFunc(null).then((res) => {
+          arr.push(...res.data);
+        });
+        return arr;
       });
-      return arr;
-    });
     return {
       equipmentFormList: [
         {
@@ -166,19 +207,19 @@ export default {
           props: "factoryId",
           value: "",
           type: "radio",
-          checkList: factoryList
+          checkList: factoryList,
         },
         {
           label: "车间",
           props: "workshopId",
           value: "",
           type: "radio",
-          checkList: []
+          checkList: [],
         },
         { label: "设备名称", props: "deviceName", value: "" },
         { label: "设备编号", props: "deviceNo", value: "" },
         { label: "资产编号", props: "deviceAssetNo", value: "" },
-        { label: "计划名称", props: "planName", value: "" }
+        { label: "计划名称", props: "planName", value: "" },
       ],
       listData: [],
       equipmentTableList: [
@@ -193,22 +234,27 @@ export default {
         { props: "planName", label: "点检计划名称", width: "200px" },
         { props: "planNo", label: "点检计划编号", width: "200px" },
         { props: "hour", label: "总工时" },
-        { label: "操作", slotName: "operation", width: "200px", fixed: "right" }
+        {
+          label: "操作",
+          slotName: "operation",
+          width: "200px",
+          fixed: "right",
+        },
       ],
       total: 0,
       detailModal: false,
-      detail: {}
+      detail: {},
     };
   },
   components: {
     tpmsHeader,
-    tpmsTable
+    tpmsTable,
   },
   mounted() {
     // 从设备履历页面跳转到这里带入设备编号
     const { deviceNo = "" } = this.$route.query;
     if (deviceNo) {
-      this.equipmentFormList.forEach(item => {
+      this.equipmentFormList.forEach((item) => {
         if (item.props === "deviceNo") item.value = deviceNo;
       });
     }
@@ -218,7 +264,7 @@ export default {
   methods: {
     showPlanDetail(row) {
       let { id } = row;
-      maintainWorkOrderDetail(null, id).then(res => {
+      maintainWorkOrderDetail(null, id).then((res) => {
         console.log(res);
         let data = res.data;
         data.status = this.statusTranslate(data.status);
@@ -246,7 +292,7 @@ export default {
       let data = this.$refs.tpmsHeader.getData();
       let pageData = this.$refs.tpmsTable.getData();
       console.log(data);
-      maintainWorkOrder({ ...data, ...pageData }).then(res => {
+      maintainWorkOrder({ ...data, ...pageData }).then((res) => {
         this.listData = res.data.content;
         this.total = res.data.totalElements;
       });
@@ -256,8 +302,8 @@ export default {
       const { equipmentFormList } = this;
       if (props === "factoryId") {
         // 选择工厂，重置车间及以下
-        workshopManage.getNames({ factoryId: value }).then(res => {
-          equipmentFormList.forEach(item => {
+        workshopManage.getNames({ factoryId: value }).then((res) => {
+          equipmentFormList.forEach((item) => {
             if (item.props === "workshopId") {
               item.checkList = res.data;
               item.value = "";
@@ -273,59 +319,138 @@ export default {
       this.$confirm("此操作将重新激活该工单, 是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
-        type: "warning"
+        type: "warning",
       })
         .then(() => {
-          updateMaintainWorkOrder({status: 1}, row.id).then(res => {
+          updateMaintainWorkOrder({ status: 1 }, row.id).then((res) => {
             this.inquireTableData();
             this.$message({
               type: "success",
-              message: "激活成功!"
+              message: "激活成功!",
             });
           });
         })
         .catch(() => {
           this.$message({
             type: "info",
-            message: "已取消激活"
+            message: "已取消激活",
           });
         });
     },
     /**
-     * @description 导出 5周 工单内容 
+     * @description 导出 5周 工单内容
      */
-    exportWorkOrders() {
-      let url = apiConfig.maintainWorkOrder + '/advance/excel'; //请求下载文件的地址
+    export5WorkOrders() {
+      let url = apiConfig.maintainWorkOrder + "/advance/excel"; //请求下载文件的地址
       let token = localStorage.getItem("access_token"); //获取token
       generate()
-      .then(res => {
-        if (!res) return
-        window.open(`${apiConfig.accessoryFile}/${res}`);
-          // let fileName = 'plans.zip';
-          // const disposition = res.headers['content-disposition'];
-          // if(disposition){
-          //   const name = disposition.split(";")[1].split("filename=")[1];
-          //   fileName = decodeURI(name);
-          // }
+        .then((res) => {
+          if (!res) return;
+          window.open(`${apiConfig.accessoryFile}/${res.data}`);
+        })
+        .catch((error) => {
+          this.$message.error(error);
+        });
+    },
+    /**
+     * @description 导出完成情况概览
+     */
+    exportWorkOrders() {
+      let url = apiConfig.maintainWorkOrder + "/export"; //请求下载文件的地址
+      let token = localStorage.getItem("access_token"); //获取token
+      axios.get(url, {
+        responseType: 'blob',
+        headers: {
+          Authorization: "Bearer " + token
+        },
+      })
+        .then((res) => {
+          if (!res) return;
+          let fileName = '月保养完成情况概览.xls';
+          const disposition = res.headers["content-disposition"];
+          if (disposition) {
+            const name = disposition.split(";")[1].split("filename=")[1];
+            fileName = decodeURI(name);
+          }
 
-          // let blob = new Blob([res.data], {
-          //   type: "application/vnd.ms-excel;charset=utf-8"
-          // });
-          // let url = window.URL.createObjectURL(blob);
-          // let aLink = document.createElement("a");
-          // aLink.style.display = "none";
-          // aLink.href = url;
-          // aLink.setAttribute("download", fileName); // 下载的文件
-          // document.body.appendChild(aLink);
-          // aLink.click();
-          // document.body.removeChild(aLink);
-          // window.URL.revokeObjectURL(url);
-      })
-      .catch(error => {
-        this.$message.error(error);
-      })
-    }
-  }
+          let blob = new Blob([res.data], {
+            type: "application/vnd.ms-excel;charset=utf-8"
+          });
+          let url = window.URL.createObjectURL(blob);
+          let aLink = document.createElement("a");
+          aLink.style.display = "none";
+          aLink.href = url;
+          aLink.setAttribute("download", fileName); // 下载的文件
+          document.body.appendChild(aLink);
+          aLink.click();
+          document.body.removeChild(aLink);
+          window.URL.revokeObjectURL(url);
+        })
+        .catch((error) => {
+          this.$message.error(error);
+        });
+    },
+    /**
+     * @description 导出当月工单情况
+     * @param row 工单对象
+     */
+    exportNowMonthWorkOrder(row) {
+      let url = apiConfig.maintainWorkOrderMobile + "/maintain/exportNowMonthWorkOrder"; //请求下载文件的地址
+      let token = localStorage.getItem("access_token"); //获取token
+      axios.get(url, {
+        params: {workOrderId: row.id},
+        responseType: 'blob',
+        headers: {
+          Authorization: "Bearer " + token
+        },
+      }).then((res) => {
+          if (!res) return;
+          let fileName = '当月工单情况.xls';
+          const disposition = res.headers["content-disposition"];
+          if (disposition) {
+            const name = disposition.split(";")[1].split("filename=")[1];
+            fileName = decodeURI(name);
+          }
+
+          let blob = new Blob([res.data], {
+            type: "application/vnd.ms-excel;charset=utf-8"
+          });
+          let url = window.URL.createObjectURL(blob);
+          let aLink = document.createElement("a");
+          aLink.style.display = "none";
+          aLink.href = url;
+          aLink.setAttribute("download", fileName); // 下载的文件
+          document.body.appendChild(aLink);
+          aLink.click();
+          document.body.removeChild(aLink);
+          window.URL.revokeObjectURL(url);
+        })
+        .catch((error) => {
+          this.$message.error(error);
+        });
+    },
+    /**
+     * @description 预览当月工单情况
+     * @param row 工单对象
+     */
+    previewNowMonthWorkOrder(row) {
+      previewNowMonthWorkOrder({workOrderId: row.id})
+        .then((res) => {
+          if (!res) return;
+          let data = res.data.split(',');
+          let path = '';
+          let name = '';
+          data.forEach(s => {
+            if (s.indexOf('name=') > -1) name = s.split('=')[1];
+            if (s.indexOf('path=') > -1) path = s.split('=')[1];
+          });
+          window.open(`${apiConfig.accessoryFile}/${path}${name}`);
+        })
+        .catch((error) => {
+          this.$message.error(error);
+        });
+    },
+  },
 };
 </script>
 <style lang="scss" scoped>

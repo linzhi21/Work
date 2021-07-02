@@ -229,6 +229,8 @@ export default {
     exportMaintainPlan:`${urls.business}/maintainPlan`,
     // GET - 导出多个保养计划excel
     exportMaintainPlans:`${urls.business}/maintainPlan/download`,
+    // 保养工单 - mobile
+    maintainWorkOrderMobile:`${urls.business}/mobile`,
 
     // 资料库
     dataBase: `${urls.database}/deviceDataBases`,

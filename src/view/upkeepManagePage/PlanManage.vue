@@ -774,7 +774,6 @@ export default {
      * @param {Object} e 文件对象
      * @param {Object} index 导入的form.maintainContentColonies数组下标
      */
-
     getFileData(files) {
       this.loading = true;
       let formData = new FormData();

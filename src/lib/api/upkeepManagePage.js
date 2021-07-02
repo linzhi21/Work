@@ -105,3 +105,19 @@ export const temporary = (data) => POST(data, apiConfig.maintainWorkOrder, 'temp
  * @param {*} data 
  */
 export const generate = (data) => GET(data, apiConfig.maintainWorkOrder, 'advance/excel');
+
+/**
+ * @description 导出保养工作完成总表
+ */
+export const exportWorkOrders = () => GET('', apiConfig.maintainWorkOrder, 'export');
+
+/**
+ * @description 导出当月工单情况
+ */
+export const exportNowMonthWorkOrder = (data) => GET(data, apiConfig.maintainWorkOrderMobile, 'maintain/exportNowMonthWorkOrder');
+
+/**
+ * @description 预览当月工单情况
+ * @param {*} data 
+ */
+export const previewNowMonthWorkOrder = (data) => GET(data, apiConfig.maintainWorkOrderMobile, 'maintain/previewNowMonthWorkOrder');
