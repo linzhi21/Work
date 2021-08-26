@@ -14,10 +14,11 @@ export default {
     userLogOut: `${urls.oauth2}/sys/logout`,
     // 获取用户信息
     principal: `${urls.oauth2}/principal`,
-    //
     client: `${urls.oauth2}/client`,
     // 用户可以看见的菜单列表
     userMenus:`${urls.oauth2}/menus`,
+    //免密登录
+    ivLogin:`${urls.oauth2}/iv/login`,
     //GET - 获取用户所有所属车间工厂
     userWorkshops: `${urls.oauth2}/workshops`,
     //GET - 将用户切换至该工厂下,并返回新的权限
@@ -165,7 +166,7 @@ export default {
     baseDownload: `${urls.system}/base/download`,
     // 时限管理
     timeLimit: `${urls.system}/time-limit-config`,
-    
+
     // 周期管理
     cycleManage: `${urls.business}/cycle`,
 
@@ -203,9 +204,9 @@ export default {
     exportPlans:`${urls.business}/web/plan/download`,
     // PATCH - 操作工单
     updateOrderStatus: `${urls.business}/mobile/workorders/status`,
-    
+
     childPlan: `${urls.business}/web/plan/child`,
-    
+
 
 
     // 附件管理
@@ -247,7 +248,7 @@ export default {
 
     // 日志
     log: `${urls.log}/log`,
-    
+
     // 统计分析
     inspectionCountBasedOnArea: `${urls.business}/statistics/inspectionCountBasedOnArea`,
     statisticsForMaintain: `${urls.business}/statistics/maintain/receivedCount`,
