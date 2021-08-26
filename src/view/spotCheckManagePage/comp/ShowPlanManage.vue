@@ -1,0 +1,150 @@
+<template>
+  <!-- 子计划 -->
+
+  <el-form :model="orderDetail" label-position="left" label-width="120px">
+    <el-row>
+      <el-col :span="11">
+        <el-form-item label="类型">
+          <!-- <el-input v-model="orderDetail.type" disabled /> -->
+          <el-select
+            v-model="orderDetail.type"
+            placeholder
+            style="width: 100%"
+            disabled
+          >
+            <el-option label="点检计划" :value="1"></el-option>
+            <el-option label="日常保养" :value="2"></el-option>
+          </el-select>
+        </el-form-item>
+      </el-col>
+      <el-col :span="11" :offset="2">
+        <el-form-item label="点检计划编号">
+          <el-input v-model="orderDetail.no" disabled />
+        </el-form-item>
+      </el-col>
+      <el-col :span="11">
+        <el-form-item label="点检名称">
+          <el-input v-model="orderDetail.name" disabled />
+        </el-form-item>
+      </el-col>
+      <el-col :span="11" :offset="2">
+        <el-form-item label="总工时">
+          <el-input v-model="orderDetail.hour" disabled />
+        </el-form-item>
+      </el-col>
+    </el-row>
+    <el-row
+      v-for="(item, index) in orderDetail.planDevices"
+      :key="index"
+      style="background: #f5f5f5; padding: 0.2rem"
+    >
+      <el-col :span="11">
+        <el-form-item label="版本">
+          <el-input v-model="item.version" disabled />
+        </el-form-item>
+      </el-col>
+      <el-col :span="11" :offset="2">
+        <el-form-item label="工位/工段">
+          <el-input v-model="item.sectionOrStationName" disabled />
+        </el-form-item>
+      </el-col>
+      <el-col :span="11">
+        <el-form-item label="总工时">
+          <el-input v-model="item.hour" disabled />
+        </el-form-item>
+      </el-col>
+      <el-col :span="11" :offset="2">
+        <el-form-item label="设备(生产线)名称">
+          <el-input v-model="item.deviceNos" disabled />
+        </el-form-item>
+      </el-col>
+      <el-col :span="11">
+        <el-form-item label="编制人">
+          <el-input v-model="item.creatorName" disabled />
+        </el-form-item>
+      </el-col>
+      <el-col :span="11" :offset="2">
+        <el-form-item label="编制日期">
+          <el-input v-model="item.createDate" disabled />
+        </el-form-item>
+      </el-col>
+      <el-col :span="24">
+        <el-form-item label="图示">
+          <div>
+            <el-image
+              v-for="img in item.planPictures"
+              :key="img.accessoryId"
+              :src="img.url"
+              fit="fill"
+            ></el-image>
+          </div>
+        </el-form-item>
+      </el-col>
+      <!-- 表格区 -->
+      <el-table
+        :data="item.planContents"
+        style="width: 100%"
+        border
+        default-expand-all
+        :tree-props="{
+          children: 'childPlanContents',
+          hasChildren: 'hasChildren',
+        }"
+      >
+        <el-table-column
+          align="center"
+          type="index"
+          label="项目"
+          width="50"
+        ></el-table-column>
+        <el-table-column
+          align="center"
+          prop="executionNode"
+          label="时间/部件"
+          width="150"
+        ></el-table-column>
+        <el-table-column
+          align="center"
+          prop="content"
+          label="内容"
+          width="300"
+        ></el-table-column>
+        <el-table-column
+          align="center"
+          prop="hour"
+          label="工时(s)"
+        ></el-table-column>
+        <el-table-column
+          align="center"
+          prop="method"
+          label="方法"
+        ></el-table-column>
+        <el-table-column
+          align="center"
+          prop="cycleName"
+          label="周期"
+          width="110"
+        ></el-table-column>
+        <!-- <el-table-column align="center" prop="photoDisplay" label="图示">
+                <template slot-scope="scope">
+                  <img
+                    v-if="scope.row.accessoryUrl"
+                    style="width: 40px;height: 40px;"
+                    :src="`${apiConfig.accessoryFile+scope.row.accessoryUrl}`"
+                    class="avatar"
+                  />
+                </template>
+              </el-table-column>-->
+      </el-table>
+    </el-row>
+  </el-form>
+</template>
+<script>
+export default {
+  name: 'ShowPlanManage', 
+  props: ['orderDetail'],
+  data() {
+    return {}
+  },
+};
+</script>

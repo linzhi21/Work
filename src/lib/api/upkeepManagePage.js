@@ -121,3 +121,9 @@ export const exportNowMonthWorkOrder = (data) => GET(data, apiConfig.maintainWor
  * @param {*} data 
  */
 export const previewNowMonthWorkOrder = (data) => GET(data, apiConfig.maintainWorkOrderMobile, 'maintain/previewNowMonthWorkOrder');
+
+/**
+ * @description 指派工单 - 导入
+ * @param {*} data 
+ */
+ export const importThisMonthMaintainWorkOrder = (file) => POST(file, apiConfig.maintainWorkOrder, 'importThisMonthMaintainWorkOrder');

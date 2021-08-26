@@ -9,12 +9,9 @@
       @onValueChanged="onValueChanged"
     />
     <el-row class="buttom-group" type="flex" justify="end" align="middle">
-      <el-button @click="export5WorkOrders" class="button-more" size="small"
-        >导出后5周内容</el-button
-      >
       <el-button @click="exportWorkOrders" class="button-more" size="small"
-        >导出概览</el-button
-      >
+        >导出车间设备保养实施表</el-button>
+      <tpms-choosefile plain text="指派工单" isMutiple @getFileData="importThisMonthMaintainWorkOrder($event)"></tpms-choosefile>
     </el-row>
 
     <!-- 表格 -->
@@ -166,8 +163,9 @@ import {
   exportWorkOrders,
   exportNowMonthWorkOrder,
   previewNowMonthWorkOrder,
+  importThisMonthMaintainWorkOrder
 } from "../../lib/api/upkeepManagePage";
-import { tpmsHeader, tpmsTable } from "../../components";
+import { tpmsHeader, tpmsTable, tpmsChoosefile } from "../../components";
 import {
   factoryManage,
   workshopManage,
@@ -176,6 +174,7 @@ import {
 } from "../../lib/api/workshopSettingsManage";
 import apiConfig from "../../lib/api/apiConfig";
 import axios from "axios";
+import { log } from '../../../environment.dev';
 export default {
   data() {
     //待接单就是1,待处理就是2、3和7,审批中是4,5,已完成就是6
@@ -248,7 +247,7 @@ export default {
   },
   components: {
     tpmsHeader,
-    tpmsTable,
+    tpmsTable,tpmsChoosefile
   },
   mounted() {
     // 从设备履历页面跳转到这里带入设备编号
@@ -338,25 +337,11 @@ export default {
         });
     },
     /**
-     * @description 导出 5周 工单内容
-     */
-    export5WorkOrders() {
-      let url = apiConfig.maintainWorkOrder + "/advance/excel"; //请求下载文件的地址
-      let token = localStorage.getItem("access_token"); //获取token
-      generate()
-        .then((res) => {
-          if (!res) return;
-          window.open(`${apiConfig.accessoryFile}/${res.data}`);
-        })
-        .catch((error) => {
-          this.$message.error(error);
-        });
-    },
-    /**
-     * @description 导出完成情况概览
+     * @description 导出车间设备保养实施表
      */
     exportWorkOrders() {
-      let url = apiConfig.maintainWorkOrder + "/export"; //请求下载文件的地址
+      // let url = apiConfig.maintainWorkOrder + "/export"; //请求下载文件的地址
+      let url = apiConfig.maintainWorkOrder + "/getThisMonthMaintainWorkOrder"; //请求下载文件的地址
       let token = localStorage.getItem("access_token"); //获取token
       axios.get(url, {
         responseType: 'blob',
@@ -366,7 +351,7 @@ export default {
       })
         .then((res) => {
           if (!res) return;
-          let fileName = '月保养完成情况概览.xls';
+          let fileName = '车间设备保养实施表.xls';
           const disposition = res.headers["content-disposition"];
           if (disposition) {
             const name = disposition.split(";")[1].split("filename=")[1];
@@ -389,6 +374,20 @@ export default {
         .catch((error) => {
           this.$message.error(error);
         });
+    },
+    /**
+     * @description 导入指派工单
+     */
+    importThisMonthMaintainWorkOrder(fileList) {debugger
+      let formData = new FormData();
+      fileList.map(file => formData.append('file', file))
+      console.log(formData)
+      importThisMonthMaintainWorkOrder(formData).then(
+        () => {
+          this.$message.success("指派成功");
+          this.inquireTableData();
+        }
+      ).catch(err => this.$message.error(err))
     },
     /**
      * @description 导出当月工单情况

@@ -306,7 +306,6 @@ export default {
   },
   mounted() {
     const _this = this;
-    this.userInfo();
     this.workorderInfo();
     this.searchWorkshopSectionSelect();
     
@@ -315,12 +314,6 @@ export default {
     });
   },
   methods: {
-    userInfo() {
-      const principal = JSON.parse(localStorage.getItem("user_info"));
-      getOneUser({}, principal.principal.uuid).then(res => {
-        const principal = res.data;
-      });
-    },
     workorderInfo() {
       const role = this.userInfoLocal.authorities;
       const roleStr = JSON.stringify(role);
