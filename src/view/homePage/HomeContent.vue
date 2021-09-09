@@ -200,12 +200,10 @@
           <el-col :span="11">
             <el-date-picker
               v-model="drawerDetail.times"
-              type="daterange"
+              type="datetimerange"
               start-placeholder="开始日期"
               end-placeholder="结束日期"
               :default-time="['00:00:00', '23:59:59']"
-              format="yyyy 年 MM 月 dd 日"
-              value-format="yyyy-MM-dd"
             ></el-date-picker>
           </el-col>
         </el-form-item>

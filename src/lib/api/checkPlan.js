@@ -185,3 +185,10 @@ export const exportExcel = (data) => GET(data, apiConfig.exportExcel)
  * @returns 
  */
 export const updateOrderStatus = (data) => PATCH(data, apiConfig.updateOrderStatus)
+
+/**
+ * post plan操作
+ * @param {*} data 
+ * @returns 
+ */
+export const postPlan = (data, restful) => POST(data, apiConfig.plan, restful);

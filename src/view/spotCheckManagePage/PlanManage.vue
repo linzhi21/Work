@@ -537,8 +537,6 @@ import {
   queryPlan,
   addPlan,
   patchPlan,
-  workshopSectionSelect,
-  workStationSelect,
   planStatusSelect,
   delPlan,
   workshopAreaManage,
@@ -547,6 +545,7 @@ import {
   cycleSelect,
   updatePlanPicture,
   importURLPlanFile,
+  postPlan
 } from "../../lib/api/checkPlan";
 import {
   factoryManage,
@@ -855,24 +854,19 @@ export default {
         type: "warning",
       })
         .then(() => {
-          const l = ids.length;
-          ids.forEach((id, i) => {
-            patchPlan({ status: 5 }, row.id)
-              .then((res) => {
-                if (i == l - 1) {
-                  this.$message({
-                    type: "success",
-                    message: "发布成功!",
-                  });
-                }
-              })
-              .catch(() => {
-                this.$message({
-                  type: "error",
-                  message: "发布失败",
-                });
+          postPlan(ids, '/released')
+            .then((res) => {
+              this.$message({
+                type: "success",
+                message: "发布成功!",
               });
-          });
+            })
+            .catch(() => {
+              this.$message({
+                type: "error",
+                message: "发布失败",
+              });
+            });
           this.getTableData();
         })
         .catch(() => {
@@ -899,22 +893,19 @@ export default {
         type: "warning",
       })
         .then(() => {
-          const l = ids.length;
-          ids.forEach((id, i) => {
-            delPlan(null, row.id)
-              .then((res) => {
-                this.$message({
-                  type: "success",
-                  message: "删除成功!",
-                });
-              })
-              .catch(() => {
-                this.$message({
-                  type: "error",
-                  message: "删除失败",
-                });
+          delPlan(ids)
+            .then((res) => {
+              this.$message({
+                type: "success",
+                message: "删除成功!",
               });
-          });
+            })
+            .catch(() => {
+              this.$message({
+                type: "error",
+                message: "删除失败",
+              });
+            });
           this.getTableData();
         })
         .catch(() => {

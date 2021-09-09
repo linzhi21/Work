@@ -525,35 +525,35 @@ export default {
           {
             required: true,
             message: "请选择所属工厂",
-            trigger: "change"
+            trigger: "blur"
           }
         ],
         workshopId: [
           {
             required: true,
             message: "请选择所属车间",
-            trigger: "change"
+            trigger: "blur"
           }
         ],
         areaId: [
           {
             required: true,
             message: "请选择所属区域",
-            trigger: "change"
+            trigger: "blur"
           }
         ],
         workshopSectionId: [
           {
             required: true,
             message: "请选择所属工段",
-            trigger: "change"
+            trigger: "blur"
           }
         ],
         deviceStatusStr: [
           {
             required: true,
             message: "请选择设备状态",
-            trigger: "change"
+            trigger: "blur"
           }
         ]
       },

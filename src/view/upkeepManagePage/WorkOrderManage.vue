@@ -9,6 +9,8 @@
       @onValueChanged="onValueChanged"
     />
     <el-row class="buttom-group" type="flex" justify="end" align="middle">
+      <el-button @click="getMaintainOverview" class="button-more" size="small"
+        >导出设备保养概览</el-button>
       <el-button @click="exportWorkOrders" class="button-more" size="small"
         >导出车间设备保养实施表</el-button>
       <tpms-choosefile plain text="指派工单" isMutiple @getFileData="importThisMonthMaintainWorkOrder($event)"></tpms-choosefile>
@@ -31,7 +33,7 @@
           </template>
           <template slot="operation" slot-scope="{ row }">
             <span class="button cursor" @click="showPlanDetail(row)">查看</span>
-            <span class="button cursor" @click="exportNowMonthWorkOrder(row)"
+            <span class="button cursor" @click="getDeviceMaintain(row)"
               >导出记录卡</span
             >
             <span class="button cursor" @click="previewNowMonthWorkOrder(row)"
@@ -390,21 +392,20 @@ export default {
       ).catch(err => this.$message.error(err))
     },
     /**
-     * @description 导出当月工单情况
+     * @description 导出设备保养概览
      * @param row 工单对象
      */
-    exportNowMonthWorkOrder(row) {
-      let url = apiConfig.maintainWorkOrderMobile + "/maintain/exportNowMonthWorkOrder"; //请求下载文件的地址
+    getMaintainOverview() {
+      let url = apiConfig.maintainWorkOrder + "/getMaintainOverview"; //请求下载文件的地址
       let token = localStorage.getItem("access_token"); //获取token
       axios.get(url, {
-        params: {workOrderId: row.id},
         responseType: 'blob',
         headers: {
           Authorization: "Bearer " + token
         },
       }).then((res) => {
           if (!res) return;
-          let fileName = '当月工单情况.xls';
+          let fileName = '设备保养概览.xls';
           const disposition = res.headers["content-disposition"];
           if (disposition) {
             const name = disposition.split(";")[1].split("filename=")[1];
@@ -444,6 +445,45 @@ export default {
             if (s.indexOf('path=') > -1) path = s.split('=')[1];
           });
           window.open(`${apiConfig.accessoryFile}/${path}${name}`);
+        })
+        .catch((error) => {
+          this.$message.error(error);
+        });
+    },
+     /**
+     * @description 导出设备保养记录卡
+     * @param maintainWorkOrderId 工单Id
+     */
+    getDeviceMaintain(row) {
+      let url = apiConfig.maintainWorkOrder + "/getDeviceMaintain"; //请求下载文件的地址
+      let token = localStorage.getItem("access_token"); //获取token
+      axios.get(url, {
+        params: {maintainWorkOrderId: row.id},
+        responseType: 'blob',
+        headers: {
+          Authorization: "Bearer " + token
+        },
+      }).then((res) => {
+          if (!res) return;
+          let fileName = '设备保养记录卡.xls';
+          const disposition = res.headers["content-disposition"];
+          if (disposition) {
+            const name = disposition.split(";")[1].split("filename=")[1];
+            fileName = decodeURI(name);
+          }
+
+          let blob = new Blob([res.data], {
+            type: "application/vnd.ms-excel;charset=utf-8"
+          });
+          let url = window.URL.createObjectURL(blob);
+          let aLink = document.createElement("a");
+          aLink.style.display = "none";
+          aLink.href = url;
+          aLink.setAttribute("download", fileName); // 下载的文件
+          document.body.appendChild(aLink);
+          aLink.click();
+          document.body.removeChild(aLink);
+          window.URL.revokeObjectURL(url);
         })
         .catch((error) => {
           this.$message.error(error);

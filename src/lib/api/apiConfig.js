@@ -207,6 +207,7 @@ export default {
 
     childPlan: `${urls.business}/web/plan/child`,
 
+    orderMobile: `${urls.business}/mobile`,
 
 
     // 附件管理
