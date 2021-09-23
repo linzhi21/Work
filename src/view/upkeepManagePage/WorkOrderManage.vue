@@ -33,6 +33,7 @@
           </template>
           <template slot="operation" slot-scope="{ row }">
             <span class="button cursor" @click="showPlanDetail(row)">查看</span>
+            <span class="button cursor" @click="showPlanDetail(row, 'approval')">审批</span>
             <span class="button cursor" @click="getDeviceMaintain(row)"
               >导出记录卡</span
             >
@@ -76,9 +77,10 @@
               </el-form-item>
             </el-col>
             <el-col :span="11" :offset="2">
-              <el-form-item label="审批状态" required="required">
+                <el-button v-if="approvalBtn" @click="approval(detail)" type="primary" size="small">审批</el-button>
+              <!-- <el-form-item label="审批状态" required="required">
                 <el-input v-model="detail.status" readonly></el-input>
-              </el-form-item>
+              </el-form-item> -->
             </el-col>
           </el-row>
           <el-row
@@ -142,14 +144,26 @@
                   }}</span>
                 </template>
               </el-table-column>
-              <el-table-column align="center" label="周期ID">
+              <el-table-column align="center" label="保养结果">
                 <template slot-scope="scope">
                   <span v-show="!scope.row.editShow">{{
-                    scope.row.cycleId
+                    scope.row.result
+                  }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column align="center" label="异常记录">
+                <template slot-scope="scope">
+                  <span v-show="!scope.row.editShow">{{
+                    scope.row.exception
                   }}</span>
                 </template>
               </el-table-column>
             </el-table>
+          </el-row>
+          <el-row>
+            <el-col :span="24">
+             
+            </el-col>
           </el-row>
         </el-form>
       </el-row>
@@ -165,7 +179,8 @@ import {
   exportWorkOrders,
   exportNowMonthWorkOrder,
   previewNowMonthWorkOrder,
-  importThisMonthMaintainWorkOrder
+  importThisMonthMaintainWorkOrder,
+  approvalMaintainWorkorder
 } from "../../lib/api/upkeepManagePage";
 import { tpmsHeader, tpmsTable, tpmsChoosefile } from "../../components";
 import {
@@ -227,10 +242,11 @@ export default {
         { props: "deviceName", label: "设备名称" },
         { props: "deviceAssetNo", label: "资产编号" },
         { props: "workshopSectionName", label: "工段" },
-        { props: "statusStr", label: "状态" },
+        { props: "resultStr", label: "执行状态" },
         { props: "receiverName", label: "接单人" },
         { props: "completeTime", label: "完成时间", width: "200px" },
         { props: "createDate", label: "工单日期", width: "200px" },
+        { props: "statusStr", label: "工单状态" },
         { props: "no", label: "点检工单编号" },
         { props: "planName", label: "点检计划名称", width: "200px" },
         { props: "planNo", label: "点检计划编号", width: "200px" },
@@ -245,6 +261,7 @@ export default {
       total: 0,
       detailModal: false,
       detail: {},
+      approvalBtn: false
     };
   },
   components: {
@@ -263,7 +280,7 @@ export default {
     this.getData();
   },
   methods: {
-    showPlanDetail(row) {
+    showPlanDetail(row, type) {
       let { id } = row;
       maintainWorkOrderDetail(null, id).then((res) => {
         console.log(res);
@@ -271,6 +288,8 @@ export default {
         data.status = this.statusTranslate(data.status);
         this.detail = res.data;
         this.detailModal = true;
+        if(type === 'approval') {this.approvalBtn = true} 
+        else {this.approvalBtn = false}
       });
     },
     editWorkorders() {},
@@ -489,6 +508,18 @@ export default {
           this.$message.error(error);
         });
     },
+    /**
+     * 审批
+     */
+    approval(row) {
+      approvalMaintainWorkorder({status: 5, id: row.id}).then(res => {
+        this.$message.success('审批成功！');
+        this.getData();
+        this.detailModal = false;
+      }).catch(err => {
+        this.$message.error('审批失败！');
+      })
+    }
   },
 };
 </script>

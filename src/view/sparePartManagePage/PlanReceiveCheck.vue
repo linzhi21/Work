@@ -8,16 +8,16 @@
       :total="total"
       @inquireTableData="inquireTableData"
     >
-      <template slot="time" slot-scope="{row}">
+      <template slot="time" slot-scope="{ row }">
         <el-date-picker
-          style="width:1.6rem;"
+          style="width: 1.6rem"
           v-model="row.value[0]"
           type="date"
           value-format="yyyy-MM-dd"
           placeholder="开始日期"
         />
         <el-date-picker
-          style="width:1.6rem;"
+          style="width: 1.6rem"
           v-model="row.value[1]"
           type="date"
           value-format="yyyy-MM-dd"
@@ -27,8 +27,12 @@
     </tpms-header>
     <!-- 按钮组 -->
     <el-row class="buttom-group" type="flex" justify="end" align="middle">
-      <el-button size="small" type="primary" @click="dialogShow()">新增</el-button>
-      <el-button size="small" type="primary" @click="exportSpareConsuming()">备查台账</el-button>
+      <el-button size="small" type="primary" @click="dialogShow()"
+        >新增</el-button
+      >
+      <el-button size="small" type="primary" @click="exportSpareConsuming()"
+        >备查台账</el-button
+      >
     </el-row>
     <!-- 底部表格 -->
     <tpms-table
@@ -37,20 +41,28 @@
       :columns="tableColumns"
       @inquireTableData="getTableDate"
     >
-      <template slot-scope="{row}">
+      <template slot-scope="{ row }">
         <el-button @click="seeDetail(row, 'detail')">查看</el-button>
         <el-button @click="seeDetail(row, 'edit')">编辑</el-button>
       </template>
     </tpms-table>
 
     <!-- 领用申请 -->
-    <el-dialog title="领用申请" :visible.sync="addDialogIsShow" width="80%">
-      <el-form :model="dialogForm" ref="dialogForm" inline label-position="left" size="small">
+    <el-dialog title="领用申请" :visible.sync="addDialogIsShow" width="80%" :before-close="dialogClose">
+      <el-form
+        :model="dialogForm"
+        ref="dialogForm"
+        inline
+        label-position="left"
+        size="small"
+      >
         <el-row v-for="(formObj, index) in dialogForm.dialogForms" :key="index">
           <el-col :span="6">
-            <el-form-item label="领用人"
-              prop="consumerName"
-              :rules="[{ required: true, message: '不能为空'}]">
+            <el-form-item
+              label="领用人"
+              :prop="'dialogForms.' +index+ '.consumerName'" 
+              :rules="{required: true, message: '不能为空', trigger: ['blur','change']}"
+            >
               <el-select
                 v-model="formObj.consumerName"
                 filterable
@@ -69,9 +81,8 @@
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item label="备件"
-              prop="spareName"
-              :rules="[{ required: true, message: '不能为空'}]">
+            <el-form-item label="备件" :prop="'dialogForms.' +index+ '.spareName'"
+              :rules="{required: true, message: '不能为空', trigger: ['blur','change']}">
               <el-select
                 v-model="formObj.spareName"
                 filterable
@@ -90,16 +101,15 @@
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item label="数量"
-              prop="num"
-              :rules="[{ required: true, message: '不能为空'}]">
+            <el-form-item label="数量" :prop="'dialogForms.' +index+ '.num'"
+              :rules="[{required: true, message: '不能为空', trigger: ['blur','change']},
+              {type: 'number', message:'请输入数字',trigger: 'blur'}]">
               <el-input v-model="formObj.num"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item label="设备名称"
-              prop="deviceName"
-              :rules="[{ required: true, message: '不能为空'}]">
+            <el-form-item label="设备名称" :prop="'dialogForms.' +index+ '.deviceName'"
+              :rules="{required: true, message: '不能为空', trigger: ['blur','change']}">
               <el-select
                 v-model="formObj.deviceName"
                 filterable
@@ -143,7 +153,12 @@
           </el-col>
           <el-col :span="2">
             <el-form-item label>
-              <el-button type="warning" @click.prevent="removeDomain(formObj)" size="small">删除</el-button>
+              <el-button
+                type="warning"
+                @click.prevent="removeDomain(formObj)"
+                size="small"
+                >删除</el-button
+              >
             </el-form-item>
           </el-col>
         </el-row>
@@ -157,20 +172,31 @@
 
     <!-- 领用查看 | 修改 -->
     <el-dialog title="领用申请" :visible.sync="dialogIsShow" width="80%">
-      <el-form :model="dialogForm" v-loading="loading" ref="dialogForm" inline label-position="left" size="small">
-        <el-row >
+      <el-form
+        :model="dialogForm"
+        v-loading="loading"
+        ref="dialogForm"
+        inline
+        label-position="left"
+        size="small"
+      >
+        <el-row>
           <!-- v-for="(formObj, index) in dialogForm.dialogForms" :key="index" -->
           <el-col :span="6">
-            <el-form-item label="领用人"
+            <el-form-item
+              label="领用人"
               prop="consumerName"
-              :rules="[{ required: true, message: '不能为空'}]">
+              :rules="[{ required: true, message: '不能为空' }]"
+            >
               <el-select
                 v-model="dialogForm.dialogForms[0].consumerName"
                 filterable
                 remote
                 placeholder="请输入领用人"
                 :remote-method="changeConsumerName"
-                @change="selectForm($event, dialogForm.dialogForms[0], 'consumer')"
+                @change="
+                  selectForm($event, dialogForm.dialogForms[0], 'consumer')
+                "
                 disabled
               >
                 <el-option
@@ -183,9 +209,11 @@
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item label="备件"
+            <el-form-item
+              label="备件"
               prop="spareName"
-              :rules="[{ required: true, message: '不能为空'}]">
+              :rules="[{ required: true, message: '不能为空' }]"
+            >
               <el-select
                 v-model="dialogForm.dialogForms[0].spareName"
                 filterable
@@ -205,23 +233,32 @@
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item label="数量"
+            <el-form-item
+              label="数量"
               prop="num"
-              :rules="[{ required: true, message: '不能为空'}]">
-              <el-input v-model="dialogForm.dialogForms[0].num" disabled></el-input>
+              :rules="[{ required: true, message: '不能为空' }]"
+            >
+              <el-input
+                v-model="dialogForm.dialogForms[0].num"
+                disabled
+              ></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item label="设备名称"
+            <el-form-item
+              label="设备名称"
               prop="deviceName"
-              :rules="[{ required: true, message: '不能为空'}]">
+              :rules="[{ required: true, message: '不能为空' }]"
+            >
               <el-select
                 v-model="dialogForm.dialogForms[0].deviceName"
                 filterable
                 remote
                 placeholder="请输入资产编号"
                 :remote-method="changeDevice"
-                @change="selectForm($event, dialogForm.dialogForms[0], 'device')"
+                @change="
+                  selectForm($event, dialogForm.dialogForms[0], 'device')
+                "
               >
                 <el-option
                   v-for="(item, index) in options.deviceOptions"
@@ -240,7 +277,9 @@
                 remote
                 placeholder="请输入维修单号"
                 :remote-method="changeMaintenance"
-                @change="selectForm($event, dialogForm.dialogForms[0], 'maintenance')"
+                @change="
+                  selectForm($event, dialogForm.dialogForms[0], 'maintenance')
+                "
               >
                 <el-option
                   v-for="(item, index) in options.maintenanceOptions"
@@ -260,7 +299,12 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="initDialog()">取 消</el-button>
-        <el-button v-if="dialogType == 'edit'" @click="updateDialogSubmit()" type="primary">提交</el-button>
+        <el-button
+          v-if="dialogType == 'edit'"
+          @click="updateDialogSubmit()"
+          type="primary"
+          >提交</el-button
+        >
       </div>
     </el-dialog>
   </div>
@@ -281,14 +325,14 @@ export default {
         consumerNameOptions: [{ label: "", value: "" }],
         spareOptions: [{ label: "", value: "" }],
         deviceOptions: [{ label: "", value: "" }],
-        maintenanceOptions: [{ label: "", value: "" }]
+        maintenanceOptions: [{ label: "", value: "" }],
       },
       headerFormList: [
         { label: "备件编号", props: "spareNo", value: "" },
         { label: "备件名称", props: "spareName", value: "" },
         { label: "领用日期", props: "timeFrame", value: [], slotName: "time" },
         { label: "设备编号", props: "deviceNo", value: "" },
-        { label: "设备名称", props: "deviceName", value: "" }
+        { label: "设备名称", props: "deviceName", value: "" },
       ],
       tableData: [], // 表格的数据
       total: 0,
@@ -305,7 +349,7 @@ export default {
         { props: "price", label: "采购价格" },
         { props: "num", label: "数量" },
         { props: "purpose", label: "设备用途" },
-        { props: "workshopName", label: "车间" }
+        { props: "workshopName", label: "车间" },
       ],
       addDialogIsShow: false, // 新增领用对话框的打开与关闭
       dialogIsShow: false, // 控制查看详情对话框的打开与关闭
@@ -322,16 +366,16 @@ export default {
             num: null,
             purpose: "",
             spareId: null,
-            purpose: null
-          }
-        ]
+            purpose: null,
+          },
+        ],
       },
-      loading: false
+      loading: false,
     };
   },
   components: {
     tpmsHeader,
-    tpmsTable
+    tpmsTable,
   },
   mounted() {
     this.getTableDate();
@@ -354,7 +398,7 @@ export default {
       data.endTime = data.timeFrame.split(",")[1];
       delete data.timeFrame;
       let pageData = this.$refs.tpmsTable.getData();
-      spareConsuming.getList({ ...data, ...pageData }).then(res => {
+      spareConsuming.getList({ ...data, ...pageData }).then((res) => {
         this.tableData = res.data.content;
         this.total = res.data.numberOfElements;
       });
@@ -362,9 +406,9 @@ export default {
     /** 加载模态框详情 */
     getTableItemDetail(row) {
       this.loading = true;
-      spareConsuming.getDetail(null, row.id).then(res => {
+      spareConsuming.getDetail(null, row.id).then((res) => {
         this.dialogForm.dialogForms[0] = res.data;
-      this.loading = false;
+        this.loading = false;
       });
     },
     /** 点击表格查看按钮 */
@@ -384,11 +428,11 @@ export default {
         .get(url, {
           // params: data,
           headers: {
-            Authorization: "Bearer " + token
+            Authorization: "Bearer " + token,
           },
-          responseType: "blob"
+          responseType: "blob",
         })
-        .then(res => {
+        .then((res) => {
           if (!res) return;
 
           let fileName = "备件清单.xlsx";
@@ -399,7 +443,7 @@ export default {
           }
 
           let blob = new Blob([res.data], {
-            type: "application/vnd.ms-excel;charset=utf-8"
+            type: "application/vnd.ms-excel;charset=utf-8",
           });
           let url = window.URL.createObjectURL(blob);
           let aLink = document.createElement("a");
@@ -411,7 +455,7 @@ export default {
           document.body.removeChild(aLink);
           window.URL.revokeObjectURL(url);
         })
-        .catch(error => {
+        .catch((error) => {
           this.$message.error(error.message);
         });
     },
@@ -423,12 +467,12 @@ export default {
       this.dialogIsShow = false;
       spareConsuming
         .approval({ workflowStatus: enable ? 1 : 2 }, this.dialogData.id)
-        .then(res => {
+        .then((res) => {
           console.log(res);
           this.$message.success("操作完成");
           this.getTableDate();
         })
-        .catch(fail => {
+        .catch((fail) => {
           this.$message.error("操作失败");
         });
     },
@@ -444,7 +488,7 @@ export default {
         maintenanceNo: null,
         num: 0,
         purpose: "",
-        spareId: null
+        spareId: null,
       });
     },
     /**
@@ -463,15 +507,15 @@ export default {
       if (param !== "") {
         getUserDropList({
           name: param,
-          type: userDropDownType.spareConsumingQueryUserByRoles
-        }).then(res => {
+          type: userDropDownType.spareConsumingQueryUserByRoles,
+        }).then((res) => {
           const consumerNameOptions = [];
-          res.data.content.forEach(m => {
+          res.data.content.forEach((m) => {
             consumerNameOptions.push({
               consumerId: m.id,
               consumerName: m.name,
               value: m.id,
-              label: m.name
+              label: m.name,
             });
             this.options.consumerNameOptions = consumerNameOptions;
           });
@@ -485,15 +529,15 @@ export default {
      */
     changeSpare(param) {
       if (param !== "") {
-        getSpare({ svwMatNum: param }).then(res => {
+        getSpare({ svwMatNum: param }).then((res) => {
           const spareOptions = [];
-          res.data.content.forEach(m => {
+          res.data.content.forEach((m) => {
             spareOptions.push({
               spareId: m.id,
               spareName: m.name,
               value: m.id,
               label: m.descSpec,
-              id: m.id
+              id: m.id,
             });
             this.options.spareOptions = spareOptions;
           });
@@ -507,15 +551,15 @@ export default {
      */
     changeDevice(param) {
       if (param !== "") {
-        device({ name: param }).then(res => {
+        device({ name: param }).then((res) => {
           const deviceOptions = [];
-          res.data.content.forEach(m => {
+          res.data.content.forEach((m) => {
             deviceOptions.push({
               deviceId: m.id,
               deviceName: m.name,
               value: m.id,
               label: `${m.name}-${m.assetNo}`,
-              id: m.id
+              id: m.id,
             });
             this.options.deviceOptions = deviceOptions;
           });
@@ -529,15 +573,15 @@ export default {
      */
     changeMaintenance(param) {
       if (param !== "") {
-        maintenanceManage["getLists"]({ no: param }).then(res => {
+        maintenanceManage["getLists"]({ no: param }).then((res) => {
           const maintenanceOptions = [];
-          res.data.content.forEach(m => {
+          res.data.content.forEach((m) => {
             maintenanceOptions.push({
               maintenanceId: m.id,
               maintenanceNo: m.no,
               value: m.id,
               label: m.no,
-              id: m.id
+              id: m.id,
             });
             this.options.maintenanceOptions = maintenanceOptions;
           });
@@ -554,7 +598,7 @@ export default {
         device: "device",
         maintenance: "maintenance",
         spare: "spare",
-        consumer: "consumer"
+        consumer: "consumer",
       };
       switch (type) {
         case types.maintenance:
@@ -579,7 +623,23 @@ export default {
      */
     addDialogSubmit(e, i) {
       const param = this.dialogForm.dialogForms;
-      spareConsuming["add"](param).then(res => {
+      if (param.consumerId == null) {
+        this.$message.info("领用人不能为空");
+        return;
+      }
+      if (param.spareId == null) {
+        this.$message.info("备件不能为空");
+        return;
+      }
+      if (param.num == null) {
+        this.$message.info("数量不能为空");
+        return;
+      }
+      if (param.deviceName == null) {
+        this.$message.info("设备不能为空");
+        return;
+      }
+      spareConsuming["add"](param).then((res) => {
         this.$message.success("保存成功");
         this.inquireTableData();
         this.getTableDate();
@@ -590,7 +650,7 @@ export default {
      */
     updateDialogSubmit() {
       const param = this.dialogForm.dialogForms[0];
-      spareConsuming["update"](param).then(res => {
+      spareConsuming["update"](param).then((res) => {
         this.$message.success("保存成功");
         this.inquireTableData();
         this.getTableDate();
@@ -614,12 +674,31 @@ export default {
             num: 0,
             purpose: "",
             spareId: null,
-            purpose: null
-          }
-        ]
+            purpose: null,
+          },
+        ],
       };
-    }
-  }
+    },
+    dialogClose() {
+      this.dialogForm = {
+        dialogForms: [
+          {
+            consumerId: null,
+            consumerName: "",
+            deviceId: null,
+            deviceName: null,
+            maintenanceId: null,
+            maintenanceNo: null,
+            num: null,
+            purpose: "",
+            spareId: null,
+            purpose: null,
+          },
+        ],
+      };
+      this.addDialogIsShow = false
+    },
+  },
 };
 </script>
 <style lang="scss" scoped>

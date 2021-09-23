@@ -127,3 +127,10 @@ export const previewNowMonthWorkOrder = (data) => GET(data, apiConfig.maintainWo
  * @param {*} data 
  */
  export const importThisMonthMaintainWorkOrder = (file) => POST(file, apiConfig.maintainWorkOrder, 'importThisMonthMaintainWorkOrder');
+
+ /**
+  * 审批
+  * @param {*} file 
+  * @returns 
+  */
+ export const approvalMaintainWorkorder = (file) => PATCH(file, apiConfig.maintainWorkOrderMobile, 'maintain/workorder');
