@@ -60,6 +60,12 @@ export const importFile = (data) => POST(data, `${apiConfig.maintainPlan}/import
  */
 export const deletePlanDetail = (data, id) => DELETE(data, apiConfig.maintainPlan, id)
 
+/**
+ * 批量删除计划
+ * @param {*} data 
+ * @returns 
+ */
+export const deletePlanMore = (data) => DELETE(data, apiConfig.maintainPlan)
 
 /**
  * @description 查看工单列表
@@ -134,3 +140,10 @@ export const previewNowMonthWorkOrder = (data) => GET(data, apiConfig.maintainWo
   * @returns 
   */
  export const approvalMaintainWorkorder = (file) => PATCH(file, apiConfig.maintainWorkOrderMobile, 'maintain/workorder');
+
+ /**
+  * 批量发布
+  * @param {*} data 
+  * @returns 
+  */
+ export const releasedMore = (data) => POST(data, apiConfig.exportMaintainPlan, 'maintain/released');
