@@ -244,15 +244,11 @@
                   class="avatar-uploader"
                   list-type="picture-card"
                   multiple
-                  :file-list="item.maintainPlanPictures"
+                  :file-list="item.maintainPlanPictures || []"
                   :action="uploadImgUrl"
                   :headers="uploadHeaders"
-                  :on-success="
-                    (res, file) => handleAvatarSuccess(res, file, item)
-                  "
-                  :on-remove="
-                    (file, fileList) => handleRemove(file, fileList, item)
-                  "
+                  :on-success="(res, file) => handleAvatarSuccess(res, file, item)"
+                  :on-remove=" (file, fileList) => handleRemove(file, fileList, item)"
                   :before-upload="beforeAvatarUpload"
                 >
                   <el-button size="small" type="file">点击上传图示</el-button>
@@ -327,10 +323,11 @@
               </el-table-column> -->
               <el-table-column align="center" label="周期" width="110">
                 <template slot-scope="scope">
+                  <span v-if="!scope.row.editShow">{{ scope.row.cycleName }}</span>
                   <el-select
                     v-model="scope.row.cycleId"
                     style="width: 100%"
-                    :disabled="!scope.row.editShow"
+                    v-if="scope.row.editShow"
                   >
                     <el-option
                       v-for="item in cycleList"
@@ -801,47 +798,35 @@ export default {
     },
     /**
      * @description 导入单个文件
-     * @param {Object} e 文件对象
-     * @param {Object} index 导入的form.maintainContentColonies数组下标
      */
     getFileData(files) {
       this.loading = true;
       let formData = new FormData();
-      let workshopName = localStorage.getItem("workshopName");
-      files.map((file) => formData.append("file", file));
-      // 车间名注意下
-      formData.append("workshopName", workshopName);
-      formData.append("module", 4); //{1:'点检',2:'日常保养',3:'保养',4:'保养'};
+      files.forEach((file) => formData.append("file", file));
+      const _this = this;
+      let datas = [];
       importFile(formData)
         .then((res) => {
-          // console.log(res,item)
-          let datas = res.data;
+          datas = res.data;
           datas.forEach((data) => {
-            data.creatorName = JSON.parse(
-              localStorage.getItem("user_info")
-            ).principal.name; //编制人
+            data.creatorName = JSON.parse(localStorage.getItem("user_info")).principal.name; //编制人
             data.createDate = parseTime(new Date()); //编制日期
             data.maintainPlanContents.forEach(
-              (item) => (item.editShow = false)
+              (item) => {
+                item.editShow = false
+              }
             );
-            delete data.maintainPlanPictures;
           });
-          // Object.assign(data,{
-          //   creatorName: JSON.parse(localStorage.getItem('user_info')).principal.name, //编制人
-          //   createDate: parseTime(new Date()), //编制日期
-          // })
-          // data.maintainPlanContents = data.maintainPlanContents.map(item => {
-          //   return Object.assign(item, {
-          //     editShow: false
-          //   })
-          // })
-          this.form.maintainContentColonies = datas;
-          this.loading = false;
-          // console.log(this.form)
         })
         .catch((err) => {
           this.loading = false;
         });
+
+      const time = setTimeout(() => {
+        _this.form.maintainContentColonies = datas;
+        console.log(datas)
+        this.loading = false;
+      }, 10000)
     },
     getMutipleFileData(files, index) {
       this.loading = true;

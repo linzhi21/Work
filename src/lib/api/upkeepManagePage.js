@@ -47,9 +47,7 @@ export const updatePlanDetail = (data, id) => PATCH(data, apiConfig.maintainPlan
 
 /**
  * @description  导入保养数据
- * @param {Obejct} data
- * @param {formData} data.file
- * @param {String} data.workshopName
+ * @param {formData} file
  */
 export const importFile = (data) => POST(data, `${apiConfig.maintainPlan}/import`)
 
