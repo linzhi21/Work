@@ -21,6 +21,7 @@
         >
           <template slot="operation" slot-scope="scope">
             <span class="button cursor" @click="view(scope.row, '查看')">查看</span>
+            <span class="button cursor" @click="exportOrder(scope.row)">导出记录</span>
             <span
               class="button cursor"
               @click="view(scope.row, '审批')"
@@ -358,6 +359,45 @@ export default {
           this.orderDetailIsShow = false;
         });
     },
+    /**
+     * 导出工单当月结果
+     * // TODO 
+     */
+    exportOrder(row) {
+       let url = `${apiConfig.orderMobile}/workorder/download?type=3?workOrderId=${row.id}`; //请求下载文件的地址
+      let token = localStorage.getItem("access_token"); //获取token
+      axios.get(url, {
+        params: {workOrderId: row.id},
+        responseType: 'blob',
+        headers: {
+          Authorization: "Bearer " + token
+        },
+      }).then((res) => {
+          if (!res) return;
+          let fileName = '当月工单情况.xls';
+          const disposition = res.headers["content-disposition"];
+          if (disposition) {
+            const name = disposition.split(";")[1].split("filename=")[1];
+            fileName = decodeURI(name);
+          }
+
+          let blob = new Blob([res.data], {
+            type: "application/vnd.ms-excel;charset=utf-8"
+          });
+          let url = window.URL.createObjectURL(blob);
+          let aLink = document.createElement("a");
+          aLink.style.display = "none";
+          aLink.href = url;
+          aLink.setAttribute("download", fileName); // 下载的文件
+          document.body.appendChild(aLink);
+          aLink.click();
+          document.body.removeChild(aLink);
+          window.URL.revokeObjectURL(url);
+        })
+        .catch((error) => {
+          this.$message.error(error);
+        });
+    }
   },
 };
 </script>

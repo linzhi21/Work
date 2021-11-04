@@ -14,17 +14,26 @@
         />
         <el-row>
           <el-col :span="22">
-            <buttom-group @getTableData="getTableData" :getHeaderData="getHeaderData" />
+            <buttom-group
+              @getTableData="getTableData"
+              :getHeaderData="getHeaderData"
+            />
           </el-col>
           <el-col :span="2">
             <!-- 新增设备按钮 -->
-            <el-row class="buttom-group" type="flex" justify="end" align="middle">
+            <el-row
+              class="buttom-group"
+              type="flex"
+              justify="end"
+              align="middle"
+            >
               <el-button
                 class="button-more"
                 type="primary"
                 size="small"
                 @click="editDevice(false)"
-              >新增设备</el-button>
+                >新增设备</el-button
+              >
             </el-row>
           </el-col>
         </el-row>
@@ -66,23 +75,49 @@
             { label: 'WBS元素', props: 'wbs' },
             { label: 'BM单编号', props: 'bm' },
             { label: '维修次数', props: 'repairTimes' },
-            { label: '操作', slotName: 'operation', fixed: 'right', width: '430px' }
+            {
+              label: '操作',
+              slotName: 'operation',
+              fixed: 'right',
+              width: '250px',
+            },
           ]"
           @inquireTableData="inquireTableData"
           @getTableData="getTableData"
         >
-          <template slot="operation" slot-scope="{row}">
+          <template slot="operation" slot-scope="{ row }">
             <span class="button cursor" @click="editDevice(row)">编辑</span>
             <el-divider direction="vertical"></el-divider>
-            <span class="button cursor" @click="createQrcode(row)">生成二维码</span>
+            <span class="button cursor" @click="seeMaintainWorkOrders(row)"
+              >查看保养工单</span
+            >
             <el-divider direction="vertical"></el-divider>
-            <span class="button cursor" @click="seeMaintainWorkOrders(row)">查看保养工单</span>
-            <el-divider direction="vertical"></el-divider>
-            <span class="button cursor" @click="seeBOM(row)">查看BOM</span>
-            <el-divider direction="vertical"></el-divider>
-            <span class="button cursor" @click="exportSpare(row)">导出备件</span>
-            <el-divider direction="vertical"></el-divider>
-            <span class="button cursor" @click="deleteDevice(row)">删除</span>
+            <el-dropdown>
+              <span class="el-dropdown-link">
+                更多操作<i class="el-icon-arrow-down el-icon--right"></i>
+              </span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item
+                  ><span @click="createQrcode(row)">生成二维码</span></el-dropdown-item
+                >
+                <el-dropdown-item
+                  ><span @click="seeRepair(row)">维修单</span></el-dropdown-item
+                >
+                <el-dropdown-item
+                  ><span @click="seeSparePartsRecord(row)">维修备件记录</span></el-dropdown-item
+                >
+                <el-dropdown-item
+                  ><span @click="seeBOM(row)">查看BOM</span></el-dropdown-item
+                >
+                <el-dropdown-item
+                  ><span @click="exportSpare(row)">导出BOM清单</span></el-dropdown-item
+                >
+                <el-dropdown-item divided
+                  ><span @click="deleteDevice(row)">删除</span></el-dropdown-item
+                >
+              </el-dropdown-menu>
+            </el-dropdown>
+
             <!-- <span class="button" @click="seeEquipmentDetail(row)">维修记录</span> -->
           </template>
         </tpms-table>
@@ -90,51 +125,76 @@
     </el-row>
 
     <!-- 维修记录详情模态框 -->
-    <el-dialog title="维修记录" :visible.sync="equipmentDetailIsShow" width="80%" center>
+    <el-dialog
+      title="维修记录"
+      :visible.sync="equipmentDetailIsShow"
+      width="80%"
+      center
+    >
       <tpms-table
         height="60vh"
         :data="equipmentTableData"
         :columns="[
-          {props:'name',label:'维修单号'},
-          {props:'name',label:'设备编号'},
-          {props:'name',label:'设备名称'},
-          {props:'name',label:'报修区域'},
-          {props:'name',label:'报修内容'},
-          {props:'name',label:'报修地址'},
-          {props:'name',label:'紧急程度'},
-          {props:'name',label:'状态'},
-          {props:'name',label:'创建时间'},
-          {props:'name',label:'创建人'},
+          { props: 'name', label: '维修单号' },
+          { props: 'name', label: '设备编号' },
+          { props: 'name', label: '设备名称' },
+          { props: 'name', label: '报修区域' },
+          { props: 'name', label: '报修内容' },
+          { props: 'name', label: '报修地址' },
+          { props: 'name', label: '紧急程度' },
+          { props: 'name', label: '状态' },
+          { props: 'name', label: '创建时间' },
+          { props: 'name', label: '创建人' },
         ]"
         :paginationIsShow="false"
       >
-        <template slot-scope="{row}">
-          <span class="button" slot="reference" @click="seeSparePartsRecord(row)">查看</span>
+        <template slot-scope="{ row }">
+          <span
+            class="button"
+            slot="reference"
+            @click="seeSparePartsRecord(row)"
+            >查看</span
+          >
         </template>
       </tpms-table>
-      <el-dialog width="70%" title="维修详情" :visible.sync="sparePartIsShow" center append-to-body>
-        <tpms-table
-          height="50vh"
-          :data="equipmentTableData"
-          :columns="[
-            {props:'name',label:'备件编号'},
-            {props:'name',label:'备件名称'},
-            {props:'name',label:'设备编号'},
-            {props:'name',label:'设备名称'},
-            {props:'name',label:'备件参数'},
-            {props:'name',label:'制造商编号'},
-            {props:'name',label:'东昌物料号'},
-            {props:'name',label:'创建时间'},
-            {props:'name',label:'创建人'},
-            {props:'name',label:'标签'},
-          ]"
-          :paginationIsShow="false"
-        />
-      </el-dialog>
+    </el-dialog>
+    <!-- 设备更换的备件 -->
+    <el-dialog
+      width="70%"
+      title="维修详情"
+      :visible.sync="sparePartIsShow"
+      center
+    >
+      <tpms-table
+        height="50vh"
+        :data="sparePartData"
+        :columns="[
+          { props: 'brokeSpareNo', label: '备件编号' },
+          { props: 'brokeSpareName', label: '备件名称' },
+          { props: 'replaceSpareNo', label: '设备编号' },
+          { props: 'replaceSpareName', label: '设备名称' },
+          { props: 'amount', label: '备件参数' },
+          { props: 'comment', label: '制造商编号' }
+        ]"
+        :paginationIsShow="false"
+      >
+       <template slot-scope="{ row }">
+          <span
+            class="button"
+            slot="reference"
+            @click="seeSparePartsRecord(row)"
+            >查看</span
+          >
+        </template>
+      </tpms-table>
     </el-dialog>
 
     <!-- 编辑设备模态框 -->
-    <el-dialog :visible.sync="editIsShow" width="70%" :title="deviceDetail.title">
+    <el-dialog
+      :visible.sync="editIsShow"
+      width="70%"
+      :title="deviceDetail.title"
+    >
       <el-row>
         <el-form
           ref="editForm"
@@ -143,7 +203,7 @@
           label-position="left"
           label-width="120px"
         >
-        <!-- <el-form-item label="状态名称" prop="assetNo" required>
+          <!-- <el-form-item label="状态名称" prop="assetNo" required>
           <el-input style="width:300px;" v-model="deviceDetail.assetNo"></el-input>
         </el-form-item> -->
           <el-col
@@ -155,33 +215,33 @@
           >
             <el-form-item :label="item.label" :prop="item.props">
               <el-select
-                style="width:100%;"
-                v-if="item.type==='radio'"
+                style="width: 100%"
+                v-if="item.type === 'radio'"
                 v-model="deviceDetail[item.props]"
                 :placeholder="item.placeholder"
-                :disabled="item.disabled===true"
-                @change="(val)=>editSelectChanged(item,val)"
+                :disabled="item.disabled === true"
+                @change="(val) => editSelectChanged(item, val)"
               >
                 <el-option
-                  v-for="(item,i) in item.checkList"
+                  v-for="(item, i) in item.checkList"
                   :key="i"
                   :label="item.label"
                   :value="item.id"
                 />
               </el-select>
               <el-date-picker
-                v-else-if="item.type==='datePicker'"
+                v-else-if="item.type === 'datePicker'"
                 v-model="deviceDetail[item.props]"
                 type="date"
                 value-format="yyyy-MM-dd"
                 placeholder="选择日期"
-                :disabled="item.disabled===true"
+                :disabled="item.disabled === true"
               ></el-date-picker>
               <el-input
-                :readonly="item.props=='no'"
+                :readonly="item.props == 'no'"
                 v-else
                 v-model="deviceDetail[item.props]"
-                :disabled="item.disabled===true"
+                :disabled="item.disabled === true"
               />
             </el-form-item>
           </el-col>
@@ -210,16 +270,16 @@
         :data="BOMdata"
         :total="BOMdataTotal"
         :columns="[
-          {props:'name',label:'备件名称'},
-          {props:'no',label:'备件编号'},
-          {props:'specification',label:'型号规格'},
-          {props:'materialNo',label:'东昌物料号'},
-          {props:'manufacturer',label:'制作商编号'},
-          {props:'repairTimes',label:'维修次数'},
-          {slotName:'recod',label:'维修记录'},
+          { props: 'name', label: '备件名称' },
+          { props: 'no', label: '备件编号' },
+          { props: 'specification', label: '型号规格' },
+          { props: 'materialNo', label: '东昌物料号' },
+          { props: 'manufacturer', label: '制作商编号' },
+          { props: 'repairTimes', label: '维修次数' },
+          { slotName: 'recod', label: '维修记录' },
         ]"
       >
-        <template slot="recod" slot-scope="{row}">
+        <template slot="recod" slot-scope="{ row }">
           <span class="button" @click="seeBOMspartPartRecord(row)">详情</span>
         </template>
       </tpms-table>
@@ -234,22 +294,24 @@
           height="50vh"
           :data="BOMspartPartRecordData"
           :columns="[
-            {props:'name',label:'维修单号'},
-            {props:'name',label:'设备编号'},
-            {props:'name',label:'设备名称'},
-            {props:'name',label:'报修区域'},
-            {props:'name',label:'报修内容'},
-            {props:'name',label:'报修地址'},
-            {props:'name',label:'紧急程度'},
-            {props:'name',label:'状态'},
-            {props:'name',label:'创建时间'},
-            {props:'name',label:'创建人'},
-            {slotName:'recod',label:'备件更换记录'},
+            { props: 'name', label: '维修单号' },
+            { props: 'name', label: '设备编号' },
+            { props: 'name', label: '设备名称' },
+            { props: 'name', label: '报修区域' },
+            { props: 'name', label: '报修内容' },
+            { props: 'name', label: '报修地址' },
+            { props: 'name', label: '紧急程度' },
+            { props: 'name', label: '状态' },
+            { props: 'name', label: '创建时间' },
+            { props: 'name', label: '创建人' },
+            { slotName: 'recod', label: '备件更换记录' },
           ]"
           :paginationIsShow="false"
         >
-          <template slot="recod" slot-scope="{row}">
-            <span class="button" @click="seeBOMspartPartReplaceRecord(row)">查看</span>
+          <template slot="recod" slot-scope="{ row }">
+            <span class="button" @click="seeBOMspartPartReplaceRecord(row)"
+              >查看</span
+            >
           </template>
         </tpms-table>
         <el-dialog
@@ -263,16 +325,16 @@
             height="50vh"
             :data="BOMspartPartReplaceRecordData"
             :columns="[
-              {props:'name',label:'备件编号'},
-              {props:'name',label:'备件名称'},
-              {props:'name',label:'设备编号'},
-              {props:'name',label:'设备名称'},
-              {props:'name',label:'备件参数'},
-              {props:'name',label:'制造商编号'},
-              {props:'name',label:'东昌物料号'},
-              {props:'name',label:'创建时间'},
-              {props:'name',label:'创建人'},
-              {props:'name',label:'标签'},
+              { props: 'name', label: '备件编号' },
+              { props: 'name', label: '备件名称' },
+              { props: 'name', label: '设备编号' },
+              { props: 'name', label: '设备名称' },
+              { props: 'name', label: '备件参数' },
+              { props: 'name', label: '制造商编号' },
+              { props: 'name', label: '东昌物料号' },
+              { props: 'name', label: '创建时间' },
+              { props: 'name', label: '创建人' },
+              { props: 'name', label: '标签' },
             ]"
             :paginationIsShow="false"
           />
@@ -280,7 +342,12 @@
       </el-dialog>
     </el-dialog>
     <!-- 保养工单 模态框 -->
-    <el-dialog width="80%" title="查看保养工单" :visible.sync="maintainOrders_dialog.isShow" center>
+    <el-dialog
+      width="80%"
+      title="查看保养工单"
+      :visible.sync="maintainOrders_dialog.isShow"
+      center
+    >
       <tpms-table
         ref="maintainOrders"
         height="50vh"
@@ -288,11 +355,10 @@
         :total="maintainOrders_dialog.total"
         :columns="[
           { props: 'no', label: '工单编号' },
-          { props: 'hour', label: '工时' },
-          { props: 'type', label: '类型' },
-          { props: 'completeTime', label: '操作时间' },
-          { props: 'comment', label: '遗留问题' },
-          { props: 'status', label: '状态', translate: statusTranslate },
+          { props: 'statusStr', label: '状态' },
+          { props: 'receiverName', label: '操作人' },
+          { props: 'receiveTime', label: '操作时间' },
+          { props: 'resultStr', label: '结果' },
         ]"
         @getTableData="getMaintainOrdersData"
       ></tpms-table>
@@ -310,24 +376,25 @@ import {
   queryBom,
   getBomDetail,
   queryDeviceStatus,
-  deviceStatusManage
+  deviceStatusManage,
 } from "../../lib/api/device";
 import {
   getWorkshopSection,
   getWorkShopTeam,
   getWorkshopArea,
   workshopAreaNames,
-  workshopSelect
+  workshopSelect,
 } from "../../lib/api/factory";
 import {
   workshopSectionManage,
   workStationManage,
-  factoryManage
+  factoryManage,
 } from "../../lib/api/workshopSettingsManage";
+import { showSparePartsRecord } from "../../lib/api/repairManagePage"
 import { tpmsHeader, tpmsTable, tpmsSearch } from "../../components";
 import {
   EquipmentResume as buttomGroup,
-  Resume
+  Resume,
 } from "./components/buttomGroups";
 import apiConfig from "../../lib/api/apiConfig";
 import { maintainWorkOrder } from "../../lib/api/upkeepManagePage";
@@ -341,7 +408,7 @@ export default {
       workshopSelect,
       workshopSectionManage.getNames, //工段
       workStationManage.getNames, //工位
-      factoryManage.getNames //工厂
+      factoryManage.getNames, //工厂
     ];
     let [
       deviceStatus,
@@ -349,12 +416,12 @@ export default {
       workshops,
       workshopSections,
       workStations,
-      factorys
-    ] = getListFuncs.map(getListFunc => {
+      factorys,
+    ] = getListFuncs.map((getListFunc) => {
       let arr = [];
-      getListFunc().then(res => {
+      getListFunc().then((res) => {
         let data = res.data.content || res.data;
-        data.forEach(item => {
+        data.forEach((item) => {
           item.label = item.label || item.value;
         });
         arr.push(...data);
@@ -372,7 +439,7 @@ export default {
           props: "workshopId",
           value: "",
           type: "radio",
-          checkList: workshops
+          checkList: workshops,
         },
         {
           label: "区域",
@@ -380,7 +447,7 @@ export default {
           value: "",
           placeholder: "请先选择车间",
           type: "radio",
-          checkList: workshopAreas
+          checkList: workshopAreas,
         },
         {
           label: "工段",
@@ -388,35 +455,35 @@ export default {
           value: "",
           placeholder: "请先选择区域",
           type: "radio",
-          checkList: workshopSections
+          checkList: workshopSections,
         },
         {
           label: "设备状态",
           props: "deviceStatus",
           value: "",
           type: "radio",
-          checkList: deviceStatus
+          checkList: deviceStatus,
         },
         {
           label: "使用人",
           props: "userName",
-          value: ""
+          value: "",
         },
         {
           label: "设备名称",
           props: "name",
-          value: ""
+          value: "",
         },
         {
           label: "设备编号",
           props: "no",
-          value: ""
+          value: "",
         },
         {
           label: "资产编号",
           props: "assetNo",
-          value: ""
-        }
+          value: "",
+        },
       ],
       total: 0,
       equipmentTableData: [],
@@ -428,31 +495,31 @@ export default {
           label: "所属工厂",
           props: "factoryId",
           type: "radio",
-          checkList: factorys
+          checkList: factorys,
         },
         {
           label: "所属车间",
           props: "workshopId",
           type: "radio",
-          checkList: workshops
+          checkList: workshops,
         },
         {
           label: "所属区域",
           props: "areaId",
           type: "radio",
-          checkList: workshopAreas
+          checkList: workshopAreas,
         },
         {
           label: "工段名称",
           props: "workshopSectionId",
           type: "radio",
-          checkList: workshopSections
+          checkList: workshopSections,
         },
         {
           label: "工位名称",
           props: "workStationId",
           type: "radio",
-          checkList: workStations
+          checkList: workStations,
         },
         { label: "一级区域", props: "primaryAreaName" },
         { label: "二级区域", props: "secondaryAreaName" },
@@ -474,7 +541,7 @@ export default {
           label: "设备状态",
           props: "deviceStatusId",
           type: "radio",
-          checkList: deviceStatus
+          checkList: deviceStatus,
         },
         { label: "合同编号", props: "contractNo" },
         { label: "WBS元素", props: "wbs" },
@@ -482,7 +549,12 @@ export default {
         { label: "维修次数", props: "repairTimes" },
         { label: "点检班组", props: "pointTeam" },
         { label: "巡检路线", props: "inspectionRoute" },
-        { label: "操作", slotName: "operation", fixed: "right", width: "240px" }
+        {
+          label: "操作",
+          slotName: "operation",
+          fixed: "right",
+          width: "240px",
+        },
       ],
       equipmentDetailIsShow: false, //查看设备维修记录列表模态框
       equipmentDetailData: [], //查看设备维修记录模态框列表数据
@@ -493,7 +565,7 @@ export default {
         factoryId: null,
         workshopId: null,
         areaId: null,
-        workshopSectionId: null
+        workshopSectionId: null,
       }, //设备详情，可编辑
       brCodeIsShow: false, //二维码模态框
       brCodeSrc: "", //二维码地址
@@ -511,59 +583,59 @@ export default {
           {
             required: true,
             message: "请输入设备资产编号",
-            trigger: "blur"
-          }
+            trigger: "blur",
+          },
         ],
         name: [
           {
             required: true,
             message: "请输入设备名称",
-            trigger: "blur"
-          }
+            trigger: "blur",
+          },
         ],
         factoryId: [
           {
             required: true,
             message: "请选择所属工厂",
-            trigger: "change"
-          }
+            trigger: "blur",
+          },
         ],
         workshopId: [
           {
             required: true,
             message: "请选择所属车间",
-            trigger: "change"
-          }
+            trigger: "blur",
+          },
         ],
         areaId: [
           {
             required: true,
             message: "请选择所属区域",
-            trigger: "change"
-          }
+            trigger: "blur",
+          },
         ],
         workshopSectionId: [
           {
             required: true,
             message: "请选择所属工段",
-            trigger: "change"
-          }
+            trigger: "blur",
+          },
         ],
         deviceStatusStr: [
           {
             required: true,
             message: "请选择设备状态",
-            trigger: "change"
-          }
-        ]
+            trigger: "blur",
+          },
+        ],
       },
       // 保养工单模态框
       maintainOrders_dialog: {
         isShow: false,
         deviceNo: "",
         data: [],
-        total: 0
-      }
+        total: 0,
+      },
     };
   },
   components: {
@@ -571,7 +643,7 @@ export default {
     buttomGroup,
     tpmsTable,
     Resume,
-    tpmsSearch
+    tpmsSearch,
   },
   created() {},
   mounted() {
@@ -584,7 +656,7 @@ export default {
     /** 生成二维码**/
     createQrcode(row) {
       console.log(row.id + "/noImage");
-      deviceManage.getQrcode(null, row.id + "/noImage").then(res => {
+      deviceManage.getQrcode(null, row.id + "/noImage").then((res) => {
         console.log(res);
         this.brCodeSrc = this.fileBaseUrl + "/" + res.data;
       });
@@ -602,7 +674,7 @@ export default {
       // 获取头部搜索组数据
       let data = this.$refs.tpmsHeader.getData();
       let pageData = this.$refs.tpmsTable.getData();
-      getData({ ...data, ...pageData }).then(res => {
+      getData({ ...data, ...pageData }).then((res) => {
         this.total = res.data.totalElements;
         this.equipmentTableData = res.data.content;
       });
@@ -612,8 +684,8 @@ export default {
       const { equipmentFormList } = this;
       if (props === "workshopId") {
         // 选择车间，重置区域和工段
-        workshopAreaNames({ [props]: value }).then(res => {
-          equipmentFormList.forEach(item => {
+        workshopAreaNames({ [props]: value }).then((res) => {
+          equipmentFormList.forEach((item) => {
             if (item.props === "areaId") {
               item.checkList = res.data;
               item.value = "";
@@ -628,14 +700,16 @@ export default {
 
       if (props === "areaId") {
         // 选择区域，重置工段
-        workshopSectionManage.getNames({ workshopAreaId: value }).then(res => {
-          equipmentFormList.forEach(item => {
-            if (item.props === "workshopSectionId") {
-              item.checkList = res.data;
-              item.value = "";
-            }
+        workshopSectionManage
+          .getNames({ workshopAreaId: value })
+          .then((res) => {
+            equipmentFormList.forEach((item) => {
+              if (item.props === "workshopSectionId") {
+                item.checkList = res.data;
+                item.value = "";
+              }
+            });
           });
-        });
       }
     },
     /** 返回头部搜索 */
@@ -653,14 +727,14 @@ export default {
     editDevice(row) {
       if (row) {
         this.deviceDetail = {};
-        queryDevice(null, row.id).then(res => {
+        queryDevice(null, row.id).then((res) => {
           const data = res.data;
           this.deviceDetail = data;
           this.deviceDetail.title = "编辑设备";
         });
       } else {
         this.deviceDetail = {
-          title: "新增设备"
+          title: "新增设备",
         };
       }
 
@@ -670,8 +744,8 @@ export default {
       const { equipmentTableList, deviceDetail } = this;
       if (props === "factoryId") {
         // 选择工厂，重置车间及以下
-        workshopSelect({ [props]: id }).then(res => {
-          equipmentTableList.forEach(item => {
+        workshopSelect({ [props]: id }).then((res) => {
+          equipmentTableList.forEach((item) => {
             if (item.props === "workshopId") {
               item.checkList = res.data;
               deviceDetail[item.props] = "";
@@ -690,8 +764,8 @@ export default {
       }
       if (props === "workshopId") {
         // 选择车间，重置区域及以下
-        workshopAreaNames({ [props]: id }).then(res => {
-          equipmentTableList.forEach(item => {
+        workshopAreaNames({ [props]: id }).then((res) => {
+          equipmentTableList.forEach((item) => {
             if (item.props === "areaId") {
               item.checkList = res.data;
               deviceDetail[item.props] = "";
@@ -706,8 +780,8 @@ export default {
       }
       if (props === "areaId") {
         // 选择区域，重置工段及以下
-        workshopSectionManage.getNames({ [props]: id }).then(res => {
-          equipmentTableList.forEach(item => {
+        workshopSectionManage.getNames({ [props]: id }).then((res) => {
+          equipmentTableList.forEach((item) => {
             if (item.props === "workshopSectionId") {
               item.checkList = res.data;
               deviceDetail[item.props] = "";
@@ -722,8 +796,8 @@ export default {
       }
       if (props === "workshopSectionId") {
         // 选择工段，重置工位
-        workStationManage.getNames({ [props]: id }).then(res => {
-          equipmentTableList.forEach(item => {
+        workStationManage.getNames({ [props]: id }).then((res) => {
+          equipmentTableList.forEach((item) => {
             if (item.props === "workStationId") {
               item.checkList = res.data;
               deviceDetail[item.props] = "";
@@ -735,10 +809,10 @@ export default {
     /** 保存已编辑的设备 */
     saveDevice() {
       if (this.deviceDetail.title === "新增设备") {
-        this.$refs["editForm"].validate(valid => {
+        this.$refs["editForm"].validate((valid) => {
           console.log(valid);
           if (valid) {
-            addDevice(this.deviceDetail).then(res => {
+            addDevice(this.deviceDetail).then((res) => {
               this.editIsShow = false;
               this.$message.success("保存成功");
               this.getTableData();
@@ -748,10 +822,10 @@ export default {
           }
         });
       } else {
-        this.$refs["editForm"].validate(valid => {
+        this.$refs["editForm"].validate((valid) => {
           console.log(valid);
           if (valid) {
-            putDevice(this.deviceDetail, this.deviceDetail.id).then(res => {
+            putDevice(this.deviceDetail, this.deviceDetail.id).then((res) => {
               this.editIsShow = false;
               this.$message.success("保存成功");
               this.getTableData();
@@ -765,9 +839,10 @@ export default {
     },
     /** 查看备件更换记录 */
     seeSparePartsRecord(row) {
-      this.sparePartIsShow = true;
-      this.sparePartData = [];
-      console.log(row);
+      showSparePartsRecord(null, row.id).then(res => {
+        this.sparePartData = res.data.content;
+        this.sparePartIsShow = true;
+      })
     },
     /** 查看保养工单 */
     seeMaintainWorkOrders({ no }) {
@@ -788,7 +863,7 @@ export default {
       const { deviceNo } = this.maintainOrders_dialog;
       const pageData = this.$refs.maintainOrders.getData();
 
-      maintainWorkOrder({ deviceNo, ...pageData }).then(res => {
+      maintainWorkOrder({ deviceNo, ...pageData }).then((res) => {
         this.maintainOrders_dialog.data = res.data.content;
         this.maintainOrders_dialog.total = res.data.totalElements;
       });
@@ -810,9 +885,9 @@ export default {
         const pageData = this.$refs.BOMtable.getData();
         const data = {
           deviceId: row.id,
-          ...pageData
+          ...pageData,
         };
-        queryBom(data).then(res => {
+        queryBom(data).then((res) => {
           console.log(res);
           this.BOMdata = res.data.content;
           this.BOMdataTotal = res.data.totalElements;
@@ -825,7 +900,7 @@ export default {
       this.BOMspartPartRecordIsShow = true;
       this.BOMspartPartRecordData = [];
       this.$message.warning("暂无接口");
-      getBomDetail(null, row.id).then(res => {
+      getBomDetail(null, row.id).then((res) => {
         console.log(res);
         this.BOMspartPartRecordData = [res.data];
       });
@@ -844,14 +919,14 @@ export default {
       axios
         .get(url, {
           params: {
-            deviceId: id
+            deviceId: id,
           },
           headers: {
-            Authorization: "Bearer " + token
+            Authorization: "Bearer " + token,
           },
-          responseType: "blob"
+          responseType: "blob",
         })
-        .then(res => {
+        .then((res) => {
           if (!res) return;
 
           let fileName = "bom.xlsx";
@@ -862,7 +937,7 @@ export default {
           }
 
           let blob = new Blob([res.data], {
-            type: "application/vnd.ms-excel;charset=utf-8"
+            type: "application/vnd.ms-excel;charset=utf-8",
           });
           let url = window.URL.createObjectURL(blob);
           let aLink = document.createElement("a");
@@ -874,7 +949,7 @@ export default {
           document.body.removeChild(aLink);
           window.URL.revokeObjectURL(url);
         })
-        .catch(error => {
+        .catch((error) => {
           this.$message.error(error);
         });
     },
@@ -883,10 +958,10 @@ export default {
       this.$confirm("此操作将删除该设备, 是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
-        type: "warning"
+        type: "warning",
       })
         .then(() => {
-          deviceManage.remove(null, id).then(res => {
+          deviceManage.remove(null, id).then((res) => {
             this.$message.success("删除成功");
             this.getTableData();
           });
@@ -894,10 +969,10 @@ export default {
         .catch(() => {
           this.$message({
             type: "info",
-            message: "已取消删除"
+            message: "已取消删除",
           });
         });
-    }
-  }
+    },
+  },
 };
 </script>

@@ -27,7 +27,7 @@
   </div>
 </template>
 <script>
-import { login, principal, refreshToken } from "../../lib/api/user";
+import { login, principal, ivLogin, refreshToken } from "../../lib/api/user";
 import { getUserMenus } from "../../lib/api/userManage";
 import { factory } from "../../lib/api/factory";
 export default {
@@ -51,6 +51,7 @@ export default {
       const { preventLogin } = this.$route.params;
       preventLogin || this.login();
     }
+    this.ivLogin();
   },
   methods: {
     // 点击登录按钮跳转到首页
@@ -85,6 +86,19 @@ export default {
         localStorage.removeItem("username");
         localStorage.removeItem("password");
       }
+    },
+    ivLogin(){
+        ivLogin({
+        })
+            .then(res => {
+                if (res.access_token) {
+                    // 获取用户信息
+                    principal().then(() => {
+                        this.$router.push("/home");
+                        getUserMenus();
+                    });
+                }
+            })
     }
   }
 };

@@ -8,11 +8,11 @@
         <el-card class="card first-card">
           <div class="left">
             <p>当前班次</p>
-            <p>{{worKClass}}</p>
+            <p>{{ worKClass }}</p>
           </div>
           <div class="right">
             <p>用户角色</p>
-            <p>{{persionalRole}}</p>
+            <p>{{ persionalRole }}</p>
           </div>
           <p class="separator"></p>
         </el-card>
@@ -28,7 +28,10 @@
               :percentage="wordorderNumObj.singleRate || 0"
               color="#fff"
             ></el-progress>
-            <i>{{wordorderNumObj.singleCompletedCount}} / {{wordorderNumObj.singleAllCount}}</i>
+            <i
+              >{{ wordorderNumObj.singleCompletedCount }} /
+              {{ wordorderNumObj.singleAllCount }}</i
+            >
           </p>
           <p>
             <span>巡检</span>
@@ -38,7 +41,10 @@
               :percentage="wordorderNumObj.patrolRate || 0"
               color="#fff"
             ></el-progress>
-            <i>{{wordorderNumObj.patrolCompletedCount}} / {{wordorderNumObj.patrolAllCount}}</i>
+            <i
+              >{{ wordorderNumObj.patrolCompletedCount }} /
+              {{ wordorderNumObj.patrolAllCount }}</i
+            >
           </p>
         </el-card>
       </el-col>
@@ -53,26 +59,34 @@
               :percentage="wordorderNumObj.maintainRate || 0"
               color="#fff"
             ></el-progress>
-            <i>{{wordorderNumObj.maintainCompletedCount}}</i>
+            <i>{{ wordorderNumObj.maintainCompletedCount }}</i>
           </p>
           <p>
             <span>未完成</span>
-            <el-progress class="reply" :show-text="false" color="#fff"></el-progress>
-            <i>{{wordorderNumObj.maintainWaitCompletedCount}}</i>
+            <el-progress
+              class="reply"
+              :show-text="false"
+              color="#fff"
+            ></el-progress>
+            <i>{{ wordorderNumObj.maintainWaitCompletedCount }}</i>
           </p>
         </el-card>
       </el-col>
       <el-col :span="6">
         <el-card class="card fourth-card">
           <p>设备状态</p>
-          <div v-for="(item,index) in equipmentSheet" :key="index" class="list">
+          <div
+            v-for="(item, index) in equipmentSheet"
+            :key="index"
+            class="list"
+          >
             <template v-if="item.action">
-              <p v-bind:style="item.style">{{item.value}}</p>
-              <p class="small">{{item.label}}</p>
+              <p v-bind:style="item.style">{{ item.value }}</p>
+              <p class="small">{{ item.label }}</p>
             </template>
             <template v-else>
-              <p>{{item.value}}</p>
-              <p class="small">{{item.label}}</p>
+              <p>{{ item.value }}</p>
+              <p class="small">{{ item.label }}</p>
             </template>
           </div>
         </el-card>
@@ -80,10 +94,10 @@
     </el-row>
     <!-- 任务单的区域 -->
     <el-row :gutter="10">
-      <el-col :span="6" v-for="(item,index) in taskOrder" :key="index">
+      <el-col :span="6" v-for="(item, index) in taskOrder" :key="index">
         <div @click="showChart(item)">
           <el-card class="task-list spot-check-list">
-            <h4 class="list-name">{{item.orderName}}</h4>
+            <h4 class="list-name">{{ item.orderName }}</h4>
             <div class="list-box">
               <div class="progress">
                 <el-progress
@@ -93,21 +107,21 @@
                   :percentage="item.rate || 0"
                 ></el-progress>
                 <div class="overtime-work-order">
-                  <p>{{item.rate}}%</p>
+                  <p>{{ item.rate }}%</p>
                   <span>完成率</span>
                 </div>
               </div>
               <div class="list-content">
                 <div class="list-content-card data-not-reply">
-                  <p class="selected">{{item.waitCompletedCount}}</p>
+                  <p class="selected">{{ item.waitCompletedCount }}</p>
                   <span>未完成</span>
                 </div>
                 <div class="list-content-card month-reply">
-                  <p>{{item.allCount}}</p>
+                  <p>{{ item.allCount }}</p>
                   <span>总工单</span>
                 </div>
                 <div class="list-content-card month-reply">
-                  <p>{{item.completedCount}}</p>
+                  <p>{{ item.completedCount }}</p>
                   <span>已完成</span>
                 </div>
               </div>
@@ -117,19 +131,24 @@
       </el-col>
     </el-row>
     <!-- 图表区 -->
-    <el-row :gutter="10" style="margin-top:10px;">
+    <el-row :gutter="10" style="margin-top: 10px">
       <el-col :span="12">
         <div>
           <el-card class="replacement-part">
             <h4>
               点检详情
-              <el-button @click="exportChart('single')" type="text" icon="el-icon-download">导出</el-button>
+              <el-button
+                @click="exportChart('single')"
+                type="text"
+                icon="el-icon-download"
+                >导出</el-button
+              >
             </h4>
             <div @click="showChart('single')">
               <ve-bar
                 :data="pointCheckChartData"
                 :settings="chartSettings"
-                :colors="['#37bb64','#f68b2f']"
+                :colors="['#37bb64', '#f68b2f']"
                 :extend="chartExtend"
               ></ve-bar>
             </div>
@@ -141,13 +160,18 @@
           <el-card class="replacement-part">
             <h4>
               巡检详情
-              <el-button @click="exportChart('patrol')" type="text" icon="el-icon-download">导出</el-button>
+              <el-button
+                @click="exportChart('patrol')"
+                type="text"
+                icon="el-icon-download"
+                >导出</el-button
+              >
             </h4>
             <div @click="showChart('patrol')">
               <ve-histogram
                 :data="inspectionChartData"
                 :settings="chartSettings"
-                :colors="['#37bb64','#f68b2f']"
+                :colors="['#37bb64', '#f68b2f']"
                 :extend="chartExtend"
               ></ve-histogram>
             </div>
@@ -158,10 +182,27 @@
         <div class="unrequired-equipment" @click="showChart('repair')">
           <h4>未修理设备</h4>
           <el-table :data="unrequiredEquipmentData">
-            <el-table-column align="center" prop="deviceName" label="设备名称"></el-table-column>
-            <el-table-column align="center" prop="deviceNo" label="设备编号"></el-table-column>
-            <el-table-column align="center" prop="workshopSectionName" label="工段"></el-table-column>
-            <el-table-column align="center" prop="createDate" label="报修时间" min-width="140"></el-table-column>
+            <el-table-column
+              align="center"
+              prop="deviceName"
+              label="设备名称"
+            ></el-table-column>
+            <el-table-column
+              align="center"
+              prop="deviceNo"
+              label="设备编号"
+            ></el-table-column>
+            <el-table-column
+              align="center"
+              prop="workshopSectionName"
+              label="工段"
+            ></el-table-column>
+            <el-table-column
+              align="center"
+              prop="createDate"
+              label="报修时间"
+              min-width="140"
+            ></el-table-column>
           </el-table>
         </div>
       </el-col>
@@ -179,7 +220,7 @@
         <el-form-item label="工单状态">
           <el-select v-model="drawerDetail.status" placeholder="请选择工单状态">
             <el-option
-              v-for="(item,index) in orderStatusList"
+              v-for="(item, index) in orderStatusList"
               :key="index"
               :label="item.status"
               :value="item.key"
@@ -187,9 +228,12 @@
           </el-select>
         </el-form-item>
         <el-form-item label="所属工段">
-          <el-select v-model="drawerDetail.workshopSectionId" placeholder="请选择所属工段">
+          <el-select
+            v-model="drawerDetail.workshopSectionId"
+            placeholder="请选择所属工段"
+          >
             <el-option
-              v-for="(item,index) in workshopSectionSelectList"
+              v-for="(item, index) in workshopSectionSelectList"
               :key="index"
               :label="item.label"
               :value="item.id"
@@ -200,21 +244,28 @@
           <el-col :span="11">
             <el-date-picker
               v-model="drawerDetail.times"
-              type="daterange"
+              type="datetimerange"
               start-placeholder="开始日期"
               end-placeholder="结束日期"
               :default-time="['00:00:00', '23:59:59']"
-              format="yyyy 年 MM 月 dd 日"
-              value-format="yyyy-MM-dd"
             ></el-date-picker>
           </el-col>
         </el-form-item>
         <el-form-item>
           <el-button
             type="primary"
-            @click="checkOutWorkOrder(drawerDetail.type, { page: 0, size: 1000 }, drawerDetail)"
-          >查询</el-button>
-          <el-button @click="clearCheckOutWorkOrder(drawerDetail.type)">重置</el-button>
+            @click="
+              checkOutWorkOrder(
+                drawerDetail.type,
+                { page: 0, size: 1000 },
+                drawerDetail
+              )
+            "
+            >查询</el-button
+          >
+          <el-button @click="clearCheckOutWorkOrder(drawerDetail.type)"
+            >重置</el-button
+          >
         </el-form-item>
       </el-form>
       <tpms-table
@@ -236,7 +287,7 @@ import {
   workorderDashboard,
   deviceAndEquipment,
   wordorderNums,
-  echartsInit
+  echartsInit,
 } from "./chart";
 import apiConfig from "../../lib/api/apiConfig";
 import { getOneUser } from "../../lib/api/userManage";
@@ -250,7 +301,7 @@ import {
   statisticsForMaintenanceSubmitList,
   pointCheckCountBasedOnArea,
   statisticsForReceivedHour,
-  statisticsForWorkOrder
+  statisticsForWorkOrder,
 } from "../../lib/api/statistics";
 import { parseTime } from "@/utils";
 export default {
@@ -261,31 +312,135 @@ export default {
       labelMap: {
         completedCount: "完成工单",
         waitReceivedCount: "未完成工单",
-        areaName: "区域"
-      }
+        areaName: "区域",
+      },
     };
     this.chartExtend = {
-      series: function(s) {
-        s.forEach(v => {
+      series: function (s) {
+        s.forEach((v) => {
           v.label = {
             color: "#fff",
             show: true,
-            position: "insideLeft"
+            position: "insideLeft",
           };
         });
         return s;
-      }
+      },
     };
     return {
       drawer: false,
       worKClass: "A班", // 工作班次
-      persionalRole: "操作工", // 用户角色
-      taskOrder: [], // 任务单内容
+      persionalRole: "维修技术员", // 用户角色
+      taskOrder: [
+        {
+          orderName: "点检任务单",
+          rate: 50,
+          waitCompletedCount: 69,
+          allCount: 138,
+          completedCount: 69,
+        },
+        {
+          orderName: "巡检任务单",
+          rate: 100,
+          waitCompletedCount: 0,
+          allCount: 65,
+          completedCount: 65,
+        },
+        {
+          orderName: "保养任务单",
+          rate: 87,
+          waitCompletedCount: 30,
+          allCount: 228,
+          completedCount: 198,
+        },
+        {
+          orderName: "维修任务单",
+          rate: 0,
+          waitCompletedCount: 0,
+          allCount: 0,
+          completedCount: 0,
+        },
+      ], // 任务单内容
       unrequiredEquipmentData: [], // 未修理设备
-      equipmentSheet: [], // 设备和维修数据
-      wordorderNumObj: {}, // 工单数据
-      pointCheckChartData: {}, // 点检报表
-      inspectionChartData: {}, // 巡检报表
+      equipmentSheet: [
+        {
+          value: 0,
+          label: "在线设备",
+        },
+        {
+          value: 0,
+          label: "已修复",
+        },
+        {
+          value: 0,
+          label: "异常中",
+        },
+      ], // 设备和维修数据
+      wordorderNumObj: {
+        singleRate: 138,
+        singleCompletedCount: 69,
+        singleAllCount: 138,
+        patrolRate: 65,
+        patrolCompletedCount: 65,
+        patrolAllCount: 65,
+        maintainRate: 198,
+        maintainCompletedCount: 198,
+        maintainWaitCompletedCount: 30,
+      }, // 工单数据
+      pointCheckChartData: {
+        columns: ["areaName", "completedCount", "waitReceivedCount"],
+        rows: [
+         {"areaName": 'UB2',
+          "completedCount":7,
+           "waitReceivedCount":7
+         },
+        {"areaName": 'UB1',
+          "completedCount":7,
+           "waitReceivedCount":7
+         },  
+          {"areaName": 'ST',
+          "completedCount":14,
+           "waitReceivedCount":14
+         },
+        {"areaName": 'MABT',
+          "completedCount":4,
+           "waitReceivedCount":4
+         },         
+         {"areaName": 'ABT',
+          "completedCount":25,
+           "waitReceivedCount":25
+         },
+          {"areaName": '总装返修区',
+          "completedCount":5,
+           "waitReceivedCount":5
+         },
+          {"areaName": 'AB',
+          "completedCount":7,
+           "waitReceivedCount":7
+         },
+        ],
+      }, // 点检报表
+      inspectionChartData: {
+        columns: ["areaName", "completedCount", "waitReceivedCount"],
+        rows: [
+         {"areaName": 'AB',
+          "completedCount":11,
+           "waitReceivedCount":0
+         },
+        {"areaName": 'ST',
+          "completedCount":13,
+           "waitReceivedCount":0
+         },         
+         {"areaName": 'UB',
+          "completedCount":15,
+           "waitReceivedCount":0
+         },
+          {"areaName": 'ABT',
+          "completedCount":26,
+           "waitReceivedCount":0
+         },
+        ],
+      }, // 巡检报表
       drawerDetail: {
         title: "",
         tableList: [],
@@ -294,33 +449,26 @@ export default {
         type: "1,2",
         workshopSectionId: "",
         status: "",
-        times: []
+        times: [],
       },
       fullscreen: false,
       orderStatusList: orderStatusList,
-      workshopSectionSelectList: []
+      workshopSectionSelectList: [],
     };
   },
   components: {
-    tpmsTable
+    tpmsTable,
   },
   mounted() {
     const _this = this;
-    this.userInfo();
     this.workorderInfo();
     this.searchWorkshopSectionSelect();
-    
-    maintenanceManage["getLists"]({ status: "1,2,4,8" }).then(res => {
+
+    maintenanceManage["getLists"]({ status: "1,2,4,8" }).then((res) => {
       this.unrequiredEquipmentData = res.data.content;
     });
   },
   methods: {
-    userInfo() {
-      const principal = JSON.parse(localStorage.getItem("user_info"));
-      getOneUser({}, principal.principal.uuid).then(res => {
-        const principal = res.data;
-      });
-    },
     workorderInfo() {
       const role = this.userInfoLocal.authorities;
       const roleStr = JSON.stringify(role);
@@ -334,7 +482,7 @@ export default {
         /**
          * 工单执行数据
          */
-        statisticsForWorkOrder().then(res => {
+        statisticsForWorkOrder().then((res) => {
           this.taskOrder = workorderDashboard(res);
           this.equipmentSheet = deviceAndEquipment(res);
           this.wordorderNumObj = wordorderNums(res.data);
@@ -342,47 +490,47 @@ export default {
         /**
          * 巡检根据区域统计接单数量
          */
-        inspectionCountBasedOnArea().then(res => {
+        inspectionCountBasedOnArea().then((res) => {
           this.inspectionChartData = {
             columns: ["areaName", "completedCount", "waitReceivedCount"],
-            rows: res.data
+            rows: res.data,
           };
         });
         /**
          * 展示所有人接单数量根据接单数量排序展示(保养)
          */
-        statisticsForMaintain().then(res =>
+        statisticsForMaintain().then((res) =>
           console.log(`statisticsForMaintain:${JSON.stringify(res)}`)
         );
         /**
          * 点检根据区域统计接单数量
          */
-        pointCheckCountBasedOnArea().then(res => {
+        pointCheckCountBasedOnArea().then((res) => {
           this.pointCheckChartData = {
             columns: ["areaName", "completedCount", "waitReceivedCount"],
-            rows: res.data
+            rows: res.data,
           };
         });
         /**
          * 展示所有人接单时间根据接单数量排序展示
          */
-        statisticsForReceivedHour({ types: "1,2" }).then(res =>
+        statisticsForReceivedHour({ types: "1,2" }).then((res) =>
           console.log(`statisticsForReceivedHour1-2:${JSON.stringify(res)}`)
         );
-        statisticsForReceivedHour({ types: "3" }).then(res =>
+        statisticsForReceivedHour({ types: "3" }).then((res) =>
           console.log(`statisticsForReceivedHour3:${JSON.stringify(res)}`)
         );
 
         /**
          * 维修时间统计
          */
-        statisticsForMaintenanceCost().then(res =>
+        statisticsForMaintenanceCost().then((res) =>
           console.log(`statisticsForMaintenanceCost:${JSON.stringify(res)}`)
         );
         /**
          * 当天维修设备清单
          */
-        statisticsForMaintenanceRepairList().then(res =>
+        statisticsForMaintenanceRepairList().then((res) =>
           console.log(
             `statisticsForMaintenanceRepairList:${JSON.stringify(res)}`
           )
@@ -390,7 +538,7 @@ export default {
         /**
          * 当天报修设备清单
          */
-        statisticsForMaintenanceSubmitList().then(res =>
+        statisticsForMaintenanceSubmitList().then((res) =>
           console.log(
             `statisticsForMaintenanceSubmitList:${JSON.stringify(res)}`
           )
@@ -406,7 +554,7 @@ export default {
         type: "1,2", // 抽屉适用类型
         workshopSectionId: "",
         status: "",
-        times: []
+        times: [],
       };
       this.drawer = false;
     },
@@ -441,7 +589,7 @@ export default {
       this.drawerDetail.type = status;
       const requestData = {
         ...pageData,
-        type: status
+        type: status,
       };
 
       if (params.status !== undefined) {
@@ -457,7 +605,7 @@ export default {
         requestData.endTime = params.times[1];
       }
 
-      checkWorkOrder(requestData).then(res => {
+      checkWorkOrder(requestData).then((res) => {
         const data = res.data.content;
         // data.forEach((r, i) => {
         //   const s = r.status;
@@ -476,7 +624,7 @@ export default {
           { props: "no", label: "点检工单编号" },
           { props: "planName", label: "点检计划名称", width: "200px" },
           { props: "planNo", label: "点检计划编号", width: "200px" },
-          { props: "hour", label: "总工时" }
+          { props: "hour", label: "总工时" },
         ];
         this.drawerDetail.tableLists = data;
         this.drawerDetail.total = pageData.size;
@@ -493,9 +641,9 @@ export default {
         { props: "applicantName", label: "报修人" },
         { props: "workshopSectionName", label: "工段" },
         { props: "description", label: "故障描述" },
-        { props: "breakdownTime", label: "报修时间", width: 120 }
+        { props: "breakdownTime", label: "报修时间", width: 120 },
       ];
-      maintenanceManage["getLists"]({ ...data, ...pageData }).then(res => {
+      maintenanceManage["getLists"]({ ...data, ...pageData }).then((res) => {
         this.drawerDetail.tableLists = res.data.content;
         this.drawerDetail.total = res.data.totalElements;
         this.drawerDetail.title = "报修工单";
@@ -513,7 +661,7 @@ export default {
         type: "1,2", // 抽屉适用类型
         workshopSectionId: "",
         status: "",
-        times: []
+        times: [],
       };
       this.checkOutWorkOrder(type, {}, this.drawerDetail);
     },
@@ -524,7 +672,7 @@ export default {
       let param = {
         endTime: parseTime(new Date()),
         startTime: parseTime(new Date()),
-        type: "1,2"
+        type: "1,2",
       };
       switch (type) {
         case "single":
@@ -551,11 +699,11 @@ export default {
         .get(url, {
           param,
           headers: {
-            Authorization: "Bearer " + token
+            Authorization: "Bearer " + token,
           },
-          responseType: "blob"
+          responseType: "blob",
         })
-        .then(res => {
+        .then((res) => {
           if (!res) return;
           const today = "";
           let fileName = `TPMS-${today}工单详情.xlsx`;
@@ -566,7 +714,7 @@ export default {
           }
 
           let blob = new Blob([res.data], {
-            type: "application/vnd.ms-excel;charset=utf-8"
+            type: "application/vnd.ms-excel;charset=utf-8",
           });
           let url = window.URL.createObjectURL(blob);
           let aLink = document.createElement("a");
@@ -578,7 +726,7 @@ export default {
           document.body.removeChild(aLink);
           window.URL.revokeObjectURL(url);
         })
-        .catch(error => {
+        .catch((error) => {
           this.$message.error(error.message);
         });
     },
@@ -649,14 +797,14 @@ export default {
      */
     searchWorkshopSectionSelect() {
       const param = {
-        workshopId: this.userInfoLocal.principal.workshopId
+        workshopId: this.userInfoLocal.principal.workshopId,
       };
-      workshopSectionSelect(param).then(res => {
+      workshopSectionSelect(param).then((res) => {
         const data = res.data;
         this.workshopSectionSelectList = data;
       });
-    }
-  }
+    },
+  },
 };
 </script>
 <style lang="scss" scoped>

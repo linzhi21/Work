@@ -273,8 +273,8 @@
               ref="planContentTable"
               :data="item.planContents"
               style="width: 100%"
-              row-key="content"
               border
+              row-key="id"
               :tree-props="{
                 children: 'childPlanContents',
                 hasChildren: 'hasChildren',
@@ -286,26 +286,36 @@
                 label="项目"
                 width="80"
               ></el-table-column>
-              <el-table-column align="center" label="时间/部件" width="150">
+              <el-table-column align="left" label="时间/部件" width="150">
                 <template slot-scope="scope">
                   <el-input
                     v-show="scope.row.editShow"
                     v-model="scope.row.executionNode"
                   ></el-input>
-                  <span v-show="!scope.row.editShow">{{
-                    scope.row.executionNode
-                  }}</span>
+                  <span
+                    v-show="!scope.row.editShow"
+                    :style="{
+                      'text-decoration':
+                        scope.row.deleted === true ? 'line-through' : '',
+                    }"
+                    >{{ scope.row.executionNode }}</span
+                  >
                 </template>
               </el-table-column>
-              <el-table-column align="center" label="内容" width="300">
+              <el-table-column align="left" label="内容" width="300">
                 <template slot-scope="scope">
                   <el-input
                     v-show="scope.row.editShow"
                     v-model="scope.row.content"
                   ></el-input>
-                  <span v-show="!scope.row.editShow">{{
-                    scope.row.content
-                  }}</span>
+                  <span
+                    v-show="!scope.row.editShow"
+                    :style="{
+                      'text-decoration':
+                        scope.row.deleted === true ? 'line-through' : '',
+                    }"
+                    >{{ scope.row.content }}</span
+                  >
                 </template>
               </el-table-column>
               <el-table-column align="center" label="工时(s)">
@@ -315,18 +325,30 @@
                     v-model="scope.row.hour"
                     @change="calcTime(item)"
                   ></el-input>
-                  <span v-show="!scope.row.editShow">{{ scope.row.hour }}</span>
+                  <span
+                    v-show="!scope.row.editShow"
+                    :style="{
+                      'text-decoration':
+                        scope.row.deleted === true ? 'line-through' : '',
+                    }"
+                    >{{ scope.row.hour }}</span
+                  >
                 </template>
               </el-table-column>
-              <el-table-column align="center" label="方法">
+              <el-table-column align="left" label="方法">
                 <template slot-scope="scope">
                   <el-input
                     v-show="scope.row.editShow"
                     v-model="scope.row.method"
                   ></el-input>
-                  <span v-show="!scope.row.editShow">{{
-                    scope.row.method
-                  }}</span>
+                  <span
+                    v-show="!scope.row.editShow"
+                    :style="{
+                      'text-decoration':
+                        scope.row.deleted === true ? 'line-through' : '',
+                    }"
+                    >{{ scope.row.method }}</span
+                  >
                 </template>
               </el-table-column>
               <el-table-column align="center" label="周期" width="110">
@@ -379,18 +401,20 @@
               >
                 <template slot-scope="scope">
                   <el-button size="small" @click="scope.row.editShow = true"
+                    :disabled="scope.row.deleted"
                     >编辑</el-button
-                  >
-                  <el-button size="small" @click="scope.row.editShow = false"
-                    >保存</el-button
                   >
                   <el-button
                     size="small"
                     @click.native.prevent="
-                      deleteRow(scope.$index, item.planContents), calcTime(item)
+                      deleteRow(scope.row, item.planContents), calcTime(item)
                     "
+                    :disabled="scope.row.deleted"
                     style="margin-right: 10px"
                     >删除</el-button
+                  >
+                  <el-button size="small" @click="scope.row.editShow = false"
+                    >保存</el-button
                   >
                   <!-- <div style="display: inline-block;" @click="uploadImg(index,scope.$index)">
                     <el-upload
@@ -439,143 +463,7 @@
     <!-- 查看详情 -->
     <el-dialog :visible.sync="orderDetailIsShow" width="80%" title="查看">
       <el-row>
-        <el-form :model="orderDetail" label-position="left" label-width="120px">
-          <el-row>
-            <el-col :span="11">
-              <el-form-item label="类型">
-                <!-- <el-input v-model="orderDetail.type" disabled /> -->
-                <el-select
-                  v-model="orderDetail.type"
-                  placeholder
-                  style="width: 100%"
-                  disabled
-                >
-                  <el-option label="点检计划" :value="1"></el-option>
-                  <el-option label="日常保养" :value="2"></el-option>
-                </el-select>
-              </el-form-item>
-            </el-col>
-            <el-col :span="11" :offset="2">
-              <el-form-item label="点检计划编号">
-                <el-input v-model="orderDetail.no" disabled />
-              </el-form-item>
-            </el-col>
-            <el-col :span="11">
-              <el-form-item label="点检名称">
-                <el-input v-model="orderDetail.name" disabled />
-              </el-form-item>
-            </el-col>
-            <el-col :span="11" :offset="2">
-              <el-form-item label="总工时">
-                <el-input v-model="orderDetail.hour" disabled />
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row
-            v-for="(item, index) in orderDetail.planDevices"
-            :key="index"
-            style="background: #f5f5f5; padding: 0.2rem"
-          >
-            <el-col :span="11">
-              <el-form-item label="版本">
-                <el-input v-model="item.version" disabled />
-              </el-form-item>
-            </el-col>
-            <el-col :span="11" :offset="2">
-              <el-form-item label="工位/工段">
-                <el-input v-model="item.sectionOrStationName" disabled />
-              </el-form-item>
-            </el-col>
-            <el-col :span="11">
-              <el-form-item label="总工时">
-                <el-input v-model="item.hour" disabled />
-              </el-form-item>
-            </el-col>
-            <el-col :span="11" :offset="2">
-              <el-form-item label="设备(生产线)名称">
-                <el-input v-model="item.deviceNos" disabled />
-              </el-form-item>
-            </el-col>
-            <el-col :span="11">
-              <el-form-item label="编制人">
-                <el-input v-model="item.creatorName" disabled />
-              </el-form-item>
-            </el-col>
-            <el-col :span="11" :offset="2">
-              <el-form-item label="编制日期">
-                <el-input v-model="item.createDate" disabled />
-              </el-form-item>
-            </el-col>
-            <el-col :span="24">
-              <el-form-item label="图示">
-                <div>
-                  <el-image
-                    v-for="img in item.planPictures"
-                    :key="img.accessoryId"
-                    :src="img.url"
-                    fit="fill"
-                  ></el-image>
-                </div>
-              </el-form-item>
-            </el-col>
-            <!-- 表格区 -->
-            <el-table
-              :data="item.planContents"
-              style="width: 100%"
-              border
-              default-expand-all
-              :tree-props="{
-                children: 'childPlanContents',
-                hasChildren: 'hasChildren',
-              }"
-            >
-              <el-table-column
-                align="center"
-                type="index"
-                label="项目"
-                width="50"
-              ></el-table-column>
-              <el-table-column
-                align="center"
-                prop="executionNode"
-                label="时间/部件"
-                width="150"
-              ></el-table-column>
-              <el-table-column
-                align="center"
-                prop="content"
-                label="内容"
-                width="300"
-              ></el-table-column>
-              <el-table-column
-                align="center"
-                prop="hour"
-                label="工时(s)"
-              ></el-table-column>
-              <el-table-column
-                align="center"
-                prop="method"
-                label="方法"
-              ></el-table-column>
-              <el-table-column
-                align="center"
-                prop="cycleName"
-                label="周期"
-                width="110"
-              ></el-table-column>
-              <!-- <el-table-column align="center" prop="photoDisplay" label="图示">
-                <template slot-scope="scope">
-                  <img
-                    v-if="scope.row.accessoryUrl"
-                    style="width: 40px;height: 40px;"
-                    :src="`${apiConfig.accessoryFile+scope.row.accessoryUrl}`"
-                    class="avatar"
-                  />
-                </template>
-              </el-table-column>-->
-            </el-table>
-          </el-row>
-        </el-form>
+        <ShowPlanManage :orderDetail="orderDetail" />
       </el-row>
     </el-dialog>
     <!-- 提交审批 -->
@@ -649,8 +537,6 @@ import {
   queryPlan,
   addPlan,
   patchPlan,
-  workshopSectionSelect,
-  workStationSelect,
   planStatusSelect,
   delPlan,
   workshopAreaManage,
@@ -659,6 +545,7 @@ import {
   cycleSelect,
   updatePlanPicture,
   importURLPlanFile,
+  postPlan
 } from "../../lib/api/checkPlan";
 import {
   factoryManage,
@@ -666,7 +553,8 @@ import {
   workStationManage,
   workshopSectionManage,
 } from "../../lib/api/workshopSettingsManage";
-import { log } from "../../../environment.dev";
+
+import ShowPlanManage from "./comp/ShowPlanManage";
 export default {
   data() {
     // 类型列表
@@ -798,6 +686,7 @@ export default {
     tpmsHeader,
     tpmsTable,
     tpmsChoosefile,
+    ShowPlanManage,
   },
   created() {},
   mounted() {
@@ -965,24 +854,19 @@ export default {
         type: "warning",
       })
         .then(() => {
-          const l = ids.length;
-          ids.forEach((id, i) => {
-            patchPlan({ status: 5 }, row.id)
-              .then((res) => {
-                if (i == l - 1) {
-                  this.$message({
-                    type: "success",
-                    message: "发布成功!",
-                  });
-                }
-              })
-              .catch(() => {
-                this.$message({
-                  type: "error",
-                  message: "发布失败",
-                });
+          postPlan(ids, '/released')
+            .then((res) => {
+              this.$message({
+                type: "success",
+                message: "发布成功!",
               });
-          });
+            })
+            .catch(() => {
+              this.$message({
+                type: "error",
+                message: "发布失败",
+              });
+            });
           this.getTableData();
         })
         .catch(() => {
@@ -1009,22 +893,19 @@ export default {
         type: "warning",
       })
         .then(() => {
-          const l = ids.length;
-          ids.forEach((id, i) => {
-            delPlan(null, row.id)
-              .then((res) => {
-                this.$message({
-                  type: "success",
-                  message: "删除成功!",
-                });
-              })
-              .catch(() => {
-                this.$message({
-                  type: "error",
-                  message: "删除失败",
-                });
+          delPlan(ids)
+            .then((res) => {
+              this.$message({
+                type: "success",
+                message: "删除成功!",
               });
-          });
+            })
+            .catch(() => {
+              this.$message({
+                type: "error",
+                message: "删除失败",
+              });
+            });
           this.getTableData();
         })
         .catch(() => {
@@ -1238,23 +1119,13 @@ export default {
           }
         }
         res.data.planDevices.map((item) => {
-          item.deletedContents = [];
           // 图示卡信息
           item.planPictures &&
             item.planPictures.forEach((ever) => {
               ever.name = ever.accessoryId;
               ever.url = this.apiConfig.accessoryFile + ever.accessoryUrl;
             });
-          // 内容信息
-          const planContents = item.planContents;
-          for (let i = 0; i < planContents.length; i++) {
-            const content = planContents[i];
-            if(content.deleted) {
-              item.deletedContents.push(content);
-              delete item.planContents[i];
-            }
-          }
-        });debugger
+        });
         this.form.status = "";
         this.form = data;
       });
@@ -1316,10 +1187,6 @@ export default {
 
     /** 修改计划 */
     changePlan() {
-      // 合并所有内容
-      this.form.planDevices.map((item, i) => {
-        item.planContents.concat(item.deletedContents);
-      });debugger
       const validate = this.form.planDevices.some(({ planContents }) => {
         const arr = planContents.map(({ sort }) => sort);
         return new Set(arr).size !== arr.length;
@@ -1369,15 +1236,15 @@ export default {
     /**
      * 删除planContents里的一条数据
      */
-    deleteRow(index, rows) {
-      rows.splice(index, 1);
-      this.form.planDevices.forEach((item, i) => {
-        if (index === i) {
-          item.planContents[i].deleted = true;
-          item.deletedContents.push(item.planContents[i]);
-        }
+    deleteRow(row, rows) {
+      this.form.planDevices.map((device) => {
+        const planContents = device.planContents;
+        planContents.map((item, i) => {
+          if (row.id === item.id) {
+            item.deleted = true;
+          }
+        });
       });
-debugger
       console.log(this.form.planDevices);
     },
     /** 计算工时 */

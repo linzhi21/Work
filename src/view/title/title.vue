@@ -128,7 +128,6 @@ export default {
     getWorkshopList() {
       userWorkshopManage.getList().then(res => {
         const data = res.data;
-        // TODO 接口返回值错误
         const ary = data;
         this.workshopsList = ary;
       });
