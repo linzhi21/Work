@@ -144,4 +144,4 @@ export const previewNowMonthWorkOrder = (data) => GET(data, apiConfig.maintainWo
   * @param {*} data 
   * @returns 
   */
- export const releasedMore = (data) => POST(data, apiConfig.exportMaintainPlan, 'maintain/released');
+ export const releasedMore = (data) => POST(data, apiConfig.exportMaintainPlan, 'release');

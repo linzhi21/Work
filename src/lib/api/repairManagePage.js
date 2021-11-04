@@ -17,4 +17,4 @@ export const add=(data)=>POST(data, apiConfig.maintenanceManage);
 
 export const del=(data)=>DELETE(data,apiConfig.maintenanceManage)
 
-export const showSparePartsRecord = (data, restful) => GET(data, apiConfig.maintenanceManage, 'spare/device'); 
+export const showSparePartsRecord = (data, restful) => GET(data, apiConfig.maintenanceManage +'/spare/device', restful); 

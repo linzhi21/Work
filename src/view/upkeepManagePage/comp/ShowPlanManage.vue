@@ -55,7 +55,7 @@
             </el-col> -->
       <el-col :span="11" :offset="2">
         <el-form-item label="设备(生产线)名称">
-          <el-input v-model="item.deviceNos" disabled />
+          <el-input v-model="item.deviceNames" disabled />
         </el-form-item>
       </el-col>
       <el-col :span="11">

@@ -32,11 +32,10 @@
         :columns="[
           { type: 'selection' },
           { props: 'no', label: '保养计划编号', width: '160px' },
-          { props: 'type', label: '类型' },
           { props: 'name', label: '保养名称' },
+          { props: 'status', label: '状态' },
           { props: 'creatorName', label: '制定人' },
           { props: 'createDate', label: '制定日期', width: '200px' },
-          { props: 'status', label: '状态' },
           {
             label: '操作',
             slotName: 'operation',
@@ -163,7 +162,7 @@
                 <el-input v-model="form.name"></el-input>
               </el-form-item>
             </el-col>
-            <el-col :span="18">
+            <el-col :span="11" :offset="2">
               <el-form-item label="导入保养计划">
                 <div>
                   <tpms-choosefile
@@ -186,9 +185,9 @@
             :key="index"
             style="background: #f5f5f5; padding: 0.2rem"
           >
-            <el-col :span="11">
-              <el-form-item label="版本" required="required">
-                <el-input v-model="item.version"></el-input>
+            <el-col :span="11" >
+              <el-form-item label="设备编号">
+                <el-input v-model="item.deviceNos"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="11" :offset="2" required="required">
@@ -198,7 +197,7 @@
                   <el-option v-for="(item,i) in deviceInfo" :key="i" :label="item.name" :value="item.name">
                   </el-option>
                 </el-select>-->
-                <el-input v-model="item.deviceNos"></el-input>
+                <el-input v-model="item.deviceNames"></el-input>
               </el-form-item>
             </el-col>
 
@@ -226,14 +225,20 @@
                 <el-input v-model="item.hour" disabled></el-input>
               </el-form-item>
             </el-col> -->
-            <el-col :span="11">
+            
+            <el-col :span="5"  >
+              <el-form-item label="版本" required="required">
+                <el-input v-model="item.version"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="7" :offset="2">
               <el-form-item label="编制人" required="required">
                 <!-- <el-date-picker value-format='yyyy-MM-dd' v-model="item.deviceCreatorDate" type="date" placeholder="选择日期"
                 style="width: 100%;"></el-date-picker>-->
                 <el-input readonly v-model="item.creatorName"></el-input>
               </el-form-item>
             </el-col>
-            <el-col :span="11" :offset="2">
+            <el-col :span="7" :offset="2">
               <el-form-item label="编制日期" required="required">
                 <el-input readonly v-model="item.createDate"></el-input>
               </el-form-item>
@@ -294,7 +299,7 @@
                   }}</span>
                 </template>
               </el-table-column>
-              <el-table-column align="center" label="内容" width="300">
+              <el-table-column align="center" label="内容">
                 <template slot-scope="scope">
                   <el-input
                     v-show="scope.row.editShow"
@@ -730,7 +735,7 @@ export default {
           window.URL.revokeObjectURL(url);
         })
         .catch((error) => {
-          this.$message.error(error);
+          this.$message.error(error || '')
         });
     },
     /** 导出符合所有搜索条件的计划 */

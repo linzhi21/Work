@@ -42,7 +42,7 @@
             >
             <span
               class="button cursor"
-              v-if="row.status === 10"
+              v-if="row.overdue === 1"
               @click="turnOn(row)"
               >激活</span
             >
@@ -68,7 +68,7 @@
             </el-col>
             <el-col :span="11" :offset="2">
               <el-form-item label="计划名称" required="required">
-                <el-input v-model="detail.no" readonly></el-input>
+                <el-input v-model="detail.planName" readonly></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="11">
@@ -95,7 +95,7 @@
             </el-col>
             <el-col :span="11" :offset="2">
               <el-form-item label="设备编号" required="required">
-                <el-input v-model="v.deviceNos" readonly></el-input>
+                <el-input v-model="v.deviceAssetNo" readonly></el-input>
               </el-form-item>
             </el-col>
 
@@ -368,7 +368,7 @@ export default {
         type: "warning",
       })
         .then(() => {
-          updateMaintainWorkOrder({ status: 1 }, row.id).then((res) => {
+          updateMaintainWorkOrder({ status: 10 }, row.id).then((res) => {
             this.inquireTableData();
             this.$message({
               type: "success",
@@ -425,7 +425,7 @@ export default {
     /**
      * @description 导入指派工单
      */
-    importThisMonthMaintainWorkOrder(fileList) {debugger
+    importThisMonthMaintainWorkOrder(fileList) {
       let formData = new FormData();
       fileList.map(file => formData.append('file', file))
       console.log(formData)
