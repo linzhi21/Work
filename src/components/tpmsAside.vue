@@ -451,9 +451,20 @@ export default {
     color: #a6bbc8;
   }
 
+  .el-menu {
+    background: #0077c8;
+    .el-submenu__title {
+      color: #fff;
+    }
+  }
+
   .el-menu-vertical:not(.el-menu--collapse) {
     width: 200px;
     min-height: 100vh;
+  }
+  .el-menu-item {
+    color: #fff !important;
+    background: #0077c8;
   }
   .el-menu-item.is-active {
     color: #0077c8 !important;

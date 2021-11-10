@@ -21,7 +21,7 @@ import '@/assets/global.css'
 
 
 import './public/element'    // 引入elementUi组件库
-import './style/theme/index.css'
+// import './style/theme/index.css'
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */
