@@ -7,7 +7,7 @@
       <el-col :span="6">
         <el-card class="card first-card">
           <div class="left">
-            <p>当前班次</p>
+            <p>工号</p>
             <p>{{ worKClass }}</p>
           </div>
           <div class="right">
@@ -74,7 +74,7 @@
       </el-col>
       <el-col :span="6">
         <el-card class="card fourth-card">
-          <p>设备状态</p>
+          <p>设备状态({{ parseTimeFun(new Date()) }})</p>
           <div
             v-for="(item, index) in equipmentSheet"
             :key="index"
@@ -179,6 +179,29 @@
         </div>
       </el-col>
       <el-col :span="6">
+        <div>
+          <el-card class="replacement-part">
+            <h4>
+              保养详情
+              <el-button
+                @click="exportChart('maintain')"
+                type="text"
+                icon="el-icon-download"
+                >导出</el-button
+              >
+            </h4>
+            <div @click="showChart('maintain')">
+              <ve-histogram
+                :data="maintainChartData"
+                :settings="chartSettings"
+                :colors="['#37bb64', '#f68b2f']"
+                :extend="chartExtend"
+              ></ve-histogram>
+            </div>
+          </el-card>
+        </div>
+      </el-col>
+      <!-- <el-col :span="6">
         <div class="unrequired-equipment" @click="showChart('repair')">
           <h4>未修理设备</h4>
           <el-table :data="unrequiredEquipmentData">
@@ -205,7 +228,7 @@
             ></el-table-column>
           </el-table>
         </div>
-      </el-col>
+      </el-col> -->
     </el-row>
 
     <!-- 报表页 -->
@@ -277,6 +300,41 @@
         :pageSizes="[drawerDetail.total]"
       ></tpms-table>
     </el-drawer>
+
+    <!-- 设置 -->
+    <el-button
+      @click="openTools"
+      type="primary"
+      icon="el-icon-s-tools"
+      class="s_tools"
+    ></el-button>
+    <el-drawer
+      :title="drawerDetail.title"
+      :visible.sync="setDrawer"
+      :with-header="true"
+      size="30%"
+      :before-close="handleClose"
+    >
+      <el-form :inline="false" label-width="80px" size="mini">
+        <el-form-item label="查询时间">
+          <el-col :span="8">
+            <el-date-picker
+              v-model="drawerDetail.times"
+              type="datetimerange"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+              :default-time="['00:00:00', '23:59:59']"
+            ></el-date-picker>
+          </el-col>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="checkTools">查询</el-button>
+          <el-button @click="clearCheckOutWorkOrder(drawerDetail.type)"
+            >重置</el-button
+          >
+        </el-form-item>
+      </el-form>
+    </el-drawer>
   </div>
 </template>
 <script>
@@ -294,6 +352,10 @@ import { getOneUser } from "../../lib/api/userManage";
 import { maintenanceManage } from "../../lib/api/business";
 import { checkWorkOrder, workshopSectionSelect } from "../../lib/api/checkPlan";
 import {
+  maintainWorkOrder,
+  exportWorkOrders,
+} from "../../lib/api/upkeepManagePage";
+import {
   inspectionCountBasedOnArea,
   statisticsForMaintain,
   statisticsForMaintenanceCost,
@@ -302,8 +364,9 @@ import {
   pointCheckCountBasedOnArea,
   statisticsForReceivedHour,
   statisticsForWorkOrder,
+  maintainCountBasedOnArea,
 } from "../../lib/api/statistics";
-import { parseTime } from "@/utils";
+import { parseTime, getTodoyTimes } from "@/utils";
 export default {
   data() {
     this.userInfoLocal = JSON.parse(localStorage.getItem("user_info"));
@@ -327,8 +390,11 @@ export default {
         return s;
       },
     };
+    this.endTime = getTodoyTimes().endTime;
+    this.startTime = getTodoyTimes().startTime;
     return {
       drawer: false,
+      setDrawer: false,
       worKClass: "A班", // 工作班次
       persionalRole: "维修技术员", // 用户角色
       taskOrder: [
@@ -390,57 +456,28 @@ export default {
       pointCheckChartData: {
         columns: ["areaName", "completedCount", "waitReceivedCount"],
         rows: [
-         {"areaName": 'UB2',
-          "completedCount":7,
-           "waitReceivedCount":7
-         },
-        {"areaName": 'UB1',
-          "completedCount":7,
-           "waitReceivedCount":7
-         },  
-          {"areaName": 'ST',
-          "completedCount":14,
-           "waitReceivedCount":14
-         },
-        {"areaName": 'MABT',
-          "completedCount":4,
-           "waitReceivedCount":4
-         },         
-         {"areaName": 'ABT',
-          "completedCount":25,
-           "waitReceivedCount":25
-         },
-          {"areaName": '总装返修区',
-          "completedCount":5,
-           "waitReceivedCount":5
-         },
-          {"areaName": 'AB',
-          "completedCount":7,
-           "waitReceivedCount":7
-         },
+          { areaName: "UB2", completedCount: 7, waitReceivedCount: 7 },
+          { areaName: "UB1", completedCount: 7, waitReceivedCount: 7 },
+          { areaName: "ST", completedCount: 14, waitReceivedCount: 14 },
+          { areaName: "MABT", completedCount: 4, waitReceivedCount: 4 },
+          { areaName: "ABT", completedCount: 25, waitReceivedCount: 25 },
+          { areaName: "总装返修区", completedCount: 5, waitReceivedCount: 5 },
+          { areaName: "AB", completedCount: 7, waitReceivedCount: 7 },
         ],
       }, // 点检报表
       inspectionChartData: {
         columns: ["areaName", "completedCount", "waitReceivedCount"],
         rows: [
-         {"areaName": 'AB',
-          "completedCount":11,
-           "waitReceivedCount":0
-         },
-        {"areaName": 'ST',
-          "completedCount":13,
-           "waitReceivedCount":0
-         },         
-         {"areaName": 'UB',
-          "completedCount":15,
-           "waitReceivedCount":0
-         },
-          {"areaName": 'ABT',
-          "completedCount":26,
-           "waitReceivedCount":0
-         },
+          { areaName: "AB", completedCount: 11, waitReceivedCount: 0 },
+          { areaName: "ST", completedCount: 13, waitReceivedCount: 0 },
+          { areaName: "UB", completedCount: 15, waitReceivedCount: 0 },
+          { areaName: "ABT", completedCount: 26, waitReceivedCount: 0 },
         ],
       }, // 巡检报表
+      maintainChartData: {
+        columns: [],
+        rows: [],
+      }, // 保养报表
       drawerDetail: {
         title: "",
         tableList: [],
@@ -449,7 +486,7 @@ export default {
         type: "1,2",
         workshopSectionId: "",
         status: "",
-        times: [],
+        times: [this.startTime, this.endTime],
       },
       fullscreen: false,
       orderStatusList: orderStatusList,
@@ -471,6 +508,11 @@ export default {
   methods: {
     workorderInfo() {
       const role = this.userInfoLocal.authorities;
+      const principal = this.userInfoLocal.principal;
+      getOneUser("", principal.uuid).then((res) => {
+        this.worKClass = res.data.workNo;
+        this.persionalRole = res.data.userWorkshops[0].roles[0].name;
+      });
       const roleStr = JSON.stringify(role);
       if (
         roleStr.includes("POINT_INSPECTION_MANAGEMENT") ||
@@ -482,7 +524,10 @@ export default {
         /**
          * 工单执行数据
          */
-        statisticsForWorkOrder().then((res) => {
+        statisticsForWorkOrder({
+          endTime: this.endTime,
+          startTime: this.startTime,
+        }).then((res) => {
           this.taskOrder = workorderDashboard(res);
           this.equipmentSheet = deviceAndEquipment(res);
           this.wordorderNumObj = wordorderNums(res.data);
@@ -490,8 +535,35 @@ export default {
         /**
          * 巡检根据区域统计接单数量
          */
-        inspectionCountBasedOnArea().then((res) => {
+        inspectionCountBasedOnArea({
+          endTime: this.endTime,
+          startTime: this.startTime,
+        }).then((res) => {
           this.inspectionChartData = {
+            columns: ["areaName", "completedCount", "waitReceivedCount"],
+            rows: res.data,
+          };
+        });
+        /**
+         * 点检根据区域统计接单数量
+         */
+        pointCheckCountBasedOnArea({
+          endTime: this.endTime,
+          startTime: this.startTime,
+        }).then((res) => {
+          this.pointCheckChartData = {
+            columns: ["areaName", "completedCount", "waitReceivedCount"],
+            rows: res.data,
+          };
+        });
+        /**
+         * 保养根据区域统计接单数量
+         */
+        maintainCountBasedOnArea({
+          endTime: this.endTime,
+          startTime: this.startTime,
+        }).then((res) => {
+          this.maintainChartData = {
             columns: ["areaName", "completedCount", "waitReceivedCount"],
             rows: res.data,
           };
@@ -502,15 +574,6 @@ export default {
         statisticsForMaintain().then((res) =>
           console.log(`statisticsForMaintain:${JSON.stringify(res)}`)
         );
-        /**
-         * 点检根据区域统计接单数量
-         */
-        pointCheckCountBasedOnArea().then((res) => {
-          this.pointCheckChartData = {
-            columns: ["areaName", "completedCount", "waitReceivedCount"],
-            rows: res.data,
-          };
-        });
         /**
          * 展示所有人接单时间根据接单数量排序展示
          */
@@ -554,9 +617,10 @@ export default {
         type: "1,2", // 抽屉适用类型
         workshopSectionId: "",
         status: "",
-        times: [],
+        times: [this.startTime, this.endTime],
       };
       this.drawer = false;
+      this.setDrawer = false;
     },
     /**
      * 显示报表详情
@@ -574,6 +638,7 @@ export default {
           this.checkOutWorkOrder("3", pageData, this.drawerDetail);
           break;
         case "maintain":
+          this.checkOutWorkOrder("4", pageData, this.drawerDetail);
           break;
         case "repair":
           this.repairWorkOrder();
@@ -605,31 +670,36 @@ export default {
         requestData.endTime = params.times[1];
       }
 
-      checkWorkOrder(requestData).then((res) => {
-        const data = res.data.content;
-        // data.forEach((r, i) => {
-        //   const s = r.status;
-        //   r.status = this.statusTranslate(s);
-        // });
+      this.drawerDetail.columns = [
+        { props: "type", label: "类型" },
+        { props: "statusStr", label: "状态" },
+        { props: "deviceName", label: "设备名称" },
+        { props: "deviceAssetNo", label: "资产编号" },
+        { props: "workshopSectionName", label: "工段" },
+        { props: "receiverName", label: "接单人" },
+        { props: "completeTime", label: "完成时间", width: "200px" },
+        { props: "createDate", label: "工单日期", width: "200px" },
+        { props: "no", label: "点检工单编号" },
+        { props: "planName", label: "点检计划名称", width: "200px" },
+        { props: "planNo", label: "点检计划编号", width: "200px" },
+        { props: "hour", label: "总工时" },
+      ];
 
-        this.drawerDetail.columns = [
-          { props: "type", label: "类型" },
-          { props: "statusStr", label: "状态" },
-          { props: "deviceName", label: "设备名称" },
-          { props: "deviceAssetNo", label: "资产编号" },
-          { props: "workshopSectionName", label: "工段" },
-          { props: "receiverName", label: "接单人" },
-          { props: "completeTime", label: "完成时间", width: "200px" },
-          { props: "createDate", label: "工单日期", width: "200px" },
-          { props: "no", label: "点检工单编号" },
-          { props: "planName", label: "点检计划名称", width: "200px" },
-          { props: "planNo", label: "点检计划编号", width: "200px" },
-          { props: "hour", label: "总工时" },
-        ];
-        this.drawerDetail.tableLists = data;
-        this.drawerDetail.total = pageData.size;
-        this.drawerDetail.title = status === "3" ? "巡检工单" : "点检工单";
-      });
+      if (status != "4") {
+        checkWorkOrder(requestData).then((res) => {
+          const data = res.data.content;
+          this.drawerDetail.tableLists = data;
+          this.drawerDetail.total = pageData.size;
+          this.drawerDetail.title = status === "3" ? "巡检工单" : "点检工单";
+        });
+      } else {
+        maintainWorkOrder(requestData).then((res) => {
+          const data = res.data.content;
+          this.drawerDetail.tableLists = data;
+          this.drawerDetail.total = pageData.size;
+          this.drawerDetail.title = "保养工单";
+        });
+      }
     },
     repairWorkOrder() {
       const data = { status: [1, 2, 4, 8] };
@@ -661,7 +731,7 @@ export default {
         type: "1,2", // 抽屉适用类型
         workshopSectionId: "",
         status: "",
-        times: [],
+        times: [this.startTime, this.endTime],
       };
       this.checkOutWorkOrder(type, {}, this.drawerDetail);
     },
@@ -670,8 +740,8 @@ export default {
      */
     exportChart(type) {
       let param = {
-        endTime: parseTime(new Date()),
-        startTime: parseTime(new Date()),
+        endTime: this.endTime,
+        startTime: this.startTime,
         type: "1,2",
       };
       switch (type) {
@@ -684,6 +754,8 @@ export default {
           this.exportWorkOrder(param);
           break;
         case "maintain":
+          param.type = "";
+          this.exportWorkOrder(param, "4");
           break;
         default:
           break;
@@ -692,12 +764,17 @@ export default {
     /**
      * 导出当日工单接口
      */
-    exportWorkOrder(param) {
-      let url = `${apiConfig.checkWorkOrder}/download`; //请求下载文件的地址
+    exportWorkOrder(param, status) {
+      let url = "";
+      if (status != "4") {
+        url = `${apiConfig.checkWorkOrder}/download`; //请求下载文件的地址
+      } else {
+        url = `${apiConfig.maintainWorkOrder}/export`; //请求下载文件的地址
+      }
       let token = localStorage.getItem("access_token"); //获取token
       axios
         .get(url, {
-          param,
+          params: param,
           headers: {
             Authorization: "Bearer " + token,
           },
@@ -803,6 +880,28 @@ export default {
         const data = res.data;
         this.workshopSectionSelectList = data;
       });
+    },
+    /**
+     * 打开设置
+     */
+    openTools() {
+      this.setDrawer = true;
+      this.drawerDetail.title = "设置";
+    },
+    /**
+     * 设置确定按钮
+     */
+    checkTools() {
+      this.startTime = this.drawerDetail.times[0];
+      this.endTime = this.drawerDetail.times[1];
+      this.workorderInfo();
+      this.handleClose();
+    },
+    /**
+     * 显示当前选择的时间
+     */
+    parseTimeFun() {
+      return parseTime(this.startTime);
     },
   },
 };
@@ -958,5 +1057,12 @@ export default {
 .replacement-part-chart {
   width: 100%;
   height: 4rem;
+}
+
+.s_tools {
+  padding: 10px;
+  position: absolute;
+  top: 60px;
+  right: 0px;
 }
 </style>

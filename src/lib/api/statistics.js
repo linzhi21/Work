@@ -49,3 +49,5 @@ export const statisticsForReceivedHour = (data) => GET(data, apiConfig.statistic
  * @param {*} data 
  */
 export const statisticsForWorkOrder = (data) => GET(data, apiConfig.statisticsForWorkOrder);
+
+export const maintainCountBasedOnArea = (data) => GET(data, apiConfig.maintainCountBasedOnArea);
