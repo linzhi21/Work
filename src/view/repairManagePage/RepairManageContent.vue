@@ -364,6 +364,7 @@ export default {
           stopLine: '',//是否停线处理
           breakdownTime: '',//故障发生时间
           breakdownPhotos: '',//故障照片，附件ID，英文逗号分割的字符串
+          type: 4
         },
         rules: {
           workshopId: [
@@ -467,6 +468,7 @@ export default {
       this.dialogTitle = "新增";
       this.dialog.isShow = true;
       this.dialog.disabled = false;
+      this.dialog.data.type = 4;
       const workshop = this.dialog.list.workshopList.filter(item => item.id ===workshopId)[0];
       Object.assign(this.dialog.data, {
         applicantId: id,
@@ -477,7 +479,7 @@ export default {
       });
     },
     save() {
-      if (this.dialog.title == "编辑") {
+      if (this.dialog.title == "编辑") {debugger
         edit(this.dialog.data).then((res) => {
           this.$message.success("操作成功");
           this.detailIsShow = false
@@ -544,7 +546,7 @@ export default {
 
         data.emergencyDegreeInfo = {id:data.emergencyDegree, label:data.emergencyDegreeName};
 
-        this.dialog.data = data;
+        this.dialog.data = {...data, type: 4};
       });
     },
     /**显示编辑modal**/
@@ -574,7 +576,7 @@ export default {
 
         data.emergencyDegreeInfo = {id:data.emergencyDegree, label:data.emergencyDegreeName};
 
-        this.dialog.data = data;
+        this.dialog.data = {...data, type: 4, workOrderId: data.id};
       });
     },
     /** 导出 */
