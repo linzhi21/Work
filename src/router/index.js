@@ -178,6 +178,13 @@ const route = new Router({
                   component: () => import('@/view/spotCheckManagePage/ChangedRecords'),
                   hidden: true
                 },
+                {
+                  path: '/workOrderCompletion',
+                  name: 'WorkOrderCompletion',
+                  meta: { title: '点检记录' },
+                  component: () => import('@/view/spotCheckManagePage/WorkOrderCompletion'),
+                  hidden: true
+                },
               ]
             },
             {
@@ -214,6 +221,13 @@ const route = new Router({
                   name: 'InSpectionChangedRecords',
                   meta: { title: '巡检计划更改记录' },
                   component: () => import('@/view/inspectionManagePage/inSpectionChangedRecords'),
+                  hidden: true
+                },
+                {
+                  path: '/inSpectionWorkOrderCompletion',
+                  name: 'InSpectionWorkOrderCompletion',
+                  meta: { title: '点检记录' },
+                  component: () => import('@/view/inspectionManagePage/WorkOrderCompletion'),
                   hidden: true
                 },
               ]
@@ -259,6 +273,13 @@ const route = new Router({
                   name: 'UpkeepChangePlan',
                   meta: { title: '保养计划更改记录' },
                   component: () => import('@/view/upkeepManagePage/UpkeepChangePlan'),
+                  hidden: true
+                },
+                {
+                  path: '/upkeepWorkOrderCompletion',
+                  name: 'UpkeepWorkOrderCompletion',
+                  meta: { title: '保养记录' },
+                  component: () => import('@/view/upkeepManagePage/UpkeepWorkOrderCompletion'),
                   hidden: true
                 },
               ]

@@ -95,7 +95,7 @@
     <!-- 任务单的区域 -->
     <el-row :gutter="10">
       <el-col :span="6" v-for="(item, index) in taskOrder" :key="index">
-        <div @click="showChart(item)">
+        <div>
           <el-card class="task-list spot-check-list">
             <h4 class="list-name">{{ item.orderName }}</h4>
             <div class="list-box">

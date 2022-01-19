@@ -24,6 +24,10 @@ import './public/element'    // 引入elementUi组件库
 // import './style/theme/index.css'
 Vue.config.productionTip = false
 
+import Viser from 'viser-vue' // 引入viser-vue
+
+Vue.use(Viser)
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

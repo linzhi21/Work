@@ -479,7 +479,7 @@ export default {
       });
     },
     save() {
-      if (this.dialog.title == "编辑") {debugger
+      if (this.dialog.title == "编辑") {
         edit(this.dialog.data).then((res) => {
           this.$message.success("操作成功");
           this.detailIsShow = false

@@ -208,6 +208,9 @@ export default {
     childPlan: `${urls.business}/web/plan/child`,
 
     orderMobile: `${urls.business}/mobile`,
+    // 工单完成记录卡
+    workOrderCompletion: `${urls.business}/workOrderCompletionController`,
+
 
 
     // 附件管理
@@ -239,6 +242,7 @@ export default {
     dataBasePreview: `${urls.database}/deviceDataBases/preview`,
     dataBaseType: `${urls.database}/deviceDataBaseType`,
     dataBaseTypeName: `${urls.database}/deviceDataBaseType/name`,
+    templateDownload: `${urls.database}/templateDownload`,
 
     // 专家智库
     theme: `${urls.expert}/theme`,

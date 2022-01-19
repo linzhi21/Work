@@ -57,9 +57,9 @@
             class="item"
             v-else-if="item.type==='dateFrame'"
             v-model="item.value"
-            type="date"
+            :type="item.date ? item.date : 'date'"
             placeholder="选择日期"
-            value-format="yyyy-MM-dd"
+            :value-format="item.format ? item.format : 'yyyy-MM-dd'"
             @change="(val)=>changed(item.props,val,item)"
           ></el-date-picker>
           <el-input
