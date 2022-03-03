@@ -226,7 +226,7 @@ const route = new Router({
                 {
                   path: '/inSpectionWorkOrderCompletion',
                   name: 'InSpectionWorkOrderCompletion',
-                  meta: { title: '点检记录' },
+                  meta: { title: '巡检记录' },
                   component: () => import('@/view/inspectionManagePage/WorkOrderCompletion'),
                   hidden: true
                 },

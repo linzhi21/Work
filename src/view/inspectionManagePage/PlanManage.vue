@@ -678,8 +678,8 @@ export default {
           label: "制定人",
         },
         {
-          props: "createDate",
-          label: "制定日期",
+          props: "lastChangeDate",
+          label: "最新编辑时间",
           width: "200px",
         },
         {
@@ -1541,12 +1541,13 @@ export default {
         type: "warning",
       })
         .then(() => {
-          postPlan(ids, '/released')
+          postPlan(ids, 'released')
             .then((res) => {
               this.$message({
                 type: "success",
                 message: "发布成功!",
               });
+              this.inquireTableData();
             })
             .catch(() => {
               this.$message({

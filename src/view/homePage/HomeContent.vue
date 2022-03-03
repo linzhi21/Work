@@ -201,10 +201,12 @@
           </el-card>
         </div>
       </el-col>
-      <!-- <el-col :span="6">
-        <div class="unrequired-equipment" @click="showChart('repair')">
+    </el-row>
+    <el-row :gutter="10" style="margin-top: 10px">
+      <el-col :span="12">
+        <div class="unrequired-equipment">
           <h4>未修理设备</h4>
-          <el-table :data="unrequiredEquipmentData">
+          <el-table :data="unrequiredEquipmentData" height="450">
             <el-table-column
               align="center"
               prop="deviceName"
@@ -228,7 +230,39 @@
             ></el-table-column>
           </el-table>
         </div>
-      </el-col> -->
+      </el-col>
+      <el-col :span="12">
+        <div class="unrequired-equipment">
+          <h4>维修统计</h4>
+          <el-tabs v-model="typeSelect" @tab-click="handleClick">
+            <el-tab-pane label="日统计" name="1"></el-tab-pane>
+            <el-tab-pane label="周统计" name="2"></el-tab-pane>
+            <el-tab-pane label="月统计" name="3"></el-tab-pane>
+          </el-tabs>
+          <el-table :data="maintenanceTimesData" height="450">
+            <el-table-column
+              align="center"
+              prop="deviceName"
+              label="设备名称"
+            ></el-table-column>
+            <el-table-column
+              align="center"
+              prop="x"
+              label="报修时间"
+            ></el-table-column>
+            <el-table-column
+              align="center"
+              prop="breakdownTime"
+              label="影响生产时间"
+            ></el-table-column>
+            <el-table-column
+              align="center"
+              prop="times"
+              label="维修次数"
+            ></el-table-column>
+          </el-table>
+        </div>
+      </el-col>
     </el-row>
 
     <!-- 报表页 -->
@@ -329,7 +363,7 @@
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="checkTools">查询</el-button>
-          <el-button @click="clearCheckOutWorkOrder(drawerDetail.type)"
+          <el-button @click="drawerDetail.times = [startTime, endTime]"
             >重置</el-button
           >
         </el-form-item>
@@ -365,6 +399,7 @@ import {
   statisticsForReceivedHour,
   statisticsForWorkOrder,
   maintainCountBasedOnArea,
+  maintenanceTimes,
 } from "../../lib/api/statistics";
 import { parseTime, getTodoyTimes } from "@/utils";
 export default {
@@ -491,6 +526,8 @@ export default {
       fullscreen: false,
       orderStatusList: orderStatusList,
       workshopSectionSelectList: [],
+      typeSelect: "1",
+      maintenanceTimesData: [],
     };
   },
   components: {
@@ -606,7 +643,22 @@ export default {
             `statisticsForMaintenanceSubmitList:${JSON.stringify(res)}`
           )
         );
+        this.maintenanceTimes(this.typeSelect);
       }
+    },
+    /**
+     * 维修设备影响生产时间统计
+     */
+    maintenanceTimes(type) {
+      maintenanceTimes({
+        startTime: "2020-01-01",
+        type: type,
+      }).then((res) => {
+        let data = res.data;
+        data.map((r) => (r.time = parseTime(r.x)));
+        console.log(`maintenanceTimes:${JSON.stringify(res)}`);
+        this.maintenanceTimesData = data
+      });
     },
     handleClose() {
       this.drawerDetail = {
@@ -902,6 +954,9 @@ export default {
      */
     parseTimeFun() {
       return parseTime(this.startTime);
+    },
+    handleClick(tab, event) {
+      this.maintenanceTimes(tab.name);
     },
   },
 };

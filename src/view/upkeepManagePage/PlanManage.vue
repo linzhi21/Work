@@ -35,7 +35,7 @@
           { props: 'name', label: '保养名称' },
           { props: 'status', label: '状态' },
           { props: 'creatorName', label: '制定人' },
-          { props: 'createDate', label: '制定日期', width: '200px' },
+          { props: 'lastChangeDate', label: '最新编辑时间', width: '200px' },
           {
             label: '操作',
             slotName: 'operation',

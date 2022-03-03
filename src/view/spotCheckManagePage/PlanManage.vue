@@ -41,7 +41,7 @@
             { props: 'name', label: '点检名称' },
             { props: 'hour', label: '总工时' },
             { props: 'creatorName', label: '制定人' },
-            { props: 'createDate', label: '制定日期', width: '200px' },
+            { props: 'lastChangeDate', label: '最新编辑时间', width: '200px' },
             { props: 'status', label: '状态' },
             {
               label: '操作',
@@ -854,12 +854,13 @@ export default {
         type: "warning",
       })
         .then(() => {
-          postPlan(ids, '/released')
+          postPlan(ids, 'released')
             .then((res) => {
               this.$message({
                 type: "success",
                 message: "发布成功!",
               });
+              this.inquireTableData();
             })
             .catch(() => {
               this.$message({

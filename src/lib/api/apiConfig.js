@@ -264,4 +264,5 @@ export default {
     pointCheckCountBasedOnArea: `${urls.business}/statistics/pointCheckCountBasedOnArea`,
     statisticsForReceivedHour: `${urls.business}/statistics/receivedHour`,
     statisticsForWorkOrder: `${urls.business}/statistics/workOrder`,
+    maintenanceTimes: `${urls.business}/statistics/device/maintenanceTimes`,
 }
