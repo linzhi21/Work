@@ -69,6 +69,8 @@ export default {
         },
         { props: "reason", label: "更改理由" },
         { props: "createDate", label: "变更日期" },
+        { props: "creator", label: "编制人" },
+        { props: "approver", label: "审批人" },
       ],
       total: 0,
     };
