@@ -11,7 +11,7 @@
           
         />
         <el-row class="buttom-group" type="flex" justify="end" align="middle">
-          <!-- <el-button class="button-more" size="small">导出</el-button> -->
+          <el-button @click="exportPlanChange" class="button-more" size="small">导出</el-button>
         </el-row>
 
         <!-- 底部表格 -->
@@ -31,6 +31,8 @@
   </div>
 </template>
 <script>
+import axios from "axios";
+import apiConfig from "../../lib/api/apiConfig";
 import { tpmsHeader, tpmsTable } from "../../components";
 import { checkPlanChanges } from "../../lib/api/checkPlan";
 export default {
@@ -42,35 +44,39 @@ export default {
     return {
       equipmentFormList: [
         //  渲染头部功能区的列表
-        { label: "点检单编号", props: "planNo", value: "" },
-        { label: "类型", props: "type", value: "1", type: 'radio', checkList: typeList },
+        { label: "计划编号", props: "planNo", value: "" },
+        { label: "计划名称", props: "planName", value: "" },
+        { label: "开始时间", props: "startTime", value: "", type: "dateFrame" },
+        { label: "结束时间", props: "endTime", value: "", type: "dateFrame" },
       ],
       // 表格的数据
       equipmentTableData: [],
       equipmentTableList: [
-        { props: "planNo", label: "点检单编号" },
+        { props: "planNo", label: "计划编号" },
+        { props: "oldPlanDeviceName", label: "设备名称", width: "140px" },
+        { props: "oldPlanDeviceNo", label: "设备编号", width: "140px" },
         {
           label: "更改前内容",
           children: [
-            { props: "oldPlanDeviceNo", label: "设备(生产线)名称", width: "140px" },
-            { props: "oldExecutionNode", label: "时间部件", width: "100px" },
-            { props: "oldCycleName", label: "周期", width: "140px" },
-            { props: "oldMethod", label: "方法", width: "140px" },
-            { props: "oldContent", label: "内容" },
-          ]
+            { props: "oldExecutionPart", label: "保养部件", width: "100px" },
+            { props: "oldExecutionNode", label: "保养位置", width: "100px" },
+            { props: "oldContent", label: "保养内容细则", width: "100px" },
+            { props: "oldCycleName", label: "保养周期", width: "100px" },
+          ],
         },
         {
           label: "更改后内容",
           children: [
-            { props: "newPlanDeviceNo", label: "设备(生产线)名称", width: "140px" },
-            { props: "newExecutionNode", label: "时间部件", width: "100px" },
-            { props: "newCycleName", label: "周期", width: "140px" },
-            { props: "newMethod", label: "方法", width: "140px" },
-            { props: "newContent", label: "内容" },
-          ]
+            { props: "newExecutionPart", label: "保养部件", width: "100px" },
+            { props: "newExecutionNode", label: "保养位置", width: "100px" },
+            { props: "newContent", label: "保养内容细则", width: "100px" },
+            { props: "newCycleName", label: "保养周期", width: "100px" },
+          ],
         },
         { props: "reason", label: "更改理由" },
-        { props: "createDate", label: "变更日期" }
+        { props: "createDate", label: "变更日期" },
+        { props: "creator", label: "编制人" },
+        { props: "approver", label: "审批人" },
       ],
       total: 0
     };
@@ -94,17 +100,57 @@ export default {
     getTableData() {
       // 获取头部搜索组数据
       let data = this.$refs.tpmsHeader.getData();
-      if(!data.type){
-        this.$message.warning('请选择计划类型');
-        return;
-      }
+      // if(!data.type){
+      //   this.$message.warning('请选择计划类型');
+      //   return;
+      // }
       let pageData = this.$refs.tpmsTable.getData();
-      checkPlanChanges({ ...data, ...pageData }).then(res => {
+      checkPlanChanges({ ...data, ...pageData, type: '1,2' }).then(res => {
         console.log(res);
         this.total = res.data.totalElements;
         this.equipmentTableData = res.data.content;
         // console.log(this.equipmentTableData)
       });
+    },
+    exportPlanChange() {
+      let data = this.$refs.tpmsHeader.getData();
+      let url = `${apiConfig.plan}/planChanges/download`; //请求下载文件的地址
+
+      let token = localStorage.getItem("access_token"); //获取token
+      axios
+        .get(url, {
+          params: {...data, type: "1,2"},
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+          responseType: "blob",
+        })
+        .then((res) => {
+          if (!res) return;
+          const today = "";
+          let fileName = `TPMS-${today}工单详情.xlsx`;
+          const disposition = res.headers["content-disposition"];
+          if (disposition) {
+            const name = disposition.split(";")[1].split("filename=")[1];
+            fileName = decodeURI(name);
+          }
+
+          let blob = new Blob([res.data], {
+            type: "application/vnd.ms-excel;charset=utf-8",
+          });
+          let url = window.URL.createObjectURL(blob);
+          let aLink = document.createElement("a");
+          aLink.style.display = "none";
+          aLink.href = url;
+          aLink.setAttribute("download", fileName); // 下载的文件
+          document.body.appendChild(aLink);
+          aLink.click();
+          document.body.removeChild(aLink);
+          window.URL.revokeObjectURL(url);
+        })
+        .catch((error) => {
+          this.$message.error(error.message);
+        });
     }
   }
 };

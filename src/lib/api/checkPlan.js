@@ -192,3 +192,5 @@ export const updateOrderStatus = (data) => PATCH(data, apiConfig.updateOrderStat
  * @returns 
  */
 export const postPlan = (data, restful) => POST(data, apiConfig.plan, restful);
+
+export const workOrderCompletionController = (data, restful) => GET(data, apiConfig.workOrderCompletion, restful);

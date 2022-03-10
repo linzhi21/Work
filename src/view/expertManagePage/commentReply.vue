@@ -102,9 +102,9 @@
        // 获取头部搜索组数据
        let data = this.$refs.tpmsHeader.getData();
        let pageData = this.$refs.tpmsTable.getData();
-       getAuthLists({...data,...pageData}).then(res=>{
-          this.authLists = res.data.content
-       })
+      //  getAuthLists({...data,...pageData}).then(res=>{
+      //     this.authLists = res.data.content
+      //  })
      },
 
     }

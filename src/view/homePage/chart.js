@@ -1,5 +1,6 @@
 
 import echarts from "echarts";
+import { device } from "../../lib/api/device";
 
 export function deviceChart() {
   alert('123213123');
@@ -46,10 +47,11 @@ export function workorderDashboard(p) {
 
 export function deviceAndEquipment(p) {
   const data = p.data;
-  const equipment = [
-    {
+  let equipment = [];
+  device().then(res => {
+    equipment.push({
       label: '在线设备',
-      value: '761'
+      value: res.data.totalElements
     },
     {
       label: '已修复',
@@ -60,8 +62,8 @@ export function deviceAndEquipment(p) {
       value: data.repairWaitCompletedCount,
       action: true,
       style: {'color': '#f6bb4b'}
-    },
-  ];
+    });
+  });
   return equipment;
 }
 

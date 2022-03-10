@@ -430,3 +430,17 @@ export function getWeek(dt) {
   var week = Math.ceil(totalDays / 7);
   return week;
 }
+
+/**
+ * 获取当天时间 - 0点到23点59
+ * @returns 
+ */
+export function getTodoyTimes() {
+  const start = new Date(new Date(new Date().toLocaleDateString()).getTime());
+  const end = new Date(new Date(new Date().toLocaleDateString()).getTime()+24*60*60*1000-1);
+  const data = {
+    startTime: parseTime(start),
+    endTime: parseTime(end)
+  } 
+  return data;
+}

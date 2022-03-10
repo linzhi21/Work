@@ -38,7 +38,7 @@ export default {
         oldPassword: "", // 旧密码
         newPassword: "", // 新密码
         confirmNewPassword: "" // 确认新密码
-      }
+      },
     };
   },
   created(){
