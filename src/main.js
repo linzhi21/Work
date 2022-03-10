@@ -18,13 +18,9 @@ import './tool/rem.js'
 // 引入全局样式表
 import '@/assets/global.css'
 
-
-
 import './public/element'    // 引入elementUi组件库
 // import './style/theme/index.css'
 Vue.config.productionTip = false
-
-import Viser from 'viser-vue' // 引入viser-vue
 
 Vue.use(Viser)
 
