@@ -527,7 +527,32 @@ export default {
       orderStatusList: orderStatusList,
       workshopSectionSelectList: [],
       typeSelect: "1",
-      maintenanceTimesData: [],
+      maintenanceTimesData: [
+        // {
+        //   deviceName: "充电器电动葫芦",
+        //   x: "2022-02-09 14:35:10",
+        //   breakdownTime: "10",
+        //   times: "1",
+        // },
+        // {
+        //   deviceName: "常规风车(AB-AFO5750DT1)",
+        //   x: "2022-01-14 09:46:18",
+        //   breakdownTime: "2",
+        //   times: "1",
+        // },
+        // {
+        //   deviceName: "手持设备HDT –H78BA14A",
+        //   x: "2021-12-23 15:13:18",
+        //   breakdownTime: "5",
+        //   times: "1",
+        // },
+        // {
+        //   deviceName: "手持设备HDT –H78BAK03",
+        //   x: "2021-12-23 15:13:18",
+        //   breakdownTime: "5",
+        //   times: "1",
+        // },
+      ],
     };
   },
   components: {
@@ -535,8 +560,8 @@ export default {
   },
   mounted() {
     const _this = this;
-    this.workorderInfo();
-    this.searchWorkshopSectionSelect();
+    // this.workorderInfo();
+    // this.searchWorkshopSectionSelect();
 
     maintenanceManage["getLists"]({ status: "1,2,4,8" }).then((res) => {
       this.unrequiredEquipmentData = res.data.content;
@@ -657,7 +682,7 @@ export default {
         let data = res.data;
         data.map((r) => (r.time = parseTime(r.x)));
         console.log(`maintenanceTimes:${JSON.stringify(res)}`);
-        this.maintenanceTimesData = data
+        this.maintenanceTimesData = data;
       });
     },
     handleClose() {
