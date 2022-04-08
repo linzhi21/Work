@@ -16,6 +16,8 @@ export default {
     accessory: 'http://tpms-gateway-runtime.apps.ci-test.ocp.sitc/accessory',
     // /** 资料库 */
     database: 'http://tpms-gateway-runtime.apps.ci-test.ocp.sitc/database',
+    // /** 专家智库 */
+    expert: 'http://tpms-gateway-runtime.apps.ci-test.ocp.sitc/expert',
     /** 文件服务器地址 */
     accessoryFile: 'http://10.160.245.70:9000/tpms',
     log: 'http://tpms-gateway-runtime.apps.ci-test.ocp.sitc/log',  // 日志地址
