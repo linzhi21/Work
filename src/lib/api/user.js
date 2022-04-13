@@ -23,7 +23,7 @@ export const login = async (data) => {
 };
 
 export const ivLogin = async (data) => {
-  const res = await GET_WITHOUTTOKEN(data, apiConfig.ivLogin);
+  const res = await GET(data, apiConfig.ivLogin);
 
   $store.commit("SET_ACCESS_TOKEN", res.access_token);
   $store.commit("SET_TOKEN_TYPE", res.token_type);
