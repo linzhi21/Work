@@ -12,13 +12,14 @@ service.interceptors.request.use(
 
     config => {
         const access_token = localStorage.getItem('access_token');
-        config.headers.Authorization = 'Bearer ' + access_token;
+        config.headers.Authorization = 'Bearer ' + access_token;       
         const newurl =config.url.substring(config.url.length-9);
         if (newurl == "importURL") {
             config.headers['Content-Type'] = 'multipart/form-data; boundary=<calculated when request is sent>';
         } else {
             config.headers['Content-Type'] = 'application/json';
         }
+        config.headers['IV-USER']='EXT42927';
         return config;
     },
     error => {
