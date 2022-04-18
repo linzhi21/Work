@@ -19,7 +19,6 @@ service.interceptors.request.use(
         } else {
             config.headers['Content-Type'] = 'application/json';
         }
-        config.headers['IV-USER']='EXT42927';
         return config;
     },
     error => {
