@@ -692,7 +692,7 @@ export default {
     },
     /** 导出 */
     download() {
-      let url = `${apiConfig.systemUrl}/tpms/business/maintenance/export`; //请求下载文件的地址
+      let url = `${apiConfig.systemUrl}/business/maintenance/export`; //请求下载文件的地址
       let token = localStorage.getItem("access_token"); //获取token
       axios
         .get(url, {
