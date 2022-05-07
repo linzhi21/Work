@@ -280,6 +280,12 @@
         this.dialogVisible = true
         this.dialogTitleTxt = '新增'
         this.dialogType = 'add'
+
+        this.form={};
+        let startTime=this.form.startTime.split(':');
+        let endTime=this.form.endTime.split(':');
+        this.form.startTime=new Date(0,0,0,startTime[0],startTime[1],startTime[2])
+        this.form.endTime=new Date(0,0,0,endTime[0],endTime[1],endTime[2])
       },
       editDialog(row){
         console.log(row)
@@ -314,7 +320,7 @@
       ok(dialogType) {
         var _self = this
         let form=this.form;
-        form.workshopId=this.form.workshopName;
+        form.workshopId=this.form.workshopId;
         delete form.workshopName
         console.log(this.form)
         this.$refs['ruleForm'].validate((valid) => {

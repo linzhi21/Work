@@ -80,7 +80,7 @@
         label-width="120px"
         :disabled="dialog.disabled"
       >
-        <el-row style="background: #f5f5f5; padding: 0.2rem">
+        <el-row style="background: #f5f5f5; padding: 0.2rem; ">
           <el-col :span="12">
             <el-form-item label="设备名称" prop="deviceName">
               <!-- <el-input v-model="dialog.data.deviceName"></el-input> -->
@@ -293,6 +293,7 @@
               <img width="100%" :src="dialogImageUrl" alt />
             </el-dialog>
           </el-form-item>-->
+        </el-row>
           <!-- 底部表格 -->
           <tpms-table
             ref="tpmsTable"
@@ -316,7 +317,6 @@
             @getTableData="dialog.data.spares"
           >
           </tpms-table>
-        </el-row>
       </el-form>
       <el-row type="flex" justify="center">
         <el-button @click="$refs.dialog.resetFields(), (dialog.isShow = false)"
@@ -547,6 +547,7 @@ export default {
     },
     /** 点击新增按钮 */
     showAddModal() {
+      this.dialog.data = {};
       const { id, name, factoryId, workshopId } =
         this.$store.state.user.userInfo.principal;
       this.dialogTitle = "新增";

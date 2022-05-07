@@ -136,7 +136,7 @@
         })
         this.userLists = userLists
         this.formList.push({
-          props: 'managerId',
+          props: 'managerName',
           label: '车间负责人',
           span: 24,
           type: 'checkbox',

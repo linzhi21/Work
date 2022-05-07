@@ -393,14 +393,14 @@ export default {
             });
           });
           this.searchFormList[1].checkList = workshopSectionLists;
-          // console.log(workshopSectionLists);
+          console.log(workshopSectionLists);
           this.formList[4].checkList = workshopSectionLists;
           this.form.workshopSectionName = "";
         });
         // this.getWorkshopTeamManage(id)
 
       } else {
-        workshopSectionManage["getLists"](null).then((res) => {
+        workshopSectionManage["getLists"]({size: 100}).then((res) => {
           let workshopSectionLists = [];
           res.data.content.forEach((val) => {
             workshopSectionLists.push({
@@ -498,8 +498,8 @@ export default {
     ok(dialogType) {
       var _self = this;
       let form = this.form;
-      this.form.workshopId = this.form.workshopName;
-      this.form.workshopSectionId = this.form.workshopSectionName;
+      this.form.workshopId = this.form.workshopId;
+      this.form.workshopSectionId = this.form.workshopSectionId;
       // this.form.workshopTeamId=this.workshopTeamName
       delete form.workshopName;
       delete form.workshopSectionName;

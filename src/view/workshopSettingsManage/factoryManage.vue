@@ -256,34 +256,40 @@ export default {
         });
       });
       this.userLists = userLists;
-      this.formList.push({
-        props: "managerId",
-        label: "工厂负责人",
-        span: 24,
-        type: "checkbox",
-        filterable: true,
-        checkList: userLists,
-        change(result) {
-          let workNo = userLists.filter(wk => {
-            return wk.value == result;
-          });
-          _self.managerworkNo = workNo[0].workNo;
-        }
-      });
-      this.workShopFormList.push({
-        props: "managerId",
-        label: "车间负责人",
-        span: 24,
-        type: "checkbox",
-        filterable: true,
-        checkList: userLists,
-        change(result) {
-          let workNo = userLists.filter(wk => {
-            return wk.value == result;
-          });
-          _self.managerworkNo = workNo[0].workNo;
-        }
-      });
+      if(this.formList.length <= 5){
+        this.formList.push({
+          props: "managerId",
+          label: "工厂负责人",
+          span: 24,
+          type: "checkbox",
+          filterable: true,
+          checkList: userLists,
+          change(result) {
+            let workNo = userLists.filter(wk => {
+              return wk.value == result;
+            });
+            _self.managerworkNo = workNo[0].workNo;
+          }
+        });
+      }
+      
+      if(this.workShopFormList.length <= 5) {
+        this.workShopFormList.push({
+          props: "managerId",
+          label: "车间负责人",
+          span: 24,
+          type: "checkbox",
+          filterable: true,
+          checkList: userLists,
+          change(result) {
+            let workNo = userLists.filter(wk => {
+              return wk.value == result;
+            });
+            _self.managerworkNo = workNo[0].workNo;
+          }
+        });
+      }
+      
     });
   },
   methods: {
@@ -294,7 +300,7 @@ export default {
     /**点击删除按钮**/
     del(row, type) {
       let key = type == 1 ? factoryManage : workshopManage;
-      console.log(row.id);
+      console.log(row.id); 
       this.$confirm("是否确认删除?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
@@ -302,7 +308,6 @@ export default {
       })
         .then(() => {
           key.remove(null, row.id).then(res => {
-            console.log(res);
             if (res.data >= 1) {
               this.$message({
                 type: "success",
@@ -321,9 +326,10 @@ export default {
               });
             }
             this.getTableData();
+          }).catch((err) =>{
           });
         })
-        .catch(() => {
+        .catch((err) => {
           this.$message({
             type: "info",
             message: "已取消删除"
@@ -358,6 +364,7 @@ export default {
       let formData = new FormData();
       formData.append("file", file);
       baseImport(formData).then(res => {
+        this.getTableData();
         this.$message.success("导入成功");
       });
     },
@@ -414,7 +421,7 @@ export default {
           this.managerworkNo = workNo[0].workNo;
         }
         this.dialogVisible = true;
-        this.dialogTitleTxt = "编辑车间";
+        this.dialogTitleTxt = "编辑工厂";
         this.dialogType = "edit";
         this.lookDetail = false;
         this.getTableData();
@@ -430,9 +437,12 @@ export default {
           this.managerworkNo = workNo[0].workNo;
         }
         this.workshopdialogVisible = true;
-        this.workshopdialogTitleTxt = "查看车间";
+        this.workshopdialogTitleTxt = "编辑车间";
         this.dialogType = "edit";
+
+        this.factoryName = res.data.factoryName;
         this.lookDetail = false;
+        this.getTableData();
       });
     },
     lookworkshopDialog(row) {
@@ -441,9 +451,12 @@ export default {
         let workNo = this.userLists.filter(wk => {
           return wk.value == row.id;
         });
-        this.managerworkNo = workNo[0].workNo;
+        if (workNo.length) {
+          this.managerworkNo = workNo[0].workNo;
+        }
         this.workshopdialogVisible = true;
-        this.workshopdialogTitleTxt = "编辑";
+        this.workshopdialogTitleTxt = "查看";
+        this.dialogVisible = true;
         this.dialogType = "edit";
         this.lookDetail = true;
       });
@@ -507,6 +520,7 @@ export default {
     },
     addWorkShopDialog(row) {
       this.workshopdialogVisible = true;
+      console.log(row)
       this.factoryName = row.name;
       this.workShopForm.factoryId = row.id;
       this.workshopdialogTitleTxt = "新增车间";

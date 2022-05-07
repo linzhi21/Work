@@ -256,6 +256,7 @@
                   :file-list="item.planPictures"
                   :action="uploadImgUrl"
                   :headers="uploadHeaders"
+                  accept=".jpg, .png, jpeg"
                   :on-success="
                     (res, file) => handleAvatarSuccess(res, file, item)
                   "
@@ -1484,13 +1485,24 @@ export default {
     },
     // 图片上传之前
     beforeAvatarUpload(file) {
-      console.log(file);
       const isLt10M = file.size / 1024 / 1024 < 10;
 
+      var testmsg = file.name.substring(file.name.lastIndexOf('.')+1)
+      const extension = testmsg === 'png'
+      const extension2 = testmsg === 'jepg'
+      const extension3 = testmsg === 'jpg'
+
+      if(!extension && !extension2 && !extension3) {
+        this.$message({
+            message: '上传文件只能是 png、jepg、jpg格式的文件',
+            type: 'warning'
+        });
+      }
+      
       if (!isLt10M) {
         this.$message.error("上传头像图片大小不能超过 10M!");
       }
-      return isLt10M;
+      return (extension || extension2 || extension3) && isLt10M;
     },
   },
 };

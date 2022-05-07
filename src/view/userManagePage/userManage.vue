@@ -211,13 +211,13 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-button :disabled="userInfo.includes('USER_EDIT_OPERATOR')" type="warning" @click.prevent="removeDomain(formObj)" size="small">删除</el-button>
+            <el-button :disabled="userInfo.includes('USER_EDIT_OPERATOR')" v-if="dialogTitleTxt !== '查看' " type="warning" @click.prevent="removeDomain(formObj)" size="small">删除</el-button>
           </el-col>
         </el-row>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button :disabled="userInfo.includes('USER_EDIT_OPERATOR')" @click="addDomain">新增工厂信息</el-button>
+        <el-button :disabled="userInfo.includes('USER_EDIT_OPERATOR')" v-if="dialogTitleTxt !== '查看' " @click="addDomain">新增工厂信息</el-button>
         <el-button v-if="dialogTitleTxt==='编辑'" type="primary" @click="edit()">确 定</el-button>
         <el-button v-if="dialogTitleTxt==='添加用户'" type="primary" @click="beforeAdd()">确 定</el-button>
       </div>
@@ -703,7 +703,9 @@ export default {
             item.selectLists.workStationList = res.data;
           });
         });
-        
+        if(dialogTitleTxt == '查看') {
+          // this.userInfo = false
+        }
         this.editForm = data;
         this.dialogVisible = true;
         this.dialogTitleTxt = dialogTitleTxt;
