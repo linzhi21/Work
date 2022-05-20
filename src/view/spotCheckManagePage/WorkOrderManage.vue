@@ -22,7 +22,12 @@
           @getTableData="getTableData"
         >
           <template slot="operation" slot-scope="scope">
-            <span class="button cursor" @click="view(scope.row, '查看')">查看</span>
+            <span class="button cursor" @click="view(scope.row, '查看')"
+              >查看</span
+            >
+            <span class="button cursor" @click="exportOrder(scope.row)"
+              >导出记录</span
+            >
             <span
               class="button cursor"
               @click="view(scope.row, '审批')"
@@ -164,11 +169,7 @@
         </el-form>
       </el-row>
 
-      <div
-        v-if="title === '审批'"
-        slot="footer"
-        class="dialog-footer"
-      >
+      <div v-if="title === '审批'" slot="footer" class="dialog-footer">
         <el-button @click="orderDetailIsShow = false">取 消</el-button>
         <el-button type="warning" @click="approval(orderDetail, 7)"
           >驳回</el-button
@@ -188,6 +189,7 @@ import {
   stopWorkorders,
   planStatusSelect,
   updateOrderStatus,
+  exportExcel,
 } from "../../lib/api/checkPlan";
 import {
   factoryManage,
@@ -195,6 +197,10 @@ import {
   workStationManage,
   workshopSectionManage,
 } from "../../lib/api/workshopSettingsManage";
+import apiConfig from "../../lib/api/apiConfig";
+import axios from "../../lib/axios";
+
+import { importFile } from "../../lib/api/upkeepManagePage";
 export default {
   data() {
     // 类型列表
@@ -215,15 +221,14 @@ export default {
       // workStationManage.getNames,//工位
       // workshopSectionManage.getNames,//工段
     ];
-    let [
-      factoryList /** workshopList, stationList, sectionList */,
-    ] = getListFuncs.map((getListFunc) => {
-      let arr = [];
-      getListFunc(null).then((res) => {
-        arr.push(...res.data);
+    let [factoryList /** workshopList, stationList, sectionList */] =
+      getListFuncs.map((getListFunc) => {
+        let arr = [];
+        getListFunc(null).then((res) => {
+          arr.push(...res.data);
+        });
+        return arr;
       });
-      return arr;
-    });
     /** 表格状态码转文字 */
     function statusTranslate(val) {
       if (val == 1) return "待接单";
@@ -309,7 +314,7 @@ export default {
       //工单详情
       orderDetail: {},
       total: 0,
-      title: '查看',
+      title: "查看",
     };
   },
   components: {
@@ -403,6 +408,44 @@ export default {
       });
       this.orderDetailIsShow = true;
       this.title = title;
+    },
+    /** 导出 */
+    exportOrder(row) {
+      let url = `${apiConfig.orderMobile}/workorder/download`; //请求下载文件的地址
+      let token = localStorage.getItem("access_token"); //获取token
+      axios
+        .get(url, {
+          params: { workOrderId: row.id},
+          responseType: "blob",
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        })
+        .then((res) => {
+          if (!res) return;
+          let fileName = "当月工单情况.xls";
+          const disposition = res.headers["content-disposition"];
+          if (disposition) {
+            const name = disposition.split(";")[1].split("filename=")[1];
+            fileName = decodeURI(name);
+          }
+
+          let blob = new Blob([res.data], {
+            type: "application/vnd.ms-excel;charset=utf-8",
+          });
+          let url = window.URL.createObjectURL(blob);
+          let aLink = document.createElement("a");
+          aLink.style.display = "none";
+          aLink.href = url;
+          aLink.setAttribute("download", fileName); // 下载的文件
+          document.body.appendChild(aLink);
+          aLink.click();
+          document.body.removeChild(aLink);
+          window.URL.revokeObjectURL(url);
+        })
+        .catch((error) => {
+          this.$message.error(error);
+        });
     },
     /** 暂停 */
     stop(row) {

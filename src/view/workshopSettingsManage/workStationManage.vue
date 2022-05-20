@@ -110,6 +110,7 @@ import {
 export default {
   data() {
     return {
+      workshopId: 0,
       dialogVisible: false,
       dialogTitleTxt: "",
       dialogType: "",
@@ -379,10 +380,12 @@ export default {
     },
     // 获取所属工段
     getworkshopSection(id, props) {
+      this.workshopId = id
       console.log(id, props);
       if (props == "workshopName") {
         // 获取所属工段
         workshopSectionManage["getLists"]({ workshopId: id }).then((res) => {
+          console.log(id)
           let workshopSectionLists = [];
           res.data.content.forEach((val) => {
             workshopSectionLists.push({
@@ -393,7 +396,6 @@ export default {
             });
           });
           this.searchFormList[1].checkList = workshopSectionLists;
-          console.log(workshopSectionLists);
           this.formList[4].checkList = workshopSectionLists;
           this.form.workshopSectionName = "";
         });
@@ -479,7 +481,6 @@ export default {
         this.dialogVisible = true;
         this.dialogTitleTxt = "编辑";
         this.dialogType = "edit";
-        console.log(res.data);
       });
       this.getworkshopSection(row.id,'workshopName')
     },
@@ -498,7 +499,7 @@ export default {
     ok(dialogType) {
       var _self = this;
       let form = this.form;
-      this.form.workshopId = this.form.workshopId;
+      this.form.workshopId = this.workshopId;
       this.form.workshopSectionId = this.form.workshopSectionId;
       // this.form.workshopTeamId=this.workshopTeamName
       delete form.workshopName;

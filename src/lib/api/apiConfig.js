@@ -125,7 +125,7 @@ export default {
     faultType:`${urls.business}/fault-type`,
     // 紧急程度管理
     emergencyDegree:`${urls.business}/emergency-degree`,
-    systemUrl:`${urls.systemUrl}`,
+    systemUrl:`${urls.system}`,
     // 用户管理
     userManage: `${urls.system}/user`,
     //文件服务器地址

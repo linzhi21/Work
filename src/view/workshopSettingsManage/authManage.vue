@@ -172,8 +172,8 @@ export default {
           rows: 5,
         },
         {
-          props: "valueNo",
-          label: "权限值",
+          props: "sort",
+          label: "序号",
           span: 24,
           type: "input",
         },
@@ -308,6 +308,7 @@ export default {
       this.dialogVisible = true;
       this.dialogTitleTxt = "新增";
       this.dialogType = "add";
+      this.form = {}
     },
     addFunctionDialog(row) {
       this.dialogVisible = true;

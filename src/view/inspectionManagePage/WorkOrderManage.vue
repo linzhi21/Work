@@ -151,6 +151,9 @@ import {
   workStationManage,
   workshopSectionManage,
 } from "../../lib/api/workshopSettingsManage";
+import apiConfig from "../../lib/api/apiConfig";
+import axios from "../../lib/axios";
+
 export default {
   data() {
     //待接单就是1,待处理就是2、3和7,审批中是4,5,已完成就是6
@@ -364,7 +367,7 @@ export default {
      * // TODO 
      */
     exportOrder(row) {
-       let url = `${apiConfig.orderMobile}/workorder/download?type=3?workOrderId=${row.id}`; //请求下载文件的地址
+       let url = `${apiConfig.orderMobile}/workorder/download?type=3`; //请求下载文件的地址
       let token = localStorage.getItem("access_token"); //获取token
       axios.get(url, {
         params: {workOrderId: row.id},

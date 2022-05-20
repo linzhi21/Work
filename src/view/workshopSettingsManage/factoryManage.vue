@@ -273,7 +273,7 @@ export default {
         });
       }
       
-      if(this.workShopFormList.length <= 5) {
+      if(this.workShopFormList.length <= 4) {
         this.workShopFormList.push({
           props: "managerId",
           label: "车间负责人",
@@ -410,6 +410,7 @@ export default {
       this.dialogTitleTxt = "新增";
       this.dialogType = "add";
       this.lookDetail = false;
+      this.form = {}
     },
     editDialog(row) {
       factoryManage["getOne"]("", row.id).then(res => {
@@ -456,9 +457,8 @@ export default {
         }
         this.workshopdialogVisible = true;
         this.workshopdialogTitleTxt = "查看";
-        this.dialogVisible = true;
-        this.dialogType = "edit";
-        this.lookDetail = true;
+        this.factoryName = res.data.factoryName;
+
       });
     },
     lookDialog(row) {

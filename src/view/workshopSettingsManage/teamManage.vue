@@ -354,6 +354,7 @@
         this.dialogVisible = true
         this.dialogTitleTxt = '新增'
         this.dialogType = 'add'
+        this.form = {}
       },
       editDialog(row) {
         workshopTeamManage['getOne']('', row.id).then(res => {

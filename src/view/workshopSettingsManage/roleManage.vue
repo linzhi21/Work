@@ -319,6 +319,7 @@ export default {
       if (this.$refs.tree) {
         this.$refs.tree[0].setCheckedKeys([]);
       }
+      this.form = {}
     },
     dialogClose() {
       this.dialogVisible = false;

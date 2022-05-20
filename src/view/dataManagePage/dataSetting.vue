@@ -30,6 +30,7 @@
         :column_index="true"
         :total="total"
         @inquireTableData="inquireTableData"
+        @getTableData="getTableData"
       >
         <template slot-scope="{row}">
           <span class="button cursor" @click="addDialog(drawer = true, 'edit', row)">编辑</span>
@@ -78,21 +79,12 @@ export default {
       searchFormList: [
         //  渲染头部功能区的列表
         {
-          label: "工厂名称",
-          props: "factoryId",
+          label: "类型名称",
+          props: "name",
           value: "",
           placeholder: "",
-          type: "radio",
-          checkList: [{ label: "", id: 1 }]
+          type: "input",
         },
-        {
-          label: "车间名称",
-          props: "workshopId",
-          value: "",
-          placeholder: "",
-          type: "radio",
-          checkList: [{ label: "", id: 1 }]
-        }
       ],
       dataTableList: [
         {
@@ -195,7 +187,7 @@ export default {
         cancelButtonText: "取消",
         type: "warning"
       }).then(() => {
-        dataBaseTypeApi['del']({ids: r.id}).then(() => {
+        dataBaseTypeApi['del'](null, r.id).then(() => {
           this.$message({
               type: "success",
               message: "操作成功!"

@@ -207,7 +207,7 @@ const getListFuncs = [
   expertTypeManage.getList
 ];
 
-const [themeTypeList, expertTypeList] = getListFuncs.map(func => {
+const [expertTypeList ,themeTypeList] = getListFuncs.map(func => {
   const arr = [];
   const data = {
     page: 0,
@@ -230,8 +230,6 @@ export default {
         { label: "主题名称", props: "name", value: "" },
         { label: "话题类型", props: "type", value: "", type: 'radio', checkList: [{ label: '分享', id: 1 }, { label: '提问', id: 2 }] },
         { label: "主题类型", props: "themeTypeId", value: "", type: 'radio', checkList: themeTypeList },
-        { label: "专家类型", props: "expertTypeId", value: "", type: 'radio', checkList: expertTypeList },
-        { label: "关键字", props: "keyword", value: "" }
       ],
       themeTypeList,//主题类型
       expertTypeList,//专家类型

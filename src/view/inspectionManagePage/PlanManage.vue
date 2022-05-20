@@ -290,13 +290,14 @@
                     v-show="scope.row.editShow"
                     v-model="scope.row.executionNode"
                   ></el-input>
-                  <span v-show="!scope.row.editShow"
-                  :style="{
+                  <span
+                    v-show="!scope.row.editShow"
+                    :style="{
                       'text-decoration':
                         scope.row.deleted === true ? 'line-through' : '',
-                    }">{{
-                    scope.row.executionNode
-                  }}</span>
+                    }"
+                    >{{ scope.row.executionNode }}</span
+                  >
                 </template>
               </el-table-column>
               <el-table-column align="center" label="内容" width="300">
@@ -305,13 +306,14 @@
                     v-show="scope.row.editShow"
                     v-model="scope.row.content"
                   ></el-input>
-                  <span v-show="!scope.row.editShow"
-                  :style="{
+                  <span
+                    v-show="!scope.row.editShow"
+                    :style="{
                       'text-decoration':
                         scope.row.deleted === true ? 'line-through' : '',
-                    }">{{
-                    scope.row.content
-                  }}</span>
+                    }"
+                    >{{ scope.row.content }}</span
+                  >
                 </template>
               </el-table-column>
               <el-table-column align="center" label="工时(s)">
@@ -321,11 +323,14 @@
                     v-model="scope.row.hour"
                     @change="calcTime(item)"
                   ></el-input>
-                  <span v-show="!scope.row.editShow"
-                  :style="{
+                  <span
+                    v-show="!scope.row.editShow"
+                    :style="{
                       'text-decoration':
                         scope.row.deleted === true ? 'line-through' : '',
-                    }">{{ scope.row.hour }}</span>
+                    }"
+                    >{{ scope.row.hour }}</span
+                  >
                 </template>
               </el-table-column>
               <el-table-column align="center" label="方法">
@@ -334,13 +339,14 @@
                     v-show="scope.row.editShow"
                     v-model="scope.row.method"
                   ></el-input>
-                  <span v-show="!scope.row.editShow"
-                  :style="{
+                  <span
+                    v-show="!scope.row.editShow"
+                    :style="{
                       'text-decoration':
                         scope.row.deleted === true ? 'line-through' : '',
-                    }">{{
-                    scope.row.method
-                  }}</span>
+                    }"
+                    >{{ scope.row.method }}</span
+                  >
                 </template>
               </el-table-column>
               <el-table-column align="center" label="周期" width="110">
@@ -392,7 +398,9 @@
                 fixed="right"
               >
                 <template slot-scope="scope">
-                  <el-button size="small" @click="scope.row.editShow = true"
+                  <el-button
+                    size="small"
+                    @click="scope.row.editShow = true"
                     :disabled="scope.row.deleted"
                     >编辑</el-button
                   >
@@ -1519,18 +1527,18 @@ export default {
       // console.log(file);
       const isLt10M = file.size / 1024 / 1024 < 10;
 
-      var testmsg = file.name.substring(file.name.lastIndexOf('.')+1)
-      const extension = testmsg === 'png'
-      const extension2 = testmsg === 'jepg'
-      const extension3 = testmsg === 'jpg'
+      var testmsg = file.name.substring(file.name.lastIndexOf(".") + 1);
+      const extension = testmsg === "png";
+      const extension2 = testmsg === "jepg";
+      const extension3 = testmsg === "jpg";
 
-      if(!extension && !extension2 && !extension3) {
+      if (!extension && !extension2 && !extension3) {
         this.$message({
-            message: '上传文件只能是 png、jepg、jpg格式的文件',
-            type: 'warning'
+          message: "上传文件只能是 png、jepg、jpg格式的文件",
+          type: "warning",
         });
       }
-      
+
       if (!isLt10M) {
         this.$message.error("上传头像图片大小不能超过 10M!");
       }
@@ -1554,7 +1562,7 @@ export default {
         type: "warning",
       })
         .then(() => {
-          postPlan(ids, 'released')
+          postPlan(ids, "released")
             .then((res) => {
               this.$message({
                 type: "success",

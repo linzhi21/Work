@@ -94,7 +94,7 @@
             <el-autocomplete
               v-model="formObj.deviceName"
               :fetch-suggestions="querySearchAsync"
-              placeholder="请输入内容"
+              placeholder="请输入内容，搜索设备"
               @select="handleSelect"
             ></el-autocomplete>
           </el-form-item>

@@ -426,8 +426,7 @@ export default {
       formData.append("file", file);
       importData(formData).then(res => {
         console.log(res);
-
-        this.$message.error(JSON.stringify(res.data));
+        // this.$message.error(JSON.stringify(res.data));
         this.getTableData();
       });
     },

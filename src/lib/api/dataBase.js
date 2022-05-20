@@ -19,7 +19,7 @@ export const dataBaseApi = {
 
 export const dataBaseTypeApi = {
   add: (data) => POST(data, apiConfig.dataBaseType), // 新增 资料类型
-  del: (data) => DELETE(data, apiConfig.dataBaseType), // 删除 资料类型
+  del: (data ,ids) => DELETE(data, `${apiConfig.dataBaseType}?ids=${ids}`), // 删除 资料类型
   select: (data) => GET(data, apiConfig.dataBaseType),// 查看 资料类型
   updateById: (id, data) => PATCH(data, apiConfig.dataBaseType + '/' + id), // 修改 资料类型
   selectById: (data) => GET(data, apiConfig.dataBaseType + '/' + data), // 查看 资料类型
