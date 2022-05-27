@@ -11,6 +11,7 @@
           :data='authLists'
           :columns='authTableList'
           :column_index='false'
+          @getTableData="getTableData"
           @inquireTableData='inquireTableData'
         >
           <template slot-scope="{row}">

@@ -26,7 +26,6 @@
         :paginationIsShow="true"
         :lazy="lazy"
         :load="lazyLoad"
-        :row-key="rowKey"
         :data="tableLists"
         :columns="tableHeaderList"
         :total="total"
@@ -36,6 +35,8 @@
       >
         <template slot="operation" slot-scope="{ row }">
           <span class="button cursor" @click="editDialog(row)">编辑</span>
+          <el-divider direction="vertical"></el-divider>
+          <span class="button cursor" @click="lookDialog(row)">子模块</span>
           <el-divider direction="vertical"></el-divider>
           <span class="button cursor" @click="addFunctionDialog(row)"
             >新增子模块</span
@@ -109,6 +110,67 @@
         <el-button type="primary" @click="ok(dialogType)">确 定</el-button>
       </div>
     </el-dialog>
+    <!-- 一级子模块 -->
+    <el-dialog
+      :title="dialogChildTitleTxt"
+      :visible.sync="dialogChild"
+      :before-close="dialogChildClose"
+    >
+      <!-- 底部表格 -->
+      <tpms-table
+        ref="tpmsTable"
+        :paginationIsShow="true"
+        :lazy="lazy"
+        :load="lazyLoad"
+        :data="childTableData"
+        :columns="tableHeaderList"
+        :total="total"
+         width="80%"
+        :column_index="false"
+        @inquireTableData="inquireTableData"
+        @getTableData="getTableData"
+      >
+        <template slot="operation" slot-scope="{ row }">
+          <span class="button cursor" @click="editDialog(row)">编辑</span>
+          <el-divider direction="vertical"></el-divider>
+          <span class="button cursor" @click="lookChildDialog(row)">子模块</span>
+          <el-divider direction="vertical"></el-divider>
+          <span class="button cursor" @click="addFunctionDialog(row)"
+            >新增子模块</span
+          >
+          <!-- <el-divider direction="vertical"></el-divider> -->
+          <!-- <span class="button cursor" @click="change(row)">{{row.enable?'禁用':'启用'}}</span> -->
+        </template>
+      </tpms-table>
+    </el-dialog>
+
+    <!-- 二级子模块 -->
+    <el-dialog
+      :title="dialogGrandsonTitleTxt"
+      :visible.sync="dialogGrandson"
+      :before-close="dialogGrandsonClose"
+    >
+      <!-- 底部表格 -->
+      <tpms-table
+        ref="tpmsTable"
+        :paginationIsShow="true"
+        :lazy="lazy"
+        :load="lazyLoad"
+        :data="childTableData"
+        :columns="tableHeaderList"
+        :total="total"
+         width="80%"
+        :column_index="false"
+        @inquireTableData="inquireTableData"
+        @getTableData="getTableData"
+      >
+        <template slot="operation" slot-scope="{ row }">
+          <span class="button cursor" @click="editDialog(row)">编辑</span>
+          <!-- <el-divider direction="vertical"></el-divider> -->
+          <!-- <span class="button cursor" @click="change(row)">{{row.enable?'禁用':'启用'}}</span> -->
+        </template>
+      </tpms-table>
+    </el-dialog>
   </div>
 </template>
 
@@ -124,8 +186,16 @@ export default {
     return {
       treeId: 1,
       dialogVisible: false,
+      childTableData: "",
       dialogTitleTxt: "",
       dialogType: "",
+      dialogChild: false,
+      dialogChildTitleTxt: "",
+      dialogChildType: "",
+      dialogGrandson: false,
+      dialogGrandsonType: "",
+      dialogGrandsonTitleTxt:"",
+      childId:"",
       total: 0,
       load: "lazyLoad",
       rowKey: "id",
@@ -193,22 +263,6 @@ export default {
             },
           ],
         },
-        {
-          props: "enabled",
-          label: "状态",
-          span: 24,
-          type: "radio",
-          radioList: [
-            {
-              label: "启用",
-              id: true,
-            },
-            {
-              label: "禁用",
-              id: false,
-            },
-          ],
-        },
       ],
       tableLists: [],
       searchFormList: [
@@ -220,23 +274,6 @@ export default {
           value: "",
           placeholder: "请选择类型",
           type: "input",
-        },
-        {
-          label: "状态",
-          props: "enabled",
-          value: "",
-          placeholder: "请选择状态",
-          type: "radio",
-          checkList: [
-            {
-              label: "启用",
-              id: true,
-            },
-            {
-              label: "禁用",
-              id: false,
-            },
-          ],
         },
       ],
       tableHeaderList: [
@@ -263,6 +300,7 @@ export default {
           width: "200px",
         },
       ],
+      lastloadNodeMap: new Map(),
       loadNodeMap: new Map(),
     };
   },
@@ -308,7 +346,7 @@ export default {
       this.dialogVisible = true;
       this.dialogTitleTxt = "新增";
       this.dialogType = "add";
-      this.form = {}
+      this.form = {};
     },
     addFunctionDialog(row) {
       this.dialogVisible = true;
@@ -323,9 +361,38 @@ export default {
       this.dialogType = "edit";
       this.form = deepClone(row);
     },
+    lookDialog(row) {
+      this.dialogChild = true;
+      this.dialogChildTitleTxt = row.name + "-" + "权限管理";
+      this.dialogGrandsonType = "look";
+      this.childResultdata;
+      this.childId = row.id;
+      authManage["getParentChild"]("", this.childId).then((res) => {
+        let resultdata = res.data;
+        console.log(resultdata);
+        this.childTableData = resultdata;
+        resultdata.forEach((val) => {
+          val.hasChildren = "true";
+        });
+      });
+    },
+    lookChildDialog(row) {
+      this.dialogGrandson = true;
+      this.dialogGrandsonTitleTxt = row.name + "-" + "权限管理";
+      this.dialogGrandsonType = "look";
+      this.childResultdata;
+      this.childId = row.id;
+      authManage["getParentChild"]("", this.childId).then((res) => {
+        let resultdata = res.data;
+        console.log(resultdata);
+        this.childTableData = resultdata;
+        resultdata.forEach((val) => {
+          val.hasChildren = "true";
+        });
+      });
+    },
     ok(dialogType) {
       var _self = this;
-
       authManage[dialogType](this.form).then((res) => {
         this.dialogVisible = false;
         this.parentId = null;
@@ -335,6 +402,15 @@ export default {
           // this.lazyLoad(this.tree)
           this.refreshTreeNode();
         }, 3000);
+
+          authManage["getParentChild"]("", this.childId).then((res) => {
+          let resultdata = res.data;
+          console.log(resultdata);
+          this.childTableData = resultdata;
+          resultdata.forEach((val) => {
+            val.hasChildren = "true";
+          });
+        });
 
         this.form = {
           name: "",
@@ -353,8 +429,11 @@ export default {
     },
     lazyLoad(tree, treeNode, resolve) {
       this.tree = tree;
-        // 缓存当前 Node   **重要
-      this.loadNodeMap.set(tree.id,{tree,treeNode,resolve})
+      // 缓存当前 Node   **重要
+      this.loadNodeMap.set(tree.id, { tree, treeNode, resolve });
+      // 缓存上次节点的Node
+      this.lastloadNodeMap.set(tree.id, { tree, treeNode, resolve });
+
       authManage["getParentChild"]("", tree.id).then((res) => {
         let resultdata = res.data;
         console.log(resultdata);
@@ -364,9 +443,9 @@ export default {
         resolve(resultdata);
       });
     },
-      /*
-      * 刷新树节点
-      */
+    /*
+     * 刷新树节点
+     */
     refreshTreeNode() {
       const node = this.loadNodeMap.get(this.tree.id);
       if (node === undefined) {
@@ -393,6 +472,12 @@ export default {
         enable: true,
         parent: null,
       };
+    },
+    dialogChildClose() {
+      this.dialogChild = false;
+    },
+     dialogGrandsonClose() {
+      this.dialogGrandson = false;
     },
   },
 };

@@ -7,7 +7,9 @@
         ref="tpmsHeader"
         :Btnoffset="8"
         :formData="searchFormList"
+        :total="total"
         @inquireTableData="inquireTableData"
+        @getTableData="getTableData"
       />
     </el-row>
     <el-row>
@@ -47,6 +49,7 @@
         :column_index="true"
         :total="total"
         @inquireTableData="inquireTableData"
+        @getTableData="getTableData"
       >
         <template slot-scope="{ row }">
           <span
@@ -307,7 +310,7 @@ export default {
         type: "warning",
       })
         .then(() => {
-          dataBaseApi["del"](r.id).then(() => {
+          dataBaseApi["del"](r.id, '').then(() => {
             this.$message({
               type: "success",
               message: "操作成功!",

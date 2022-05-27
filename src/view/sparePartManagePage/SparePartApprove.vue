@@ -7,6 +7,7 @@
             :data="tableData"
             :total="total"
             :columns="columns"
+            @getTableData="getTableData"
             @inquireTableData="inquireTableData"
         >
             <template slot-scope="{row}">

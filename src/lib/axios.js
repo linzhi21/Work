@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Notification } from 'element-ui';
+import { Notification, Message} from 'element-ui';
 import {refreshToken}  from './api/user'
 import route from '../router/index'
 const service = axios.create({
@@ -22,6 +22,7 @@ service.interceptors.request.use(
         return config;
     },
     error => {
+        console.log(error)
         // do something with request error
         return Promise.reject(error)
     }
@@ -64,10 +65,11 @@ service.interceptors.response.use(
               // refreshToken()
           }else{
             Notification({
-                title: '',
-                message: responseData.error,
+                title: responseData.error,
+                message: responseData.message,
                 type: 'warning'
             })
+            
             store.commit('SET_UPLOADING',false)
           }
 

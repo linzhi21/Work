@@ -1139,10 +1139,10 @@ export default {
       delete this.form.status;
       var form = this.form;
       var newType = false;
-      // if (!form.name) {
-      //   this.$message.warning("缺少必填项!");
-      //   return false;
-      // }
+      if (!form.name) {
+        this.$message.warning("缺少必填项!");
+        return false;
+      }
       const validateDevices = form.planDevices.filter((item) => {
         if (!item.version) return true;
         if (!item.deviceNos) return true;
@@ -1164,11 +1164,6 @@ export default {
         }
         return false;
       });
-
-      if (validateDevices.length) {
-        this.$message.warning("缺少必填项!");
-        return;
-      }
 
       // console.log("提交form", form);
       const validate = form.planDevices.some(({ planContents }) => {

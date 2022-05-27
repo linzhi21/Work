@@ -31,13 +31,11 @@
         ref="tpmsTable"
         :lazy="lazy"
         :load="lazyLoad"
-        row-key="uniquelyId"
         :data="tableLists"
         :columns="tableHeaderList"
         :total="total"
         @getTableData="getTableData"
         @selection-change="handleSelectionChange"
-        :column_index="false"
         @inquireTableData="inquireTableData"
       >
         <template
@@ -49,7 +47,6 @@
             <span class="button cursor" @click="editDialog(row)">编辑</span>
             <span class="button cursor" @click="lookDialog(row)">查看</span>
             <span class="button cursor" @click="del(row,'1')">删除</span>
-            <span v-if="!row.chejian" class="button" @click="addWorkShopDialog(row)">新增车间</span>
           </div>
           <div v-else-if="row.chejian=='chejian'">
             <span class="button cursor" @click="editworkshopDialog(row)">编辑</span>

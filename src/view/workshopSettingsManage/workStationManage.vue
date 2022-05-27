@@ -111,6 +111,7 @@ export default {
   data() {
     return {
       workshopId: 0,
+      workshopSectionId: 0,
       dialogVisible: false,
       dialogTitleTxt: "",
       dialogType: "",
@@ -230,6 +231,14 @@ export default {
           checkList: [],
         },
         {
+          props: "workshopSectionName",
+          label: "所属工段",
+          span: 24,
+          type: "checkbox",
+          filterable: true,
+          checkList: [],
+        },
+        {
           props: "no",
           label: "工位编号",
           span: 24,
@@ -246,14 +255,6 @@ export default {
           label: "工位描述",
           span: 24,
           type: "textarea",
-        },
-        {
-          props: "workshopSectionName",
-          label: "所属工段",
-          span: 24,
-          type: "checkbox",
-          filterable: true,
-          checkList: [],
         },
         // {
         //   props: "workshopTeamName",
@@ -373,16 +374,15 @@ export default {
             });
           });
           this.searchFormList[1].checkList = workshopTeamLists;
-          console.log(workshopTeamLists);
           this.formList[5].checkList = workshopTeamLists;
           this.form.workshopTeamName = "";
       })
     },
     // 获取所属工段
     getworkshopSection(id, props) {
-      this.workshopId = id
       console.log(id, props);
       if (props == "workshopName") {
+        this.workshopId = id
         // 获取所属工段
         workshopSectionManage["getLists"]({ workshopId: id }).then((res) => {
           console.log(id)
@@ -402,6 +402,7 @@ export default {
         // this.getWorkshopTeamManage(id)
 
       } else {
+        this.workshopSectionId = id
         workshopSectionManage["getLists"]({size: 100}).then((res) => {
           let workshopSectionLists = [];
           res.data.content.forEach((val) => {
@@ -482,7 +483,7 @@ export default {
         this.dialogTitleTxt = "编辑";
         this.dialogType = "edit";
       });
-      this.getworkshopSection(row.id,'workshopName')
+      this.getworkshopSection()
     },
     dialogClose() {
       this.dialogVisible = false;
@@ -500,7 +501,7 @@ export default {
       var _self = this;
       let form = this.form;
       this.form.workshopId = this.workshopId;
-      this.form.workshopSectionId = this.form.workshopSectionId;
+      this.form.workshopSectionId = this.workshopSectionId
       // this.form.workshopTeamId=this.workshopTeamName
       delete form.workshopName;
       delete form.workshopSectionName;

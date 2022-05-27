@@ -10,7 +10,7 @@ import apiConfig from './apiConfig';
 
 export const dataBaseApi = {
   add: (data) => POST(data, apiConfig.dataBase), // 新增 某个设备下的资料 
-  del: (data) => DELETE(data, apiConfig.dataBase), // 删除 某个设备下的资料
+  del: (ids, data) => DELETE(data,`${apiConfig.dataBase}?ids=${ids}`), // 删除 某个设备下的资料
   select: (data) => GET(data, apiConfig.dataBase), // 查看 某个设备下的资料
   updateById: (id, data) => PATCH(data, apiConfig.dataBase + '/' + id), // 修改 某个资料
   selectById: (id, data) => GET(data, apiConfig.dataBase + '/' + id), // 查看 某个资料

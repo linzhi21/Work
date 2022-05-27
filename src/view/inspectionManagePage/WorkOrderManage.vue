@@ -152,7 +152,7 @@ import {
   workshopSectionManage,
 } from "../../lib/api/workshopSettingsManage";
 import apiConfig from "../../lib/api/apiConfig";
-import axios from "../../lib/axios";
+import axios from "axios";
 
 export default {
   data() {
@@ -367,7 +367,7 @@ export default {
      * // TODO 
      */
     exportOrder(row) {
-       let url = `${apiConfig.orderMobile}/workorder/download?type=3`; //请求下载文件的地址
+      let url = apiConfig.orderMobile + "/workorder/download"; //请求下载文件的地址
       let token = localStorage.getItem("access_token"); //获取token
       axios.get(url, {
         params: {workOrderId: row.id},
@@ -378,11 +378,12 @@ export default {
       }).then((res) => {
           if (!res) return;
           let fileName = '当月工单情况.xls';
-          const disposition = res.headers["content-disposition"];
-          if (disposition) {
-            const name = disposition.split(";")[1].split("filename=")[1];
-            fileName = decodeURI(name);
-          }
+        // 巡检导出文件名称修改 
+        //  const disposition = res.headers["content-disposition"];
+        //   if (disposition) {
+        //     const name = disposition.split(";")[1].split("filename=")[1];
+        //     fileName = decodeURI(name);
+        //   }
 
           let blob = new Blob([res.data], {
             type: "application/vnd.ms-excel;charset=utf-8"

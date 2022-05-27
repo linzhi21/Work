@@ -6,6 +6,7 @@
       ref="tpmsHeader"
       :formData="headerFormList"
       :total="total"
+      @getTableData="getTableData"
       @inquireTableData="inquireTableData"
     >
       <template slot="time" slot-scope="{ row }">
@@ -39,6 +40,7 @@
       ref="tpmsTable"
       :data="tableData"
       :columns="tableColumns"
+      @getTableData="getTableData"
       @inquireTableData="getTableDate"
     >
       <template slot-scope="{ row }">

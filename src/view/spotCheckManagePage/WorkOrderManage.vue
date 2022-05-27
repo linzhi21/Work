@@ -198,7 +198,7 @@ import {
   workshopSectionManage,
 } from "../../lib/api/workshopSettingsManage";
 import apiConfig from "../../lib/api/apiConfig";
-import axios from "../../lib/axios";
+import axios from "axios";
 
 import { importFile } from "../../lib/api/upkeepManagePage";
 export default {

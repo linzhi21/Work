@@ -1,4 +1,3 @@
-// 审批流管理
 <template>
   <div>
     <!-- 头部功能区 -->
@@ -24,8 +23,8 @@
         :columns="[
           { label: '话题名称', props: 'name' },
           { label: '话题类型', props: 'type', translate: (val) => ({1:'分享',2:'提问'}[val]) },
-          { label: '主题类型', props: 'expertTypeStr' },
-          { label: '专家类型', props: 'themeTypeStr' },
+          { label: '主题类型', props: 'themeTypeStr' },
+          { label: '专家类型', props: 'expertTypeStr' },
           { label: '关键字', props: 'keyword' },
           { label: '话题发起人', props: 'authorName' },
         ]"
@@ -56,20 +55,20 @@
         <el-form-item label="关键字" prop="keyword" required>
           <el-input v-model="dialog_add.data.keyword"></el-input>
         </el-form-item>
-        <el-form-item label="主题类型" prop="themeType" required>
-          <el-select v-model="dialog_add.data.themeType" placeholder="请选择主题类型" class="width-fill">
+        <el-form-item label="专家类型" prop="expertType" required>
+          <el-select v-model="dialog_add.data.expertType" placeholder="请选择专家类型" class="width-fill">
             <el-option
-              v-for="item in themeTypeList"
+              v-for="item in expertTypeList"
               :label="item.label"
               :value="item.id"
               :key="item.id"
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="专家类型" prop="expertType" required>
-          <el-select v-model="dialog_add.data.expertType" placeholder="请选择专家类型" class="width-fill">
+        <el-form-item label="主题类型" prop="themeType" required>
+          <el-select v-model="dialog_add.data.themeType" placeholder="请选择主题类型" class="width-fill">
             <el-option
-              v-for="item in expertTypeList"
+              v-for="item in themeTypeList"
               :label="item.label"
               :value="item.id"
               :key="item.id"
@@ -207,7 +206,7 @@ const getListFuncs = [
   expertTypeManage.getList
 ];
 
-const [expertTypeList ,themeTypeList] = getListFuncs.map(func => {
+const [themeTypeList, expertTypeList] = getListFuncs.map(func => {
   const arr = [];
   const data = {
     page: 0,
