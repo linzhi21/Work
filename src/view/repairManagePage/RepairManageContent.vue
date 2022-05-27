@@ -481,6 +481,7 @@ export default {
           Shift: [{ required: true, message: "请输入班次", trigger: "blur" }],
         },
       },
+      dialogSpares:[],
       dialogImageUrl: "",
       dialogVisible: false,
       detail: {},
@@ -502,6 +503,7 @@ export default {
   },
   mounted() {
     this.getTableData();
+    this.dialogSpares = this.dialog.data.spares
   },
   methods: {
     /** 点击查询按钮 */
@@ -587,6 +589,7 @@ export default {
       this.dialog.isShow = true;
       this.dialog.disabled = false;
       this.dialog.data.type = 4;
+      this.dialog.data.spares = this.dialogSpares;
       const workshop = this.dialog.list.workshopList.filter(
         (item) => item.id === workshopId
       )[0];

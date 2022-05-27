@@ -254,7 +254,7 @@
                   :file-list="item.planPictures"
                   :action="uploadImgUrl"
                   :headers="uploadHeaders"
-                  accept=".jpg, .png, jpeg"
+                  accept=".jpg, .png, .jpeg"
                   :on-success="
                     (res, file) => handleAvatarSuccess(res, file, item)
                   "
@@ -1529,12 +1529,12 @@ export default {
 
       var testmsg = file.name.substring(file.name.lastIndexOf(".") + 1);
       const extension = testmsg === "png";
-      const extension2 = testmsg === "jepg";
+      const extension2 = testmsg === "jpeg";
       const extension3 = testmsg === "jpg";
 
       if (!extension && !extension2 && !extension3) {
         this.$message({
-          message: "上传文件只能是 png、jepg、jpg格式的文件",
+          message: "上传文件只能是 png、jpeg、jpg格式的文件",
           type: "warning",
         });
       }
