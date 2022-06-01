@@ -56,13 +56,22 @@ service.interceptors.response.use(
               })
           }
           if (error.response.status === 401) {
+              if(error.response.data.error == "对不起，您没有权限访问此资源！") {
+                Notification({
+                    title: '权限',
+                    message: error.response.data.error,
+                    type: 'warning'
+                })
+                return
+              }
+              console.log(error.response)
               Notification({
                   title: '',
-                  message: 'token过期，请重试',
+                  message: "token过期，请重新登录",
                   type: 'warning'
               })
               route.push('/login')
-              // refreshToken()
+            //   refreshToken()
           }else{
             Notification({
                 title: responseData.error,

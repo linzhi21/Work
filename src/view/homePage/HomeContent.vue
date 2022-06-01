@@ -560,12 +560,8 @@ export default {
   },
   mounted() {
     const _this = this;
-    // this.workorderInfo();
-    // this.searchWorkshopSectionSelect();
-
-    maintenanceManage["getLists"]({ status: "1,2,4,8" }).then((res) => {
-      this.unrequiredEquipmentData = res.data.content;
-    });
+    this.workorderInfo();
+    this.searchWorkshopSectionSelect();
   },
   methods: {
     workorderInfo() {
@@ -669,6 +665,11 @@ export default {
           )
         );
         this.maintenanceTimes(this.typeSelect);
+      }
+      if (roleStr.includes("REPAIR_MANAGEMENT")) {
+        maintenanceManage["getLists"]({ status: "1,2,4,8" }).then((res) => {
+          this.unrequiredEquipmentData = res.data.content;
+        });
       }
     },
     /**
