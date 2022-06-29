@@ -3,68 +3,30 @@
   <div>
     <!-- 头部功能区 -->
     <el-row>
-      <tpms-header
-        ref="tpmsHeader"
-        :Btnoffset="8"
-        :formData="searchFormList"
-        :total="total"
-        @inquireTableData="inquireTableData"
-        @getTableData="getTableData"
-      />
+      <tpms-header ref="tpmsHeader" :Btnoffset="8" :formData="searchFormList" :total="total"
+        @inquireTableData="inquireTableData" @getTableData="getTableData" />
     </el-row>
     <el-row>
       <el-row class="buttom-group" type="flex" justify="end" align="middle">
-        <el-button
-          class="button-more"
-          type="primary"
-          size="small"
-          style=""
-          @click="exportModelFile('/maintainPlan')"
-          >保养计划</el-button
-        >
-        <el-button
-          class="button-more"
-          type="primary"
-          size="small"
-          style=""
-          @click="exportModelFile('/plan')"
-          >点巡检计划</el-button
-        >
-        <el-button
-          class="button-more"
-          type="primary"
-          size="small"
-          style="margin-right: 29px"
-          @click="addDialog((drawer = true), 'add')"
-          >新增</el-button
-        >
+        <el-button class="button-more" type="primary" size="small" style="" @click="exportModelFile('/maintainPlan')">
+          保养计划</el-button>
+        <el-button class="button-more" type="primary" size="small" style="" @click="exportModelFile('/plan')">点巡检计划
+        </el-button>
+        <el-button class="button-more" type="primary" size="small" style="margin-right: 29px"
+          @click="addDialog((drawer = true), 'add')">新增</el-button>
       </el-row>
     </el-row>
     <el-row>
       <!-- 底部表格 -->
-      <tpms-table
-        ref="tpmsTable"
-        :data="dataLists"
-        :columns="dataTableList"
-        :column_index="true"
-        :total="total"
-        @inquireTableData="inquireTableData"
-        @getTableData="getTableData"
-      >
+      <tpms-table ref="tpmsTable" :data="dataLists" :columns="dataTableList" :column_index="true" :total="total"
+        @inquireTableData="inquireTableData" @getTableData="getTableData">
         <template slot-scope="{ row }">
-          <span
-            class="button cursor"
-            @click="addDialog((drawer = true), 'look', row)"
-          >
+          <span class="button cursor" @click="addDialog((drawer = true), 'look', row)">
             查看
             <el-divider direction="vertical"></el-divider>
           </span>
 
-          <span
-            class="button cursor"
-            @click="addDialog((drawer = true), 'edit', row)"
-            >修改</span
-          >
+          <span class="button cursor" @click="addDialog((drawer = true), 'edit', row)">修改</span>
           <el-divider direction="vertical"></el-divider>
           <span class="button cursor" @click="isDelete(row)">删除</span>
         </template>
@@ -77,62 +39,37 @@
         <div class="drawer-title">{{ drawerTitle }}</div>
         <el-form label-position="right" label-width="100px" :model="formObj">
           <el-form-item label="资料名称">
-            <el-input 
-            v-model="formObj.name"
-            :readonly="drawerTitle=='查看'"
-            ></el-input>
+            <el-input v-model="formObj.name" :readonly="drawerTitle == '查看'"></el-input>
           </el-form-item>
           <el-form-item label="类型">
-            <el-select
-              v-model="formObj.deviceDataBaseTypeId"
-              placeholder="请选择"
-              :disabled="drawerTitle=='查看'"
-            >
-              <el-option
-                v-for="item in dataBaseTypes"
-                :key="item.id"
-                :label="item.name"
-                :value="item.id"
-              ></el-option>
+            <el-select v-model="formObj.deviceDataBaseTypeId" placeholder="请选择" :disabled="drawerTitle == '查看'">
+              <el-option v-for="item in dataBaseTypes" :key="item.id" :label="item.name" :value="item.id"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="关联设备">
-            <el-autocomplete
-              v-model="formObj.deviceName"
-              :fetch-suggestions="querySearchAsync"
-              placeholder="请输入内容，搜索设备"
-              @select="handleSelect"
-              :readonly="drawerTitle=='查看'"
-            ></el-autocomplete>
+            <el-autocomplete v-model="formObj.deviceName" :fetch-suggestions="querySearchAsync" placeholder="请输入内容，搜索设备"
+              @select="handleSelect" :readonly="drawerTitle == '查看'"></el-autocomplete>
           </el-form-item>
           <el-form-item label="关联设备编号">
             <el-input v-model="formObj.deviceNo" readonly></el-input>
           </el-form-item>
           <el-form-item label="关键词">
-            <el-input v-model="formObj.keyword" :readonly="drawerTitle=='查看'"></el-input>
+            <el-input v-model="formObj.keyword" :readonly="drawerTitle == '查看'"></el-input>
           </el-form-item>
           <el-form-item label="资料/文件">
-            <tpms-choosefile
-              style="margin-left: 10px"
-              size="small"
-              @getFileData="getMutipleFileData($event)"
-              type="default"
-              text="上传附件"
-              v-if="drawerTitle=='修改'||drawerTitle=='新增'"
-            ></tpms-choosefile>
-            <el-button
-              style="margin-left: 10px"
-              size="small"
-              @click="exportAllFile()"
-              type="primary"
-              v-if="drawerTitle=='查看'"
-            >下载附件</el-button>
+            <tpms-choosefile style="margin-left: 10px" size="small" @getFileData="getMutipleFileData($event)"
+              type="default" text="上传附件" v-if="drawerTitle == '修改' || drawerTitle == '新增'"></tpms-choosefile>
+            <el-button style="margin-left: 10px" size="small" @click="exportAllFile()" type="primary"
+              v-if="drawerTitle == '查看'">下载附件</el-button>
+          </el-form-item>
+          <el-form-item v-if="drawerTitle == '查看'" label="文件列表">
+            <div v-for="(acc, index) in formObj.deviceDataBaseAccessories" :key="index">{{acc.accessoryUrl}}</div>
           </el-form-item>
         </el-form>
         <div class="drawer-footer">
           <el-button @click="cancelForm">取 消</el-button>
           <el-button type="primary" @click="action()" :loading="loading">{{
-            loading ? "提交中 ..." : "确 定"
+              loading ? "提交中 ..." : "确 定"
           }}</el-button>
         </div>
       </div>
@@ -212,7 +149,7 @@ export default {
       drawerTitle: "新增",
       drawerType: "edit",
       formObj: {
-        accessories: [],
+        deviceDataBaseAccessories: [],
       },
       loading: false,
       factoryId: null,
@@ -220,7 +157,7 @@ export default {
       devices: [],
       dataBaseTypes: [],
       uploadData: {}, // 附件信息
-      dataId:0,// 资料id
+      dataId: 0,// 资料id
     };
   },
   components: {
@@ -337,7 +274,7 @@ export default {
             this.getTableData();
           });
         })
-        .catch(() => {});
+        .catch(() => { });
     },
     cancelForm() {
       this.loading = false;
@@ -392,20 +329,24 @@ export default {
       formData.append("file", files);
       formData.append("module", "8");
       this.$store.commit("SET_UPLOADING", true);
+      const _this = this;
       uploadAccessory(formData, 8).then((res) => {
-        this.$store.commit("SET_UPLOADING", false);
-        this.formObj.file = res;
-        this.formObj.accessories.push({
+        _this.$store.commit("SET_UPLOADING", false);
+        _this.formObj.file = res;
+        _this.formObj.deviceDataBaseAccessories.push({
           accessoryId: res.id,
           accessoryUrl: res.path + res.name,
         });
       });
     },
+    /**
+     * 导出所有附件
+     */
     exportAllFile() {
-        if(this.formObj.accessories) {
-          for(let i=0; i<this.formObj.accessories.length; i++) {
-          let id = this.formObj.accessories[i].id
-          exportMutipleFileData(id)
+      if (this.formObj.deviceDataBaseAccessories) {
+        for (let i = 0; i < this.formObj.deviceDataBaseAccessories.length; i++) {
+          let id = this.formObj.deviceDataBaseAccessories[i].accessoryId;
+          this.exportMutipleFileData(id);
         }
       } else {
         this.$message.warning("对不起，没有附件可下载")
@@ -450,6 +391,10 @@ export default {
           this.$message.error(error.message);
         });
     },
+    /**
+     * 导出模板
+     * @param {*} urlStr 
+     */
     exportModelFile(urlStr) {
       let url = `${apiConfig.templateDownload}${urlStr}`; //请求下载文件的地址
 

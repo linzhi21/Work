@@ -416,37 +416,35 @@ export default {
       this.dialogType = "edit";
       roleManage.getOne(null, id).then((res) => {
         this.form = res.data;
-        console.log(res.data);
 
         const arr = res.data.authorities;
         let arr1 = []
-
-        // 获取第三层叶子节点
+        let arr2 = []
+        // 获取节点
         function getLeaf(arr) {
           for (let i = 0; i < arr.length; i++) {
             if (arr[i].parent != null) {
+              arr2.push(arr[i].parent.id)
               if(arr[i].parent.parent != null) {
-                arr1.push(arr[i].id)
+                arr2.push(arr[i].parent.parent.id)
               }
+            }
+          }
+          for(let i = 0;i < arr.length; i++) {
+            arr1.push(arr[i].id)
+          }
+          // 数组去重
+          for (var i=0; i<arr1.length; i++) { 
+            for (var j=0; j<arr2.length; j++) {
+              if (arr2[j] == arr1[i]) {
+                arr1.splice(i, 1); 
+                i--;
+              } 
             }
           }
         }
         getLeaf(arr)
-        // for (let i = 0; i < authoritiesNode.length; i++) {
-        //   if (authoritiesNode.parent == null) {
-        //     return;
-        //   } else {
-        //     for (let i = 0; i < authoritiesNode.length; i++) {
-        //       if (authoritiesNode.parent.parent == null) {
-        //         return;
-        //       } else {
-        //         this.form.authorities.map((item) => item.id);
-        //       }
-        //     }
-        //   }
-        // }
-        // console.log(this.form.authorities.map((item) => item.id));
-        console.log(arr1)
+        
         this.$refs.tree[0].setCheckedKeys(
           arr1
         );
