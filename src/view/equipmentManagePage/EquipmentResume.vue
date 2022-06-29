@@ -13,13 +13,13 @@
           @onValueChanged="onValueChanged"
         />
         <el-row>
-          <el-col :span="22">
+          <el-col :span="20">
             <buttom-group
               @getTableData="getTableData"
               :getHeaderData="getHeaderData"
             />
           </el-col>
-          <el-col :span="2">
+          <el-col :span="4">
             <!-- 新增设备按钮 -->
             <el-row
               class="buttom-group"
@@ -27,6 +27,9 @@
               justify="end"
               align="middle"
             >
+              <el-button size="small" @click='deleteMore'>
+                批量删除
+              </el-button>
               <el-button
                 class="button-more"
                 type="primary"
@@ -46,6 +49,7 @@
           :total="total"
           :data="equipmentTableData"
           :columns="[
+            { type: 'selection' },
             { label: '设备编号', props: 'no' },
             { label: '资产编号', props: 'assetNo' },
             { label: '设备名称', props: 'name' },
@@ -84,6 +88,7 @@
           ]"
           @inquireTableData="inquireTableData"
           @getTableData="getTableData"
+          @selection-change="handleSelectionChange"
         >
           <template slot="operation" slot-scope="{ row }">
             <span class="button cursor" @click="editDevice(row)">编辑</span>
@@ -636,6 +641,8 @@ export default {
         data: [],
         total: 0,
       },
+      // 多选对象
+      selected: []
     };
   },
   components: {
@@ -972,6 +979,36 @@ export default {
             message: "已取消删除",
           });
         });
+    },
+    /**
+     * 批量删除
+     */
+    deleteMore() {
+      const selected = this.selected
+      const ids = selected.map((item) => item.id);
+      this.$confirm("此操作将删除该设备, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+      .then(() => {
+          deviceManage.remove(null, ids).then((res) => {
+            this.$message.success("删除成功");
+            this.getTableData();
+          });
+        })
+      .catch(() => {
+        this.$message({
+          type: "info",
+          message: "已取消删除",
+        });
+      });
+    },
+    /**
+     * 批量选择
+     */
+    handleSelectionChange(e) {
+      this.selected = e
     },
   },
 };

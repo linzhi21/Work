@@ -86,7 +86,7 @@
         :data="item.planContents"
         style="width: 100%"
         border
-        default-expand-all
+        row-key="id"
         :tree-props="{
           children: 'childPlanContents',
           hasChildren: 'hasChildren',

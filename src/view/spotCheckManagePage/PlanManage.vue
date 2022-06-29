@@ -154,7 +154,7 @@
           <el-row>
             <el-col :span="11">
               <el-form-item label="类型" required="required">
-                <el-radio-group v-model="form.type" @change="getCycleList">
+                <el-radio-group v-model="form.type" @change="getCycleList(form.type)">
                   <el-radio :label="1">点检计划</el-radio>
                   <el-radio :label="2">日常保养</el-radio>
                 </el-radio-group>
@@ -174,13 +174,12 @@
               <el-form-item label="导入设备点检计划">
                 <div>
                   <tpms-choosefile
-                    size="small"
+                    plain
                     isMutiple
                     text="选择文件"
                     accept=".xlsx,.xls"
-                    @getFileData="getFileData($event)"
+                    @getFileData="getFileData($event, form.type)"
                   ></tpms-choosefile>
-                  <!-- <el-button type="default" size="small" @click="addPlanDevice">批量</el-button> -->
                 </div>
               </el-form-item>
             </el-col>
@@ -239,12 +238,12 @@
               <el-form-item label="编制人" required="required">
                 <!-- <el-date-picker value-format='yyyy-MM-dd' v-model="item.deviceCreatorDate" type="date" placeholder="选择日期"
                 style="width: 100%;"></el-date-picker>-->
-                <el-input readonly v-model="item.creatorName"></el-input>
+                <el-input readonly v-model="item.creatorName" disabled></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="11" :offset="2">
               <el-form-item label="编制日期" required="required">
-                <el-input readonly v-model="item.createDate"></el-input>
+                <el-input readonly v-model="item.createDate" disabled></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="24">
@@ -275,7 +274,7 @@
               :data="item.planContents"
               style="width: 100%"
               border
-              row-key="id"
+              row-key="content"
               :tree-props="{
                 children: 'childPlanContents',
                 hasChildren: 'hasChildren',
@@ -406,11 +405,21 @@
                     >编辑</el-button
                   >
                   <el-button
+                    v-if="newAddDialogTitle === '编辑'"
                     size="small"
                     @click.native.prevent="
                       deleteRow(scope.row, item.planContents), calcTime(item)
                     "
                     :disabled="scope.row.deleted"
+                    style="margin-right: 10px"
+                    >删除</el-button
+                  >
+                  <el-button
+                    v-if="newAddDialogTitle === '新增'"
+                    size="small"
+                    @click.native.prevent="
+                      addDeleteRow(scope, item.planContents), calcTime(item)
+                    "
                     style="margin-right: 10px"
                     >删除</el-button
                   >
@@ -635,6 +644,7 @@ export default {
       //新增点检计划表单
       form: {
         type: "1", //点检计划
+        status:"",
         no: "", //点检计划编号
         name: "", //点检名称
         workshopId: "", //车间ID
@@ -643,6 +653,7 @@ export default {
         planDevices: [
           {
             id: "",
+            type: "",
             version: "", //版本
             stationId: "", //工位
             sectionId: "", //工段
@@ -654,6 +665,7 @@ export default {
             planContents: [
               {
                 id: "",
+                type:"",
                 editShow: false,
                 executionNode: "", //时间/部件
                 content: "", //  内容
@@ -776,40 +788,12 @@ export default {
      * 批量选择
      */
     handleSelectionChange(e) {},
-    /**
-     * 导入多个文件
+   /**
+     * @description 导入单个文件
+     * @param {Object} e 文件对象
+     * @param {Object} index 导入的form.planDevices数组下标
      */
-    getMutipleFileData(files, index) {
-      this.loading = true;
-      let formData = new FormData();
-      files.forEach(function (file) {
-        formData.append("file", file, file.name);
-      });
-
-      // formData.append('file',file);
-      formData.append("workshopName", "PFMB");
-      importURLPlanFile(formData).then((res) => {
-        console.log(res);
-        this.loading = false;
-        let data = res.data;
-        for (var i = 0; i < data.length; i++) {
-          for (var j = 0; j < data[i].planContents.length; j++) {
-            data[i].planContents[j].editShow = false;
-          }
-        }
-        this.form.planDevices.splice(index, 1, ...data);
-        // this.form.planDevices = this.form.planDevices.concat(data);
-        // let len=index+res.data.length
-        // for(var j=index;j<len;j++){
-        //   this.form.planDevices[j]=res.data[len-j-index];
-        //   this.$set(this.form.planDevices,j,res.data[len-j-index])
-        // }
-        // this.$forceUpdate()
-        // this.$set(this.form.planDevices,index,res.data[0])
-      });
-    },
-    // 导入excel
-    getFileData(files) {
+    getFileData(files, val) {
       if (!this.form.type) {
         this.$message({
           message: "请先选择计划类型",
@@ -821,21 +805,69 @@ export default {
       let formData = new FormData();
       let workshopName = localStorage.getItem("workshopName");
       files.map((file) => formData.append("file", file));
-      formData.append("module", this.form.type); //{1:'点检',2:'日常保养',3:'巡检',4:'保养'};
+      formData.append("module", val); //{1:'点检',2:'日常保养',3:'巡检',4:'保养'};
       importURLPlanFile(formData)
         .then((res) => {
           // console.log(res,item)
-          this.loading = false;
           let datas = res.data;
           datas.map((data) => {
-            data.planContents.forEach((item) => (item.editShow = false));
+            data.creatorName = JSON.parse(
+              localStorage.getItem("user_info")
+            ).principal.name; //编制人
+            data.createDate = parseTime(new Date()); //编制日期
+            data.planContents.forEach((item) => {
+              item.editShow = false;
+              // if(item.childPlanContents != null) {
+              //   item.childPlanContents.map((m, index) => m.aid = index)
+              // }
+            });
             delete data.planPictures;
           });
+          // Object.assign(data,{
+          //   creatorName: JSON.parse(localStorage.getItem('user_info')).principal.name, //编制人
+          //   createDate: parseTime(new Date()), //编制日期
+          // })
+          // data.planContents = data.planContents.map(item => {
+          //   return Object.assign(item, {
+          //     editShow: false
+          //   })
+          // })
           this.form.planDevices = datas;
+          this.loading = false;
+          console.log('导入点检计划', JSON.stringify(this.form))
         })
         .catch((err) => {
           this.loading = false;
         });
+    },
+    getMutipleFileData(files, index) {
+      this.loading = true;
+      let formData = new FormData();
+      files.forEach(function (file) {
+        formData.append("file", file, file.name);
+      });
+
+      // formData.append('file',file);
+      formData.append("workshopName", "PFMB");
+      importURLPlanFile(formData).then((res) => {
+        // console.log(res)
+        this.loading = false;
+        let data = res.data;
+        for (var i = 0; i < data.length; i++) {
+          for (var j = 0; j < data[i].planContents.length; j++) {
+            data[i].planContents[j].editShow = false;
+          }
+        }
+        this.form.planDevices.splice(index, 1);
+        this.form.planDevices.splice(index, 1, ...data);
+        // let len=index+res.data.length
+        // for(var j=index;j<len;j++){
+        //   this.form.planDevices[j]=res.data[len-j-index];
+        //   this.$set(this.form.planDevices,j,res.data[len-j-index])
+        // }
+        // this.$forceUpdate()
+        // this.$set(this.form.planDevices,index,res.data[0])
+      });
     },
     /**
      * 批量发布
@@ -861,7 +893,7 @@ export default {
                 type: "success",
                 message: "发布成功!",
               });
-              this.inquireTableData();
+              this.getTableData();
             })
             .catch(() => {
               this.$message({
@@ -942,7 +974,6 @@ export default {
       let pageData = this.$refs.tpmsTable.getData();
       data.type = data.type || "1,2";
       planList({ ...data, ...pageData }).then((res) => {
-        console.log(res);
         this.total = res.data.totalElements;
         this.equipmentTableData = res.data.content;
       });
@@ -1114,6 +1145,7 @@ export default {
     edit(row) {
       queryPlan(null, row.id).then((res) => {
         let data = res.data;
+        console.log(res.data)
         this.getCycleList(data.type);
         for (var j = 0; j < data.planDevices.length; j++) {
           for (var i = 0; i < data.planDevices[j].planContents.length; i++) {
@@ -1130,6 +1162,7 @@ export default {
         });
         this.form.status = "";
         this.form = data;
+        console.log('编辑点检计划', JSON.stringify(this.form))
       });
       this.newAddDialog = true;
       this.newAddDialogTitle = "编辑";
@@ -1188,13 +1221,34 @@ export default {
         const arr = planContents.map(({ sort }) => sort);
         return new Set(arr).size !== arr.length;
       });
-      if (validate) {
-        this.$message.warning("工作内容顺序重复，请修改");
+      const validateDevices = this.form.planDevices.filter(item => {
+        const validateee = item.planContents.filter(itemm => {
+          if(!itemm.executionNode) return true;
+          if(!itemm.content) return true;
+          if(!itemm.hour) return true;
+          if(!itemm.cycleId) return true;
+          if(!itemm.method) return true;
+          return false;
+        });
+        if (validateee.length) {
+          this.$message.warning("缺少必填项!");
+          return true;
+        }
+        return false
+      })
+      if (validateDevices.length) {
         return;
       }
-      console.log(JSON.stringify(this.form));
+      if (validate) {
+        this.$message.warning("工作内容顺序重复，请修改");
+        console.log(validate)
+        return;
+      }
       delete this.form.status;
+      let type = this.form.type;
+      console.log(this.form.type)
       patchPlan(this.form, this.form.id).then((res) => {
+        console.log(res.data)
         this.newAddDialog = false;
         this.getTableData();
       });
@@ -1231,6 +1285,16 @@ export default {
       });
     },
     /**
+     * 点击新增的时候删除数据
+     */
+    addDeleteRow(row, rows) {
+      this.form.planDevices.map((device) => {
+        const planContents = device.planContents;
+        console.log(planContents[row.$index])
+        planContents.splice(row.$index,1)
+      })
+    },
+    /**
      * 删除planContents里的一条数据
      */
     deleteRow(row, rows) {
@@ -1238,6 +1302,7 @@ export default {
         const planContents = device.planContents;
         planContents.map((item, i) => {
           if (row.id === item.id) {
+            
             item.deleted = true;
           }
         });
@@ -1250,12 +1315,13 @@ export default {
       const { planContents } = item;
       window.planContents = planContents;
       const sum = planContents
+        .filter((row => row.deleted == false))
         .map((row) => row.hour)
         .reduce((a, b) => {
           const pre = parseInt(a) || 0;
           const next = parseInt(b) || 0;
           return pre + next;
-        });
+        },0);
       item.hour = sum;
     },
     /** 表格添加一行 */

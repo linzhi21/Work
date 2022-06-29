@@ -27,6 +27,15 @@ export const faultTypeManage = {
   getNames: (data) => GET(data, apiConfig.faultType + '/names')
 }
 
+// 故障类型控制
+export const faultTypeController = {
+  add: (data) => POST(data, apiConfig.faultType),
+  getList: (data) => GET(data, apiConfig.faultType),
+  edit: (data) => PUT(data, apiConfig.faultType),
+  remove: (data) => DELETE(data, apiConfig.faultType),
+  getNames: (data) => GET(data, apiConfig.faultType + '/names')
+}
+
 // 问题上升设置管理
 export const problemUpManage = {
   add: (data) => POST(data, apiConfig.problemUp),

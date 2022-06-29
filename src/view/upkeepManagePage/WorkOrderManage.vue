@@ -538,7 +538,8 @@ export default {
      * 审批
      */
     approval(row) {
-      approvalMaintainWorkorder({status: 5, id: row.id}).then(res => {
+      let id = row.id
+      approvalMaintainWorkorder({status: 5},id).then(res => {
         this.$message.success('审批成功！');
         this.getData();
         this.detailModal = false;

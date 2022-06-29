@@ -117,6 +117,7 @@
           { props: 'status', label: '状态' },
           { props: 'receiverName', label: '接单人' },
         ]"
+        @getTableData="viewWorkOrder"
       />
     </el-dialog>
 
@@ -235,12 +236,12 @@
               <el-form-item label="编制人" required="required">
                 <!-- <el-date-picker value-format='yyyy-MM-dd' v-model="item.deviceCreatorDate" type="date" placeholder="选择日期"
                 style="width: 100%;"></el-date-picker>-->
-                <el-input readonly v-model="item.creatorName"></el-input>
+                <el-input readonly v-model="item.creatorName" disabled></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="7" :offset="2">
               <el-form-item label="编制日期" required="required">
-                <el-input readonly v-model="item.createDate"></el-input>
+                <el-input readonly v-model="item.createDate" disabled></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="24">
@@ -331,7 +332,7 @@
                 <template slot-scope="scope">
                   <span v-if="!scope.row.editShow">{{ scope.row.cycleName }}</span>
                   <el-select
-                    v-model="scope.row.cycleId"
+                    v-model="scope.row.cycleName"
                     style="width: 100%"
                     v-if="scope.row.editShow"
                   >
@@ -407,13 +408,6 @@
                 </template>
               </el-table-column>
             </el-table>
-            <el-row type="flex" justify="center">
-              <i
-                class="el-icon-circle-plus"
-                style="font-size: 30px; color: #0077dc"
-                @click="addTableRow(item.maintainPlanContents)"
-              ></i>
-            </el-row>
           </el-row>
           <el-col :span="7" :offset="17" style="margin-top: 20px">
             <el-form-item>
@@ -633,6 +627,7 @@ export default {
       newAddDialog: false, //新增保养计划弹窗
       //新增保养计划表单
       form: {
+        tyepe:1,
         no: "", //保养计划编号
         name: "", //保养名称
         workshopId: "", //车间ID
@@ -642,6 +637,7 @@ export default {
         maintainContentColonies: [
           {
             id: "",
+            tyepe:1,
             version: "", //版本
             // stationId: "", //工位
             // sectionId: "", //工段
@@ -656,8 +652,10 @@ export default {
             maintainPlanContents: [
               {
                 id: "",
+                tyepe:1,
                 editShow: false,
                 executionNode: "", //时间/部件
+                executionPart: "", //保养部件
                 content: "", //  内容
                 hour: "", //工时（s）
                 cycleId: "", //周期
@@ -1142,6 +1140,23 @@ export default {
         this.$message.warning("工作内容顺序重复，请修改");
         return;
       }
+      const validateDevices = this.form.maintainContentColonies.filter(item => {
+        const validateee = item.maintainPlanContents.filter(itemm => {
+          if(!itemm.executionNode) return true;
+          if(!itemm.content) return true;
+          if(!itemm.executionPart) return true;
+          // if(!itemm.cycleId) return true;
+          return false;
+        });
+        if (validateee.length) {
+          this.$message.warning("缺少必填项!");
+          return true;
+        }
+        return false
+      })
+      if (validateDevices.length) {
+        return;
+      }
       console.log(JSON.stringify(this.form));
       delete this.form.status;
       updatePlanDetail(this.form, this.form.id).then((res) => {
@@ -1209,12 +1224,13 @@ export default {
       console.log(item);
       const { maintainPlanContents } = item;
       const sum = maintainPlanContents
+        .filter((row => row.deleted == false))
         .map((row) => row.hour)
         .reduce((a, b) => {
           const pre = parseInt(a) || 0;
           const next = parseInt(b) || 0;
           return pre + next;
-        });
+        },0);
       item.hour = sum;
     },
     //审批保养计划
@@ -1353,11 +1369,12 @@ export default {
           this.form.status = 5;
           updatePlanDetail(this.form, row.id).then((res) => {
             // console.log(res);
-            this.getTableData();
+          this.getTableData();
             this.$message({
               type: "success",
               message: "发布成功!",
             });
+          this.getTableData();
           });
         })
         .catch(() => {
@@ -1366,6 +1383,7 @@ export default {
             message: "已取消发布",
           });
         });
+      this.getTableData();
     },
     //取消保养计划
     cancel(row) {
@@ -1504,6 +1522,7 @@ export default {
         .then(() => {
           releasedMore(ids)
             .then((res) => {
+              this.getTableData();
               this.$message({
                 type: "success",
                 message: "发布成功!",

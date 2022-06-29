@@ -105,6 +105,12 @@ export const importTemporary = (data) => POST(data, apiConfig.maintainWorkOrder,
 export const temporary = (data) => POST(data, apiConfig.maintainWorkOrder, 'temporary');
 
 /**
+ * @description 删除临时保养
+ * @param {*} data 
+ */
+ export const deleteTemporary = (data) => DELETE(data, apiConfig.maintainWorkOrder, 'temporary');
+
+/**
  * @description 保养内容导出 5 周内容
  * @param {*} data 
  */
@@ -137,7 +143,7 @@ export const previewNowMonthWorkOrder = (data) => GET(data, apiConfig.maintainWo
   * @param {*} file 
   * @returns 
   */
- export const approvalMaintainWorkorder = (file) => PATCH(file, apiConfig.maintainWorkOrderMobile, 'maintain/workorder');
+ export const approvalMaintainWorkorder = (file,id) => PATCH(file, apiConfig.maintainWorkOrderMobile, `maintain/workorder/${id}`);
 
  /**
   * 批量发布
@@ -145,3 +151,8 @@ export const previewNowMonthWorkOrder = (data) => GET(data, apiConfig.maintainWo
   * @returns 
   */
  export const releasedMore = (data) => POST(data, apiConfig.exportMaintainPlan, 'release');
+/**
+ * 变更理由
+ * @returns 
+ */
+ export const planChangeReason = (data, restful) => PATCH(data, `${apiConfig.maintainPlan}/maintainPlanChange/update`, restful);

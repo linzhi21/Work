@@ -519,13 +519,8 @@ export default {
         data.startTime = `${time[0]} 00:00:00`;
         data.endTime = `${time[1]} 23:59:59`
       }
-
       let pageData = this.$refs.tpmsTable.getData();
-      const param = {
-        startTime: data.startTime,
-        endTime: data.endTime
-      }
-      maintenanceManage["getLists"]({ ...param, ...pageData }).then((res) => {
+      maintenanceManage["getLists"]({ ...data, ...pageData }).then((res) => {
         this.tableLists = res.data.content;
         this.total = res.data.totalElements;
       });

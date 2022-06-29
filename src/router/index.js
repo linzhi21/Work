@@ -316,8 +316,15 @@ const route = new Router({
                 {
                   path: '/faultTypeManage',
                   name: 'FaultTypeManage',
-                  meta: { title: '故障类型管理' },
+                  meta: { title: '故障类型设置' },
                   component: () => import('@/view/repairManagePage/FaultTypeManage'),
+                  hidden: true
+                },
+                {
+                  path: '/faultTypeController',
+                  name: 'FaultTypeController',
+                  meta: { title: '故障类型管理' },
+                  component: () => import('@/view/repairManagePage/FaultTypeController'),
                   hidden: true
                 },
                 {

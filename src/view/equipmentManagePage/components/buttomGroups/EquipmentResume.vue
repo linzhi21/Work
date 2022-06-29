@@ -61,7 +61,7 @@
 import axios from 'axios';
 import apiConfig from '../../../../lib/api/apiConfig';
 import tpmsChoosefile from '../../../../components/tpmsChoosefile.vue'
-import {uploadDevice,uploadBom} from '../../../../lib/api/device.js'
+import {uploadDevice,uploadBom,deviceManage} from '../../../../lib/api/device.js'
 export default {
   data() {
     return {
@@ -140,6 +140,35 @@ export default {
         .catch(error => {
           this.$message.error(error);
         });
+    },
+     /**
+     * 批量删除
+     */
+    deleteMore() {
+      const selected = this.$refs.tpmsTable.getSelectionList();
+      const ids = selected.map((item) => item.id);
+      this.$confirm("此操作将删除该设备, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+      .then(() => {
+          deviceManage.remove(null, ids).then((res) => {
+            this.$message.success("删除成功");
+            this.getTableData();
+          });
+        })
+      .catch(() => {
+        this.$message({
+          type: "info",
+          message: "已取消删除",
+        });
+      });
+    },
+    /**
+     * 批量删除
+     */
+    handleSelectionChange() {
     },
     downloadBom(){
         let url = apiConfig.bomDownload; //请求下载文件的地址
@@ -223,6 +252,7 @@ export default {
     }
   }
 };
+
 </script>
 <style lang="scss" scoped>
 .buttom-group{

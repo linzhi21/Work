@@ -40,12 +40,12 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="工号">
-              <el-input :readonly="dialogTitleTxt=='查看' || userInfo.includes('USER_EDIT_OPERATOR')" v-model="editForm.workNo" />
+              <el-input :read-only="dialogTitleTxt=='查看' || userInfo.includes('USER_EDIT_OPERATOR')" v-model="editForm.workNo" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="姓名" :label-width="labelWidth">
-              <el-input :readonly="dialogTitleTxt=='查看' || userInfo.includes('USER_EDIT_OPERATOR')" v-model="editForm.name" />
+              <el-input :read-only="dialogTitleTxt=='查看' || userInfo.includes('USER_EDIT_OPERATOR')" v-model="editForm.name" />
             </el-form-item>
           </el-col>
         </el-row>
