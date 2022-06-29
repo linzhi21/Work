@@ -237,12 +237,12 @@
               <el-form-item label="编制人" required="required">
                 <!-- <el-date-picker value-format='yyyy-MM-dd' v-model="item.deviceCreatorDate" type="date" placeholder="选择日期"
                 style="width: 100%;"></el-date-picker>-->
-                <el-input readonly v-model="item.creatorName"></el-input>
+                <el-input readonly v-model="item.creatorName" disabled></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="11" :offset="2">
               <el-form-item label="编制日期" required="required">
-                <el-input readonly v-model="item.createDate"></el-input>
+                <el-input readonly v-model="item.createDate" disabled></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="24">
@@ -254,6 +254,7 @@
                   :file-list="item.planPictures"
                   :action="uploadImgUrl"
                   :headers="uploadHeaders"
+                  accept=".jpg, .png, .jpeg"
                   :on-success="
                     (res, file) => handleAvatarSuccess(res, file, item)
                   "
@@ -271,7 +272,7 @@
               :data="item.planContents"
               style="width: 100%"
               border
-              default-expand-all
+              row-key="content"
               :tree-props="{
                 children: 'childPlanContents',
                 hasChildren: 'hasChildren',
@@ -289,13 +290,14 @@
                     v-show="scope.row.editShow"
                     v-model="scope.row.executionNode"
                   ></el-input>
-                  <span v-show="!scope.row.editShow"
-                  :style="{
+                  <span
+                    v-show="!scope.row.editShow"
+                    :style="{
                       'text-decoration':
                         scope.row.deleted === true ? 'line-through' : '',
-                    }">{{
-                    scope.row.executionNode
-                  }}</span>
+                    }"
+                    >{{ scope.row.executionNode }}</span
+                  >
                 </template>
               </el-table-column>
               <el-table-column align="center" label="内容" width="300">
@@ -304,13 +306,14 @@
                     v-show="scope.row.editShow"
                     v-model="scope.row.content"
                   ></el-input>
-                  <span v-show="!scope.row.editShow"
-                  :style="{
+                  <span
+                    v-show="!scope.row.editShow"
+                    :style="{
                       'text-decoration':
                         scope.row.deleted === true ? 'line-through' : '',
-                    }">{{
-                    scope.row.content
-                  }}</span>
+                    }"
+                    >{{ scope.row.content }}</span
+                  >
                 </template>
               </el-table-column>
               <el-table-column align="center" label="工时(s)">
@@ -320,11 +323,14 @@
                     v-model="scope.row.hour"
                     @change="calcTime(item)"
                   ></el-input>
-                  <span v-show="!scope.row.editShow"
-                  :style="{
+                  <span
+                    v-show="!scope.row.editShow"
+                    :style="{
                       'text-decoration':
                         scope.row.deleted === true ? 'line-through' : '',
-                    }">{{ scope.row.hour }}</span>
+                    }"
+                    >{{ scope.row.hour }}</span
+                  >
                 </template>
               </el-table-column>
               <el-table-column align="center" label="方法">
@@ -333,13 +339,14 @@
                     v-show="scope.row.editShow"
                     v-model="scope.row.method"
                   ></el-input>
-                  <span v-show="!scope.row.editShow"
-                  :style="{
+                  <span
+                    v-show="!scope.row.editShow"
+                    :style="{
                       'text-decoration':
                         scope.row.deleted === true ? 'line-through' : '',
-                    }">{{
-                    scope.row.method
-                  }}</span>
+                    }"
+                    >{{ scope.row.method }}</span
+                  >
                 </template>
               </el-table-column>
               <el-table-column align="center" label="周期" width="110">
@@ -391,16 +398,28 @@
                 fixed="right"
               >
                 <template slot-scope="scope">
-                  <el-button size="small" @click="scope.row.editShow = true"
+                  <el-button
+                    size="small"
+                    @click="scope.row.editShow = true"
                     :disabled="scope.row.deleted"
                     >编辑</el-button
                   >
                   <el-button
+                    v-if="newAddDialogTitle === '编辑'"
                     size="small"
                     @click.native.prevent="
                       deleteRow(scope.row, item.planContents), calcTime(item)
                     "
                     :disabled="scope.row.deleted"
+                    style="margin-right: 10px"
+                    >删除</el-button
+                  >
+                  <el-button
+                    v-if="newAddDialogTitle === '新增'"
+                    size="small"
+                    @click.native.prevent="
+                      addDeleteRow(scope, item.planContents), calcTime(item)
+                    "
                     style="margin-right: 10px"
                     >删除</el-button
                   >
@@ -709,6 +728,7 @@ export default {
         planDevices: [
           {
             id: "",
+            type: 1,
             version: "", //版本
             stationId: "", //工位
             sectionId: "", //工段
@@ -723,6 +743,7 @@ export default {
             planContents: [
               {
                 id: "",
+                type: 1,
                 editShow: false,
                 executionNode: "", //时间/部件
                 content: "", //  内容
@@ -1164,10 +1185,10 @@ export default {
       var form = this.form;
       form.type = 3;
       var newType = false;
-      // if (!form.name) {
-      //   this.$message.warning("缺少必填项!");
-      //   return false;
-      // }
+      if (!form.name) {
+        this.$message.warning("缺少必填项!");
+        return false;
+      }
       const validateDevices = form.planDevices.filter((item) => {
         if (!item.version) return true;
         if (!item.deviceNos) return true;
@@ -1219,6 +1240,24 @@ export default {
       });
       if (validate) {
         this.$message.warning("工作内容顺序重复，请修改");
+        return;
+      }
+      const validateDevices = this.form.planDevices.filter(item => {
+        const validateee = item.planContents.filter(itemm => {
+          if(!itemm.executionNode) return true;
+          if(!itemm.content) return true;
+          if(!itemm.hour) return true;
+          if(!itemm.cycleId) return true;
+          if(!itemm.method) return true;
+          return false;
+        });
+        if (validateee.length) {
+          this.$message.warning("缺少必填项!");
+          return true;
+        }
+        return false
+      })
+      if (validateDevices.length) {
         return;
       }
       console.log(JSON.stringify(this.form));
@@ -1279,6 +1318,16 @@ export default {
         ],
       });
     },
+    /**
+     * 点击新增的时候删除数据
+     */
+    addDeleteRow(row, rows) {
+      this.form.planDevices.map((device) => {
+        const planContents = device.planContents;
+        console.log(planContents[row.$index])
+        planContents.splice(row.$index,1)
+      })
+    },
     //删除planContents里的一条数据
     deleteRow(row, rows) {
       this.form.planDevices.map((device) => {
@@ -1296,12 +1345,13 @@ export default {
       const { planContents } = item;
       window.planContents = planContents;
       const sum = planContents
+        .filter((row => row.deleted == false))
         .map((row) => row.hour)
         .reduce((a, b) => {
           const pre = parseInt(a) || 0;
           const next = parseInt(b) || 0;
           return pre + next;
-        });
+        },0);
       item.hour = sum;
     },
     //审批巡检计划
@@ -1518,10 +1568,22 @@ export default {
       // console.log(file);
       const isLt10M = file.size / 1024 / 1024 < 10;
 
+      var testmsg = file.name.substring(file.name.lastIndexOf(".") + 1);
+      const extension = testmsg === "png";
+      const extension2 = testmsg === "jpeg";
+      const extension3 = testmsg === "jpg";
+
+      if (!extension && !extension2 && !extension3) {
+        this.$message({
+          message: "上传文件只能是 png、jpeg、jpg格式的文件",
+          type: "warning",
+        });
+      }
+
       if (!isLt10M) {
         this.$message.error("上传头像图片大小不能超过 10M!");
       }
-      return isLt10M;
+      return (extension || extension2 || extension3) && isLt10M;
     },
     /**
      * 批量发布
@@ -1541,7 +1603,7 @@ export default {
         type: "warning",
       })
         .then(() => {
-          postPlan(ids, 'released')
+          postPlan(ids, "released")
             .then((res) => {
               this.$message({
                 type: "success",

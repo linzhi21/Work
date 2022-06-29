@@ -206,6 +206,9 @@ export default {
       const { id, data } = this.dialog_edit;
       expertTypeManage.edit(data, id).then(res => {
         this.$message.success('修改成功')
+        
+        this.getTableData();
+        this.dialog_edit.isShow = false;
       });
     },
 

@@ -34,13 +34,13 @@
       </el-card>
     </el-row>
     <!-- 修理备件登记对话框 -->
-    <el-dialog title="备件损坏登记" :visible.sync="addIsShow" width="50%">
+    <el-dialog title="备件损坏登记" :visible.sync="detailIsShow" width="50%">
       <el-form class="spare-part-dialog-form" :model="repairPartDialogForm" label-width="180px">
         <el-form-item label="修理备件登记编号">
-          <el-input v-model="repairPartDialogForm.repairPartRegistNumber" placeholder="请输入"></el-input>
+          <el-input v-model="repairPartDialogForm.spareNo" placeholder="请输入"></el-input>
         </el-form-item>
         <el-form-item label="修理情况">
-          <el-select v-model="repairPartDialogForm.repairStatus">
+          <el-select v-model="repairPartDialogForm.status">
             <el-option
               v-for="(item,index) in repairStatusSelect"
               :key="index"
@@ -50,59 +50,38 @@
           </el-select>
         </el-form-item>
         <el-form-item label="修理日期">
-          <el-input v-model="repairPartDialogForm.repairDate" placeholder="请输入"></el-input>
+          <el-input v-model="repairPartDialogForm.requireFinishDate" placeholder="请输入"></el-input>
         </el-form-item>
         <el-form-item label="备件编号">
-          <el-input v-model="repairPartDialogForm.sparePartNumber" placeholder="请输入"></el-input>
+          <el-input v-model="repairPartDialogForm.spareNo" placeholder="请输入"></el-input>
         </el-form-item>
         <el-form-item label="备件名称">
-          <el-input v-model="repairPartDialogForm.sparePartName" placeholder="请输入"></el-input>
+          <el-input v-model="repairPartDialogForm.spareName" placeholder="请输入"></el-input>
         </el-form-item>
         <el-form-item label="规格型号">
-          <el-select v-model="repairPartDialogForm.type">
-            <el-option
-              v-for="(item,index) in typeSelect"
-              :key="index"
-              :label="item.label"
-              :value="item.value"
-            ></el-option>
-          </el-select>
+          <el-input v-model="repairPartDialogForm.specification" placeholder="请输入"></el-input>
         </el-form-item>
         <el-form-item label="原值">
-          <el-select v-model="repairPartDialogForm.originValue">
-            <el-option
-              v-for="(item,index) in originValueSelect"
-              :key="index"
-              :label="item.label"
-              :value="item.value"
-            ></el-option>
-          </el-select>
+          <el-input v-model="repairPartDialogForm.sn" placeholder="请输入"></el-input>
         </el-form-item>
         <el-form-item label="数量">
-          <el-select v-model="repairPartDialogForm.number">
-            <el-option
-              v-for="(item,index) in numberSelect"
-              :key="index"
-              :label="item.label"
-              :value="item.value"
-            ></el-option>
-          </el-select>
+          <el-input v-model="repairPartDialogForm.num" placeholder="请输入"></el-input>
         </el-form-item>
-        <el-form-item label="鉴定人">
+        <!-- <el-form-item label="鉴定人">
           <el-input v-model="repairPartDialogForm.appraiser" disabled></el-input>
         </el-form-item>
         <el-form-item label="鉴定日期">
           <el-input v-model="repairPartDialogForm.checkDate" disabled></el-input>
-        </el-form-item>
+        </el-form-item> -->
       </el-form>
-      <span slot="footer">
+      <!-- <span slot="footer">
         <el-button type="primary" @click="repairPartDialog = false">
           <i class="el-icon-edit"></i>取消
         </el-button>
         <el-button @click="submitForm">
           <i class="el-icon-edit"></i>保存
         </el-button>
-      </span>
+      </span> -->
     </el-dialog>
   </div>
 </template>
@@ -156,22 +135,6 @@ export default {
         { label: "报废备件", value: "2" },
         { label: "修复备件", value: "3" }
       ],
-      // 规格型号下拉选择框内容
-      typeSelect: [
-        { label: "委内维修", value: "1" },
-        { label: "委外维修", value: "2" }
-      ],
-      // 原值下拉选择框内容
-      originValueSelect: [
-        { label: "委内维修", value: "1" },
-        { label: "委外维修", value: "2" }
-      ],
-      // 数量下拉选择框内容
-      numberSelect: [
-        { label: "委内维修", value: "1" },
-        { label: "委外维修", value: "2" }
-      ],
-
       equipmentFormList: [
         //  渲染头部功能区的列表
         { label: "备件名称", props: "spareName", value: "" },
@@ -218,7 +181,8 @@ export default {
       ],
       detailIsShow: false, //详情
       addIsShow: false, //新增
-      repairPartDialogForm: {},
+      repairPartDialogForm: {
+      },
       detailData: {},
       total: 0
     };
@@ -263,8 +227,8 @@ export default {
     view(row) {
       console.log(row);
       spairRrepair.getOne(null, row.id).then(res => {
-        console.log(res);
-        this.detailData = res.data;
+        console.log(res.data)
+        this.repairPartDialogForm = res.data;
       });
       this.detailIsShow = true;
     },

@@ -255,6 +255,8 @@
         this.dialogVisible = true
         this.dialogTitleTxt = '新增'
         this.dialogType = 'add'
+        this.form = {}
+
       },
       dialogClose() {
         this.dialogVisible = false

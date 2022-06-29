@@ -6,6 +6,7 @@
         <tpms-header
           ref="tpmsHeader"
           :formData="equipmentFormList"
+          @getTableData="getTableData"
           @inquireTableData="inquireTableData"
         />
         <el-row class="buttom-group" type="flex" justify="end" align="middle">
@@ -23,6 +24,7 @@
           ref="tpmsTable"
           :data="equipmentTableData"
           :columns="equipmentTableList"
+          @getTableData="getTableData"
           @inquireTableData="inquireTableData"
         >
           <template slot-scope="scope">
@@ -35,14 +37,22 @@
     <!-- 编辑 -->
     <el-dialog :visible.sync="editIsShow" width="70%" title="编辑">
       <el-row>
-        <el-form :model="editData" label-position="left" label-width="120px"></el-form>
+        <el-form
+          :model="editData"
+          label-position="left"
+          label-width="120px"
+        ></el-form>
       </el-row>
     </el-dialog>
 
     <!-- 查看详情 -->
     <el-dialog :visible.sync="detailIsShow" width="70%" title="查看">
       <el-row>
-        <el-form :model="detailData" label-position="left" label-width="120px"></el-form>
+        <el-form
+          :model="detailData"
+          label-position="left"
+          label-width="120px"
+        ></el-form>
       </el-row>
     </el-dialog>
   </div>
@@ -62,7 +72,7 @@ export default {
         //  渲染头部功能区的列表
         { label: "备件编号", props: "no", value: "" },
         { label: "备件名称", props: "planName", value: "" },
-        { label: "领用日期", props: "planNo", value: [], slotName: "time"},
+        { label: "领用日期", props: "planNo", value: [], slotName: "time" },
       ],
       // 表格的数据
       equipmentTableData: [],
@@ -70,10 +80,10 @@ export default {
       equipmentTableList: [
         { props: "no", label: "领用日期", width: "200px" },
         { props: "type", label: "备件编号" },
-        { props: "planName", label: "备件名称",},
-        { props: "planNo", label: "型号规格", },
+        { props: "planName", label: "备件名称" },
+        { props: "planNo", label: "型号规格" },
         { props: "hour", label: "原值" },
-        { props: "createDate", label: "数量"},
+        { props: "createDate", label: "数量" },
         { props: "status", label: "用途类别" },
         { props: "status", label: "设备编号名称" },
         { props: "status", label: "领用人" },

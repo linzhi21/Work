@@ -7,7 +7,9 @@
         ref="tpmsHeader"
         :Btnoffset="8"
         :formData="searchFormList"
+        :total="total"
         @inquireTableData="inquireTableData"
+        @getTableData="getTableData"
       />
     </el-row>
     <el-row>
@@ -47,14 +49,14 @@
         :column_index="true"
         :total="total"
         @inquireTableData="inquireTableData"
+        @getTableData="getTableData"
       >
         <template slot-scope="{ row }">
           <span
             class="button cursor"
-            v-if="row.accessories"
-            @click="preview(row)"
+            @click="addDialog((drawer = true), 'look', row)"
           >
-            预览
+            查看
             <el-divider direction="vertical"></el-divider>
           </span>
 
@@ -75,12 +77,16 @@
         <div class="drawer-title">{{ drawerTitle }}</div>
         <el-form label-position="right" label-width="100px" :model="formObj">
           <el-form-item label="资料名称">
-            <el-input v-model="formObj.name"></el-input>
+            <el-input 
+            v-model="formObj.name"
+            :readonly="drawerTitle=='查看'"
+            ></el-input>
           </el-form-item>
           <el-form-item label="类型">
             <el-select
               v-model="formObj.deviceDataBaseTypeId"
               placeholder="请选择"
+              :disabled="drawerTitle=='查看'"
             >
               <el-option
                 v-for="item in dataBaseTypes"
@@ -94,15 +100,16 @@
             <el-autocomplete
               v-model="formObj.deviceName"
               :fetch-suggestions="querySearchAsync"
-              placeholder="请输入内容"
+              placeholder="请输入内容，搜索设备"
               @select="handleSelect"
+              :readonly="drawerTitle=='查看'"
             ></el-autocomplete>
           </el-form-item>
           <el-form-item label="关联设备编号">
             <el-input v-model="formObj.deviceNo" readonly></el-input>
           </el-form-item>
           <el-form-item label="关键词">
-            <el-input v-model="formObj.keyword"></el-input>
+            <el-input v-model="formObj.keyword" :readonly="drawerTitle=='查看'"></el-input>
           </el-form-item>
           <el-form-item label="资料/文件">
             <tpms-choosefile
@@ -111,7 +118,15 @@
               @getFileData="getMutipleFileData($event)"
               type="default"
               text="上传附件"
+              v-if="drawerTitle=='修改'||drawerTitle=='新增'"
             ></tpms-choosefile>
+            <el-button
+              style="margin-left: 10px"
+              size="small"
+              @click="exportAllFile()"
+              type="primary"
+              v-if="drawerTitle=='查看'"
+            >下载附件</el-button>
           </el-form-item>
         </el-form>
         <div class="drawer-footer">
@@ -205,6 +220,7 @@ export default {
       devices: [],
       dataBaseTypes: [],
       uploadData: {}, // 附件信息
+      dataId:0,// 资料id
     };
   },
   components: {
@@ -275,6 +291,12 @@ export default {
     addDialog(s, t, r) {
       if (t === "add") {
         this.drawerTitle = "新增";
+      } else if (t === "look") {
+        this.drawerTitle = "查看";
+        dataBaseApi["selectById"](r.id).then((res) => {
+          this.formObj = res.data;
+          this.dataId = r.id;
+        });
       } else {
         this.drawerTitle = "修改";
         dataBaseApi["selectById"](r.id).then((res) => {
@@ -307,7 +329,7 @@ export default {
         type: "warning",
       })
         .then(() => {
-          dataBaseApi["del"](r.id).then(() => {
+          dataBaseApi["del"](r.id, '').then(() => {
             this.$message({
               type: "success",
               message: "操作成功!",
@@ -378,6 +400,55 @@ export default {
           accessoryUrl: res.path + res.name,
         });
       });
+    },
+    exportAllFile() {
+        if(this.formObj.accessories) {
+          for(let i=0; i<this.formObj.accessories.length; i++) {
+          let id = this.formObj.accessories[i].id
+          exportMutipleFileData(id)
+        }
+      } else {
+        this.$message.warning("对不起，没有附件可下载")
+      }
+    },
+    /**
+     * 下载附件文件
+     */
+    exportMutipleFileData(id) {
+      let url = `${apiConfig.downloadAccessory}/${id}`; //请求下载文件的地址
+      let token = localStorage.getItem("access_token"); //获取token
+      axios
+        .get(url, {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+          responseType: "blob",
+        })
+        .then((res) => {
+          if (!res) return;
+          let fileName = '';
+          const disposition = res.headers["content-disposition"];
+          if (disposition) {
+            const name = disposition.split(";")[1].split("filename=")[1];
+            fileName = decodeURI(name);
+          }
+
+          let blob = new Blob([res.data], {
+            type: "application/vnd.ms-excel;charset=utf-8",
+          });
+          let url = window.URL.createObjectURL(blob);
+          let aLink = document.createElement("a");
+          aLink.style.display = "none";
+          aLink.href = url;
+          aLink.setAttribute("download", fileName); // 下载的文件
+          document.body.appendChild(aLink);
+          aLink.click();
+          document.body.removeChild(aLink);
+          window.URL.revokeObjectURL(url);
+        })
+        .catch((error) => {
+          this.$message.error(error.message);
+        });
     },
     exportModelFile(urlStr) {
       let url = `${apiConfig.templateDownload}${urlStr}`; //请求下载文件的地址

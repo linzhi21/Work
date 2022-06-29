@@ -2,45 +2,21 @@
 <template>
   <div>
     <!-- 头部功能区 -->
-    <tpms-header
-      ref="tpmsHeader"
-      :formData="headerFormList"
-      :total="total"
-      @inquireTableData="inquireTableData"
-    >
+    <tpms-header ref="tpmsHeader" :formData="headerFormList" :total="total" @inquireTableData="inquireTableData">
       <template slot="time" slot-scope="{ row }">
-        <el-date-picker
-          style="width: 1.6rem"
-          v-model="row.value[0]"
-          type="date"
-          value-format="yyyy-MM-dd"
-          placeholder="开始日期"
-        />
-        <el-date-picker
-          style="width: 1.6rem"
-          v-model="row.value[1]"
-          type="date"
-          value-format="yyyy-MM-dd"
-          placeholder="结束日期"
-        />
+        <el-date-picker style="width: 1.6rem" v-model="row.value[0]" type="date" value-format="yyyy-MM-dd"
+          placeholder="开始日期" />
+        <el-date-picker style="width: 1.6rem" v-model="row.value[1]" type="date" value-format="yyyy-MM-dd"
+          placeholder="结束日期" />
       </template>
     </tpms-header>
     <!-- 按钮组 -->
     <el-row class="buttom-group" type="flex" justify="end" align="middle">
-      <el-button size="small" type="primary" @click="dialogShow()"
-        >新增</el-button
-      >
-      <el-button size="small" type="primary" @click="exportSpareConsuming()"
-        >备查台账</el-button
-      >
+      <el-button size="small" type="primary" @click="dialogShow()">新增</el-button>
+      <el-button size="small" type="primary" @click="exportSpareConsuming()">备查台账</el-button>
     </el-row>
     <!-- 底部表格 -->
-    <tpms-table
-      ref="tpmsTable"
-      :data="tableData"
-      :columns="tableColumns"
-      @inquireTableData="getTableDate"
-    >
+    <tpms-table ref="tpmsTable" :data="tableData" :columns="tableColumns" @inquireTableData="getTableDate">
       <template slot-scope="{ row }">
         <el-button @click="seeDetail(row, 'detail')">查看</el-button>
         <el-button @click="seeDetail(row, 'edit')">编辑</el-button>
@@ -49,100 +25,56 @@
 
     <!-- 领用申请 -->
     <el-dialog title="领用申请" :visible.sync="addDialogIsShow" width="80%" :before-close="dialogClose">
-      <el-form
-        :model="dialogForm"
-        ref="dialogForm"
-        inline
-        label-position="left"
-        size="small"
-      >
+      <el-form :model="dialogForm" ref="dialogForm" inline label-position="left" size="small">
         <el-row v-for="(formObj, index) in dialogForm.dialogForms" :key="index">
           <el-col :span="6">
-            <el-form-item
-              label="领用人"
-              :prop="'dialogForms.' +index+ '.consumerName'" 
-              :rules="{required: true, message: '不能为空', trigger: ['blur','change']}"
-            >
-              <el-select
-                v-model="formObj.consumerName"
-                filterable
-                remote
-                placeholder="请输入领用人"
-                :remote-method="changeConsumerName"
-                @change="selectForm($event, formObj, 'consumer')"
-              >
-                <el-option
-                  v-for="(item, index) in options.consumerNameOptions"
-                  :key="index"
-                  :label="item.label"
-                  :value="item"
-                ></el-option>
+            <el-form-item label="领用人" :prop="'dialogForms.' + index + '.consumerName'"
+              :rules="{ required: true, message: '不能为空', trigger: ['blur', 'change'] }">
+              <el-select v-model="formObj.consumerName" filterable remote placeholder="请输入领用人"
+                :remote-method="changeConsumerName" @change="selectForm($event, formObj, 'consumer')">
+                <el-option v-for="(item, index) in options.consumerNameOptions" :key="index" :label="item.label"
+                  :value="item"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item label="备件" :prop="'dialogForms.' +index+ '.spareName'"
-              :rules="{required: true, message: '不能为空', trigger: ['blur','change']}">
-              <el-select
-                v-model="formObj.spareName"
-                filterable
-                remote
-                placeholder="请输入SVW编号"
-                :remote-method="changeSpare"
-                @change="selectForm($event, formObj, 'spare')"
-              >
-                <el-option
-                  v-for="(item, index) in options.spareOptions"
-                  :key="index"
-                  :label="item.label"
-                  :value="item"
-                ></el-option>
+            <el-form-item label="备件" :prop="'dialogForms.' + index + '.spareName'"
+              :rules="{ required: true, message: '不能为空', trigger: ['blur', 'change'] }">
+              <el-select v-model="formObj.spareName" filterable remote placeholder="请输入SVW编号"
+                :remote-method="changeSpare" @change="selectForm($event, formObj, 'spare')">
+                <el-option v-for="(item, index) in options.spareOptions" :key="index" :label="item.label" :value="item">
+                </el-option>
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item label="数量" :prop="'dialogForms.' +index+ '.num'"
-              :rules="[{required: true, message: '不能为空', trigger: ['blur','change']},
-              {type: 'number', message:'请输入数字',trigger: 'blur'}]">
+            <el-form-item label="数量" :prop="'dialogForms.' + index + '.num'" :rules="[{ required: true, message: '不能为空', trigger: ['blur', 'change'] },
+            {
+              type: 'number', message: '请输入数字', trigger: 'blur', transform(value) {
+                if (value) {
+                  return Number(value);
+                }
+              }
+            }]">
               <el-input v-model="formObj.num"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item label="设备名称" :prop="'dialogForms.' +index+ '.deviceName'"
-              :rules="{required: true, message: '不能为空', trigger: ['blur','change']}">
-              <el-select
-                v-model="formObj.deviceName"
-                filterable
-                remote
-                placeholder="请输入资产编号"
-                :remote-method="changeDevice"
-                @change="selectForm($event, formObj, 'device')"
-              >
-                <el-option
-                  v-for="(item, index) in options.deviceOptions"
-                  :key="index"
-                  :label="item.label"
-                  :value="item"
-                ></el-option>
+            <el-form-item label="设备名称" :prop="'dialogForms.' + index + '.deviceName'"
+              :rules="{ required: true, message: '不能为空', trigger: ['blur', 'change'] }">
+              <el-select v-model="formObj.deviceName" filterable remote placeholder="请输入资产编号"
+                :remote-method="changeDevice" @change="selectForm($event, formObj, 'device')">
+                <el-option v-for="(item, index) in options.deviceOptions" :key="index" :label="item.label"
+                  :value="item"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="6">
             <el-form-item label="维修单号">
-              <el-select
-                v-model="formObj.maintenanceNo"
-                filterable
-                remote
-                placeholder="请输入维修单号"
-                :remote-method="changeMaintenance"
-                @change="selectForm($event, formObj, 'maintenance')"
-              >
-                <el-option
-                  v-for="(item, index) in options.maintenanceOptions"
-                  :key="index"
-                  :label="item.label"
-                  :value="item"
-                ></el-option>
+              <el-select v-model="formObj.maintenanceNo" filterable remote placeholder="请输入维修单号"
+                :remote-method="changeMaintenance" @change="selectForm($event, formObj, 'maintenance')">
+                <el-option v-for="(item, index) in options.maintenanceOptions" :key="index" :label="item.label"
+                  :value="item"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
@@ -153,12 +85,7 @@
           </el-col>
           <el-col :span="2">
             <el-form-item label>
-              <el-button
-                type="warning"
-                @click.prevent="removeDomain(formObj)"
-                size="small"
-                >删除</el-button
-              >
+              <el-button type="warning" @click.prevent="removeDomain(formObj)" size="small">删除</el-button>
             </el-form-item>
           </el-col>
         </el-row>
@@ -172,121 +99,53 @@
 
     <!-- 领用查看 | 修改 -->
     <el-dialog title="领用申请" :visible.sync="dialogIsShow" width="80%">
-      <el-form
-        :model="dialogForm"
-        v-loading="loading"
-        ref="dialogForm"
-        inline
-        label-position="left"
-        size="small"
-      >
+      <el-form :model="dialogForm" v-loading="loading" ref="dialogForm" inline label-position="left" size="small">
         <el-row>
           <!-- v-for="(formObj, index) in dialogForm.dialogForms" :key="index" -->
           <el-col :span="6">
-            <el-form-item
-              label="领用人"
-              prop="consumerName"
-              :rules="[{ required: true, message: '不能为空' }]"
-            >
-              <el-select
-                v-model="dialogForm.dialogForms[0].consumerName"
-                filterable
-                remote
-                placeholder="请输入领用人"
-                :remote-method="changeConsumerName"
-                @change="
+            <el-form-item label="领用人" prop="consumerName">
+              <el-select v-model="dialogForm.dialogForms[0].consumerName" filterable remote placeholder="请输入领用人"
+                :remote-method="changeConsumerName" @change="
                   selectForm($event, dialogForm.dialogForms[0], 'consumer')
-                "
-                disabled
-              >
-                <el-option
-                  v-for="(item, index) in options.consumerNameOptions"
-                  :key="index"
-                  :label="item.label"
-                  :value="item"
-                ></el-option>
+                " disabled>
+                <el-option v-for="(item, index) in options.consumerNameOptions" :key="index" :label="item.label"
+                  :value="item"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item
-              label="备件"
-              prop="spareName"
-              :rules="[{ required: true, message: '不能为空' }]"
-            >
-              <el-select
-                v-model="dialogForm.dialogForms[0].spareName"
-                filterable
-                remote
-                placeholder="请输入SVW编号"
-                :remote-method="changeSpare"
-                @change="selectForm($event, dialogForm.dialogForms[0], 'spare')"
-                disabled
-              >
-                <el-option
-                  v-for="(item, index) in options.spareOptions"
-                  :key="index"
-                  :label="item.label"
-                  :value="item"
-                ></el-option>
+            <el-form-item label="备件" prop="spareName">
+              <el-select v-model="dialogForm.dialogForms[0].spareName" filterable remote placeholder="请输入SVW编号"
+                :remote-method="changeSpare" @change="selectForm($event, dialogForm.dialogForms[0], 'spare')" disabled>
+                <el-option v-for="(item, index) in options.spareOptions" :key="index" :label="item.label" :value="item">
+                </el-option>
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item
-              label="数量"
-              prop="num"
-              :rules="[{ required: true, message: '不能为空' }]"
-            >
-              <el-input
-                v-model="dialogForm.dialogForms[0].num"
-                disabled
-              ></el-input>
+            <el-form-item label="数量" prop="num">
+              <el-input v-model="dialogForm.dialogForms[0].num" disabled></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item
-              label="设备名称"
-              prop="deviceName"
-              :rules="[{ required: true, message: '不能为空' }]"
-            >
-              <el-select
-                v-model="dialogForm.dialogForms[0].deviceName"
-                filterable
-                remote
-                placeholder="请输入资产编号"
-                :remote-method="changeDevice"
-                @change="
+            <el-form-item label="设备名称" :rules="{ required: true, message: '不能为空', trigger: ['blur', 'change'] }">
+              <el-select v-model="dialogForm.dialogForms[0].deviceName" filterable remote placeholder="请输入资产编号"
+                :remote-method="changeDevice" @change="
                   selectForm($event, dialogForm.dialogForms[0], 'device')
-                "
-              >
-                <el-option
-                  v-for="(item, index) in options.deviceOptions"
-                  :key="index"
-                  :label="item.label"
-                  :value="item"
-                ></el-option>
+                ">
+                <el-option v-for="(item, index) in options.deviceOptions" :key="index" :label="item.label"
+                  :value="item"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="6">
             <el-form-item label="维修单号">
-              <el-select
-                v-model="dialogForm.dialogForms[0].maintenanceNo"
-                filterable
-                remote
-                placeholder="请输入维修单号"
-                :remote-method="changeMaintenance"
-                @change="
+              <el-select v-model="dialogForm.dialogForms[0].maintenanceNo" filterable remote placeholder="请输入维修单号"
+                :remote-method="changeMaintenance" @change="
                   selectForm($event, dialogForm.dialogForms[0], 'maintenance')
-                "
-              >
-                <el-option
-                  v-for="(item, index) in options.maintenanceOptions"
-                  :key="index"
-                  :label="item.label"
-                  :value="item"
-                ></el-option>
+                ">
+                <el-option v-for="(item, index) in options.maintenanceOptions" :key="index" :label="item.label"
+                  :value="item"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
@@ -299,12 +158,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="initDialog()">取 消</el-button>
-        <el-button
-          v-if="dialogType == 'edit'"
-          @click="updateDialogSubmit()"
-          type="primary"
-          >提交</el-button
-        >
+        <el-button v-if="dialogType == 'edit'" @click="updateDialogSubmit()" type="primary">提交</el-button>
       </div>
     </el-dialog>
   </div>
@@ -407,7 +261,7 @@ export default {
     getTableItemDetail(row) {
       this.loading = true;
       spareConsuming.getDetail(null, row.id).then((res) => {
-        this.dialogForm.dialogForms[0] = res.data;
+        this.dialogForm.dialogForms = [res.data];
         this.loading = false;
       });
     },
@@ -623,26 +477,27 @@ export default {
      */
     addDialogSubmit(e, i) {
       const param = this.dialogForm.dialogForms;
-      if (param.consumerId == null) {
-        this.$message.info("领用人不能为空");
-        return;
-      }
-      if (param.spareId == null) {
-        this.$message.info("备件不能为空");
-        return;
-      }
-      if (param.num == null) {
-        this.$message.info("数量不能为空");
-        return;
-      }
-      if (param.deviceName == null) {
-        this.$message.info("设备不能为空");
-        return;
-      }
+      // if (param.consumerId == null) {
+      //   this.$message.info("领用人不能为空");
+      //   return;
+      // }
+      // if (param.spareId == null) {
+      //   this.$message.info("备件不能为空");
+      //   return;
+      // }
+      // if (param.num == null) {
+      //   this.$message.info("数量不能为空");
+      //   return;
+      // }
+      // if (param.deviceName == null) {
+      //   this.$message.info("设备不能为空");
+      //   return;
+      // }
       spareConsuming["add"](param).then((res) => {
         this.$message.success("保存成功");
         this.inquireTableData();
         this.getTableDate();
+        this.initDialog();
       });
     },
     /**
@@ -654,6 +509,7 @@ export default {
         this.$message.success("保存成功");
         this.inquireTableData();
         this.getTableDate();
+        this.initDialog();
       });
     },
     /**

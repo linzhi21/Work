@@ -13,6 +13,9 @@
         <el-button class="button-more" type="primary" size="small" @click="add"
           >新增计划</el-button
         >
+          <el-button @click="deleteMore" class="button-more" size="small"
+            >批量删除</el-button
+          >
         <!-- <tpms-choosefile
           plain
           text="新增计划"
@@ -33,7 +36,7 @@
           { props: 'statusStr', label: '状态' },
           { props: 'receiverName', label: '接单人' },
           { props: 'completeTime', label: '完成时间', width: '200px' },
-          { props: 'createDate', label: '工单日期', width: '200px' },
+          { props: 'exceptTime', label: '工单日期', width: '200px' },
           { props: 'no', label: '点检工单编号' },
           { props: 'planName', label: '点检计划名称', width: '200px' },
           { props: 'planNo', label: '点检计划编号', width: '200px' },
@@ -50,6 +53,7 @@
       @changeDialog="changeDialog"
       :dialog="newAddDialog"
       :dialogTitle="dialogTitle"
+      :addShow="false"
     />
   </div>
 </template>
@@ -67,6 +71,7 @@ import {
 
 import {
   maintainWorkOrder, //查看保养工单
+  deleteTemporary, //删除保养工单
 } from "../../lib/api/upkeepManagePage.js";
 import {
   factoryManage,
@@ -205,9 +210,47 @@ export default {
      * @param dialog 模态框状态
      */
     changeDialog(dialog) {
-      console.log(1234567);
       this.newAddDialog = dialog;
       this.getTableData();
+    },
+    /**
+     * 批量删除
+     */
+    deleteMore() {
+      const selected = this.$refs.tpmsTable.getSelectionList();
+      const ids = selected.map((item) => item.id);
+
+      if (ids.length === 0) {
+        this.$message.warning("请先选择需要删除的计划");
+        return;
+      }
+      this.$confirm("批量删除临时保养计划, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(() => {
+          deleteTemporary(ids)
+            .then((res) => {
+              this.$message({
+                type: "success",
+                message: "删除成功!",
+              });
+            this.getTableData();
+            })
+            .catch(() => {
+              this.$message({
+                type: "error",
+                message: "删除失败",
+              });
+            });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消删除",
+          });
+        });
     },
   },
 };

@@ -2,35 +2,39 @@
   <div>
     <el-row>
       <!-- 头部功能区 -->
-      <tpms-header
-        ref="tpmsHeader"
-        :formData="equipmentFormList"
-        @inquireTableData="inquireTableData"
-        label-width="90px"
-      />
+      <tpms-header ref="tpmsHeader" :formData="equipmentFormList" @inquireTableData="inquireTableData"
+        label-width="90px" />
       <el-row class="buttom-group" type="flex" justify="end" align="middle">
         <el-button @click="exportPlanChange" class="button-more" size="small">导出</el-button>
       </el-row>
 
       <!-- 底部表格 -->
-      <tpms-table
-        class="table-more"
-        :column_index="true"
-        ref="tpmsTable"
-        :total="total"
-        :data="equipmentTableData"
-        :columns="equipmentTableList"
-        @inquireTableData="inquireTableData"
-        @getTableData="getTableData"
-      ></tpms-table>
+      <tpms-table class="table-more" :column_index="true" ref="tpmsTable" :total="total" :data="equipmentTableData"
+        :columns="equipmentTableList" @inquireTableData="inquireTableData" @getTableData="getTableData">
+        <template slot="operation" slot-scope="scope">
+          <span class="button cursor" @click="showReason(scope.row)">变更理由</span>
+        </template>
+      </tpms-table>
     </el-row>
+    <!-- 变更理由 -->
+    <el-dialog width="50%" title="变更理由" :visible.sync="reasonIsShow" center append-to-body>
+      <el-form>
+        <el-form-item label="变更理由" prop="reason">
+          <el-input v-model="reason" placeholder="必须填写理由"></el-input>
+        </el-form-item>
+      </el-form>
+      <div style="text-align: center">
+        <el-button type="" @click="reasonIsShow = false">取消</el-button>
+        <el-button type="primary" @click="onReason">确认</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 <script>
 import axios from "axios";
 import { tpmsHeader, tpmsTable } from "../../components";
 import apiConfig from "../../lib/api/apiConfig";
-import { maintainPlanChanges } from "../../lib/api/upkeepManagePage";
+import { maintainPlanChanges, planChangeReason } from "../../lib/api/upkeepManagePage";
 export default {
   data() {
     return {
@@ -69,8 +73,17 @@ export default {
         { props: "createDate", label: "生效日期" },
         { props: "creator", label: "编制人" },
         { props: "approver", label: "审批人" },
+        {
+          label: '操作',
+          slotName: 'operation',
+          fixed: 'right',
+          width: '240px',
+        },
       ],
       total: 0,
+      row: {},
+      reason: '',
+      reasonIsShow: false
     };
   },
   components: {
@@ -108,7 +121,7 @@ export default {
       let token = localStorage.getItem("access_token"); //获取token
       axios
         .get(url, {
-          params: {...data},
+          params: { ...data },
           headers: {
             Authorization: "Bearer " + token,
           },
@@ -140,6 +153,25 @@ export default {
         .catch((error) => {
           this.$message.error(error.message);
         });
+    },
+    /**
+     * 打开理由
+     */
+    showReason(row) {
+      this.row = row;
+      this.reasonIsShow = true;
+    },
+    /**
+     * 提交理由
+     */
+    onReason() {
+      planChangeReason({ reason: this.reason }, this.row.id).then(
+        () => {
+          this.$message.success('更改成功！');
+          this.reasonIsShow = false;
+          this.inquireTableData()
+        }
+      ).catch(err => this.$message.error(err || ''))
     }
   },
 };

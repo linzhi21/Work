@@ -280,6 +280,7 @@
         this.dialogVisible = true
         this.dialogTitleTxt = '新增'
         this.dialogType = 'add'
+        this.form = {}
       },
       editDialog(row) {
         workshopAreaManage['getOne']('', row.id).then(res => {

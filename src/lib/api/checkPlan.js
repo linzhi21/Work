@@ -194,3 +194,9 @@ export const updateOrderStatus = (data) => PATCH(data, apiConfig.updateOrderStat
 export const postPlan = (data, restful) => POST(data, apiConfig.plan, restful);
 
 export const workOrderCompletionController = (data, restful) => GET(data, apiConfig.workOrderCompletion, restful);
+
+/**
+ * 变更理由
+ * @returns 
+ */
+export const planChangeReason = (data, restful) => PATCH(data, `${apiConfig.plan}/planChange/update`, restful);

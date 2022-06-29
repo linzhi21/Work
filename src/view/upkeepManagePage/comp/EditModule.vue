@@ -53,6 +53,7 @@
           </el-table>
           <el-row type="flex" justify="center">
             <i
+              v-if="addShow"
               class="el-icon-circle-plus"
               style="font-size: 30px; color: #0077dc"
               @click="addTableRow(item.maintainPlanContents)"
@@ -79,12 +80,13 @@ import { importTemporary, temporary } from "../../../lib/api/upkeepManagePage";
 
 export default {
   name: "EditModule",
-  props: ["changeDialog", "dialogTitle", "dialog"],
+  props: ["changeDialog", "dialogTitle", "dialog" ,"addShow"],
   components: {
     tpmsChoosefile,
   },
   data() {
     return {
+      addShow:true,
       loading: false,
       newAddDialog: this.dialog,
       cycleList: [], // 周期列表

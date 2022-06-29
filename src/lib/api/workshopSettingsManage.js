@@ -57,7 +57,7 @@ export const factoryManage = {
   add: (data) => POST(data, apiConfig.factoryManage),
   getLists: (data) => GET(data, apiConfig.factoryManage),
   getOne: (data, restful) => GET(data, apiConfig.factoryManage + '/' + restful),
-  remove: (data,ids) => DELETE(data, `${apiConfig.factoryManage}?ids=${ids}`),
+  remove: (data,ids) => DELETE(data, `${apiConfig.factoryManage}`+ '/' + ids),
   edit: (data, restful) => PATCH(data, apiConfig.factoryManage + '/' + restful),
   getNames: (data) => GET(data, apiConfig.factoryManage + '/names')
 }

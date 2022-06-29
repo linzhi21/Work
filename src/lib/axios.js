@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Notification } from 'element-ui';
+import { Notification, Message} from 'element-ui';
 import {refreshToken}  from './api/user'
 import route from '../router/index'
 const service = axios.create({
@@ -12,7 +12,7 @@ service.interceptors.request.use(
 
     config => {
         const access_token = localStorage.getItem('access_token');
-        config.headers.Authorization = 'Bearer ' + access_token;
+        config.headers.Authorization = 'Bearer ' + access_token;       
         const newurl =config.url.substring(config.url.length-9);
         if (newurl == "importURL") {
             config.headers['Content-Type'] = 'multipart/form-data; boundary=<calculated when request is sent>';
@@ -22,6 +22,7 @@ service.interceptors.request.use(
         return config;
     },
     error => {
+        console.log(error)
         // do something with request error
         return Promise.reject(error)
     }
@@ -55,19 +56,29 @@ service.interceptors.response.use(
               })
           }
           if (error.response.status === 401) {
+              if(error.response.data.error == "对不起，您没有权限访问此资源！") {
+                Notification({
+                    title: '权限',
+                    message: error.response.data.error,
+                    type: 'warning'
+                })
+                return
+              }
+              console.log(error.response)
               Notification({
                   title: '',
-                  message: 'token过期，请重试',
+                  message: "token过期，请重新登录",
                   type: 'warning'
               })
               route.push('/login')
-              // refreshToken()
+            //   refreshToken()
           }else{
             Notification({
-                title: '',
-                message: responseData.error,
+                title: responseData.error,
+                message: responseData.message,
                 type: 'warning'
             })
+            
             store.commit('SET_UPLOADING',false)
           }
 

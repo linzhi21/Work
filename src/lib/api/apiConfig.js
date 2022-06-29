@@ -18,7 +18,7 @@ export default {
     // 用户可以看见的菜单列表
     userMenus:`${urls.oauth2}/menus`,
     //免密登录
-    ivLogin:`${urls.oauth2}/iv/login`,
+    ivLogin:`${urls.oauth2}/ivUser/login`,
     //GET - 获取用户所有所属车间工厂
     userWorkshops: `${urls.oauth2}/workshops`,
     //GET - 将用户切换至该工厂下,并返回新的权限
@@ -125,7 +125,7 @@ export default {
     faultType:`${urls.business}/fault-type`,
     // 紧急程度管理
     emergencyDegree:`${urls.business}/emergency-degree`,
-    systemUrl:`${urls.systemUrl}`,
+    systemUrl:`${urls.system}`,
     // 用户管理
     userManage: `${urls.system}/user`,
     //文件服务器地址

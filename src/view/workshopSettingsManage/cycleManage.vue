@@ -84,7 +84,7 @@
               </el-select>
             </el-form-item>
             <el-form-item label='按日期' v-show='form.type==2'>
-              <el-date-picker style="width: 100%;" value-format='MM-dd' format="MM-dd" type="dates" v-model="form.day"
+              <el-date-picker style="width: 100%;" format="MM-dd" type="dates" v-model="form.day"
                 placeholder="选择一个或多个日期">
               </el-date-picker>
             </el-form-item>
@@ -608,6 +608,7 @@
         this.dialogVisible = true
         this.dialogTitleTxt = '新增'
         this.dialogType = 'add'
+        this.form = {}
       },
       dialogClose() {
         this.dialogVisible = false

@@ -9,7 +9,11 @@
         @inquireTableData="inquireTableData"
       />
       <el-row class="buttom-group" type="flex" justify="end" align="middle">
-        <el-button class="button-more" size="small" @click="download"
+        <el-button
+          class="button-more"
+          size="small"
+          style="margin-left: 20px"
+          @click="download"
           >导出</el-button
         >
         <el-button
@@ -83,8 +87,8 @@
         <el-row style="background: #f5f5f5; padding: 0.2rem">
           <el-col :span="12">
             <el-form-item label="设备名称" prop="deviceName">
-              <!-- <el-input v-model="dialog.data.deviceName"></el-input> -->
-              <el-select
+              <el-input v-model="dialog.data.deviceName"></el-input>
+              <!-- <el-select
                 v-model="dialog.data.deviceInfo"
                 filterable
                 remote
@@ -101,14 +105,14 @@
                   :label="item.name"
                   :value="item"
                 ></el-option>
-              </el-select>
+              </el-select> -->
             </el-form-item>
           </el-col>
 
           <el-col :span="12">
             <el-form-item label="设备编号" prop="deviceNo">
-              <!-- <el-input v-model="dialog.data.deviceNo"></el-input> -->
-              <el-select
+              <el-input v-model="dialog.data.deviceNo"></el-input>
+              <!-- <el-select
                 v-model="dialog.data.deviceInfo"
                 filterable
                 remote
@@ -123,9 +127,10 @@
                   :label="item.no"
                   :value="item"
                 ></el-option>
-              </el-select>
+              </el-select> -->
             </el-form-item>
           </el-col>
+
           <el-col :span="12">
             <el-form-item label="车间" prop="workshopId">
               <el-select
@@ -293,30 +298,30 @@
               <img width="100%" :src="dialogImageUrl" alt />
             </el-dialog>
           </el-form-item>-->
-          <!-- 底部表格 -->
-          <tpms-table
-            ref="tpmsTable"
-            :total="total"
-            :data="dialog.data.spares"
-            :columns="[
-              {
-                props: 'replaceSpareName',
-                label: '替换备件名称',
-                width: '160px',
-              },
-              { props: 'replaceSpareNo', label: '替换备件编号' },
-              { props: 'amount', label: '替换数量' },
-              {
-                props: 'brokeSpareName',
-                label: '损坏备件名称',
-                width: '160px',
-              },
-              { props: 'brokeSpareNo', label: '损坏备件编号' },
-            ]"
-            @getTableData="dialog.data.spares"
-          >
-          </tpms-table>
         </el-row>
+        <!-- 底部表格 -->
+        <tpms-table
+          ref="tpmsTable"
+          :total="dialog.data.spares.length"
+          :data="dialog.data.spares"
+          :columns="[
+            {
+              props: 'replaceSpareName',
+              label: '替换备件名称',
+              width: '160px',
+            },
+            { props: 'replaceSpareNo', label: '替换备件编号' },
+            { props: 'amount', label: '替换数量' },
+            {
+              props: 'brokeSpareName',
+              label: '损坏备件名称',
+              width: '160px',
+            },
+            { props: 'brokeSpareNo', label: '损坏备件编号' },
+          ]"
+          @getTableData="dialog.data.spares"
+        >
+        </tpms-table>
       </el-form>
       <el-row type="flex" justify="center">
         <el-button @click="$refs.dialog.resetFields(), (dialog.isShow = false)"
@@ -325,7 +330,10 @@
         <el-button
           v-if="!dialog.disabled"
           type="primary"
-          @click="$refs.dialog.validate((validate) => validate && save())"
+          @click="
+            $refs.dialog.validate((validate) => validate && save()),
+              (dialog.isShow = false)
+          "
           >保存</el-button
         >
       </el-row>
@@ -336,6 +344,8 @@
 import { tpmsHeader, tpmsTable } from "../../components";
 import axios from "axios";
 import apiConfig from "../../lib/api/apiConfig";
+import { parseTime } from "@/utils";
+
 import { maintenanceManage } from "../../lib/api/business";
 import {
   // workshopManage,
@@ -387,6 +397,18 @@ export default {
         //  渲染头部功能区的列表
         { label: "维修单号", props: "no", value: "" },
         { label: "设备编号", props: "deviceNo", value: "" },
+        {
+          label: "起始时间",
+          props: "times",
+          value: "",
+          type: "timeFrame",
+        },
+        // {
+        //   label: "结束时间",
+        //   props: "endTime",
+        //   value: "",
+        //   type: "dateFrame",
+        // },
         { label: "设备名称", props: "deviceName", value: "" },
         {
           label: "状态",
@@ -444,6 +466,7 @@ export default {
           breakdownTime: "", //故障发生时间
           breakdownPhotos: "", //故障照片，附件ID，英文逗号分割的字符串
           type: 4,
+          spares: []
         },
         rules: {
           workshopId: [
@@ -491,6 +514,11 @@ export default {
     getTableData() {
       // 获取头部搜索组数据
       let data = this.$refs.tpmsHeader.getData();
+      if (data.times) {
+        const time = data.times.split(',');
+        data.startTime = `${time[0]} 00:00:00`;
+        data.endTime = `${time[1]} 23:59:59`
+      }
       let pageData = this.$refs.tpmsTable.getData();
       maintenanceManage["getLists"]({ ...data, ...pageData }).then((res) => {
         this.tableLists = res.data.content;
@@ -547,12 +575,14 @@ export default {
     },
     /** 点击新增按钮 */
     showAddModal() {
+      this.dialog.data = {};
       const { id, name, factoryId, workshopId } =
         this.$store.state.user.userInfo.principal;
       this.dialogTitle = "新增";
       this.dialog.isShow = true;
       this.dialog.disabled = false;
       this.dialog.data.type = 4;
+      this.dialog.data.spares = [];
       const workshop = this.dialog.list.workshopList.filter(
         (item) => item.id === workshopId
       )[0];
@@ -621,6 +651,8 @@ export default {
         };
         data.deviceInfo = deviceInfo;
         this.dialog.list.deviceList = [deviceInfo];
+        this.dialog.data.deviceInfo = deviceInfo;
+        console.log(this.dialog.list.deviceList);
 
         data.areaInfo = { id: data.areaId, label: data.areaName };
 
@@ -643,8 +675,10 @@ export default {
           id: data.emergencyDegree,
           label: data.emergencyDegreeName,
         };
-
         this.dialog.data = { ...data, type: 4 };
+      });
+      this.$nextTick(() => {
+        this.$refs.dialog.resetFields();
       });
     },
     /**显示编辑modal**/
@@ -652,7 +686,6 @@ export default {
       this.dialog.isShow = true;
       this.dialog.title = "编辑";
       this.dialog.disabled = false;
-
       showDetail(null, row.id).then((res) => {
         const data = res.data;
 
@@ -691,7 +724,15 @@ export default {
     },
     /** 导出 */
     download() {
-      let url = `${apiConfig.systemUrl}/tpms/business/maintenance/export`; //请求下载文件的地址
+      let data = this.$refs.tpmsHeader.getData();
+      const time = data.times.split(',');
+      if (data.times) {
+        const time = data.times.split(',');
+        data.startTime = `${time[0]} 00:00:00`;
+        data.endTime = parseTime(new Date(`${time[1]} 00:00:00`));
+      }
+      let url = `${apiConfig.systemUrl}/tpms/business/maintenance/export?startTime=${data.startTime}&endTime=${data.endTime}`; //请求下载文件的地址
+
       let token = localStorage.getItem("access_token"); //获取token
       axios
         .get(url, {
