@@ -14,8 +14,10 @@ export default {
     approval: 'http://tpms-gateway-runtime.ci-prodapps.ocp.sitc/approval',
     /** 附件管理 */
     accessory: 'http://tpms-gateway-runtime.ci-prodapps.ocp.sitc/accessory',
-    // /** 资料库 */
-    database: 'http://tpms-gateway-runtime.ci-prodapps.ocp.sitc/database',
+    /** 资料库 */
+    database: 'http://tpms-gateway-runtime.ci-prodapps.ocp.sitc/database', 
+    /** 专家智库 */
+    expert: 'http://tpms-gateway-runtime.ci-prodapps.ocp.sitc/expert', 
     /** 文件服务器地址 */
     accessoryFile: 'http://10.160.245.70:9000/tpms',
     log: 'http://tpms-gateway-runtime.ci-prodapps.ocp.sitc/log',  // 日志地址
