@@ -40,12 +40,12 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="工号">
-              <el-input :read-only="dialogTitleTxt=='查看' || userInfo.includes('USER_EDIT_OPERATOR')" v-model="editForm.workNo" />
+              <el-input :readonly="dialogTitleTxt=='查看' || userInfo.includes('USER_EDIT_FACTORY')" v-model="editForm.workNo" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="姓名" :label-width="labelWidth">
-              <el-input :read-only="dialogTitleTxt=='查看' || userInfo.includes('USER_EDIT_OPERATOR')" v-model="editForm.name" />
+              <el-input :readonly="dialogTitleTxt=='查看' || userInfo.includes('USER_EDIT_FACTORY')" v-model="editForm.name" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -53,12 +53,12 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="电话" :label-width="labelWidth">
-              <el-input :readonly="dialogTitleTxt=='查看' || userInfo.includes('USER_EDIT_OPERATOR')" v-model="editForm.phone" />
+              <el-input :readonly="dialogTitleTxt=='查看' || userInfo.includes('USER_EDIT_FACTORY')" v-model="editForm.phone" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="邮箱" :label-width="labelWidth">
-              <el-input :readonly="dialogTitleTxt=='查看' || userInfo.includes('USER_EDIT_OPERATOR')" v-model="editForm.email" />
+              <el-input :readonly="dialogTitleTxt=='查看' || userInfo.includes('USER_EDIT_FACTORY')" v-model="editForm.email" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -66,7 +66,7 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="性别" :label-width="labelWidth">
-              <el-select clearable :disabled="dialogTitleTxt=='查看' || userInfo.includes('USER_EDIT_OPERATOR')" v-model="editForm.gender">
+              <el-select clearable :disabled="dialogTitleTxt=='查看' || userInfo.includes('USER_EDIT_FACTORY')" v-model="editForm.gender">
                 <el-option
                   v-for="item in genderList"
                   :key="item.id"
@@ -78,7 +78,7 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="状态" :label-width="labelWidth">
-              <el-select clearable :disabled="dialogTitleTxt=='查看' || userInfo.includes('USER_EDIT_OPERATOR')" v-model="editForm.enabled">
+              <el-select clearable :disabled="dialogTitleTxt=='查看' || userInfo.includes('USER_EDIT_FACTORY')" v-model="editForm.enabled">
                 <el-option
                   v-for="item in enabledList"
                   :key="item.id"
@@ -94,7 +94,7 @@
           <el-divider content-position="left">用户工厂信息</el-divider>
           <el-col :span="12">
             <el-form-item label="工厂" :label-width="labelWidth">
-              <el-select clearable :disabled="dialogTitleTxt=='查看' || userInfo.includes('USER_EDIT_OPERATOR')" v-model="formObj.factoryId" @change="userChanged('factoryId',formObj)">
+              <el-select clearable :disabled="dialogTitleTxt=='查看' || userInfo.includes('USER_EDIT_FACTORY')" v-model="formObj.factoryId" @change="userChanged('factoryId',formObj)">
                 <el-option
                   v-for="item in formObj.selectLists.factoryList"
                   :key="item.id"
@@ -106,7 +106,7 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="车间" :label-width="labelWidth">
-              <el-select clearable :disabled="dialogTitleTxt=='查看' || userInfo.includes('USER_EDIT_OPERATOR')" v-model="formObj.workshopId" @change="userChanged('workshopId',formObj)">
+              <el-select clearable :disabled="dialogTitleTxt=='查看' || userInfo.includes('USER_EDIT_FACTORY')" v-model="formObj.workshopId" @change="userChanged('workshopId',formObj)">
                 <el-option
                   v-for="item in formObj.selectLists.workshopList"
                   :key="item.id"
@@ -196,7 +196,7 @@
           <el-col :span="12">
             <el-form-item label="角色" :label-width="labelWidth">
               <el-select
-                :disabled="dialogTitleTxt=='查看' || userInfo.includes('USER_EDIT_OPERATOR')"
+                :disabled="dialogTitleTxt=='查看' || userInfo.includes('USER_EDIT_FACTORY')"
                 v-model="formObj.roleIds"
                 multiple
                 collapse-tags
@@ -211,13 +211,13 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-button :disabled="userInfo.includes('USER_EDIT_OPERATOR')" v-if="dialogTitleTxt !== '查看' " type="warning" @click.prevent="removeDomain(formObj)" size="small">删除</el-button>
+            <el-button :disabled="userInfo.includes('USER_EDIT_FACTORY')" v-if="dialogTitleTxt !== '查看' " type="warning" @click.prevent="removeDomain(formObj)" size="small">删除</el-button>
           </el-col>
         </el-row>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button :disabled="userInfo.includes('USER_EDIT_OPERATOR')" v-if="dialogTitleTxt !== '查看' " @click="addDomain">新增工厂信息</el-button>
+        <el-button :disabled="userInfo.includes('USER_EDIT_FACTORY')" v-if="dialogTitleTxt !== '查看' " @click="addDomain">新增工厂信息</el-button>
         <el-button v-if="dialogTitleTxt==='编辑'" type="primary" @click="edit()">确 定</el-button>
         <el-button v-if="dialogTitleTxt==='添加用户'" type="primary" @click="beforeAdd()">确 定</el-button>
       </div>
@@ -376,7 +376,7 @@ export default {
           });
           return;
         };
-        
+
         // 区域
         if(item.props === 'workshopAreaId'){
           workshopAreaManage.getNames().then(res => {
@@ -490,8 +490,8 @@ export default {
           this.$message.error(err.error);
         });
     },
-    /** 
-     * 头部value变更回调 
+    /**
+     * 头部value变更回调
      * @param {props, value} 当前changed整条item
      * @param {object} searchData 整个搜索组所有有值的key-value
      */
@@ -550,7 +550,7 @@ export default {
       // 选择工厂|车间|区域|工段，都重置工位
       if(['factoryId', 'workshopId', 'workshopAreaId', 'workshopSectionId'].includes(props)){
         const requestData = { factoryId, workshopId, workshopAreaId, workshopSectionId };
-        
+
         workStationManage.getNames(requestData).then(res => {
           userFormList.forEach(item => {
             if(item.props === 'workStationId'){
@@ -576,7 +576,7 @@ export default {
           info.workStationId = '';
         });
       };
- 
+
       if(props === 'workshopId'){
         // 选择车间，重置区域及以下
         workshopAreaManage.getNames({[props]: info[props]}).then(res => {
@@ -588,7 +588,7 @@ export default {
           info.workStationId = '';
         });
       };
- 
+
       if(props === 'workshopAreaId'){
         // 选择区域，重置工段及以下
         workshopSectionManage.getNames({[props]: info[props]}).then(res => {
@@ -598,7 +598,7 @@ export default {
           info.workStationId = '';
         });
       };
- 
+
       if(props === 'workshopSectionId'){
         // 选择工段，重置工位
         workStationManage.getNames({[props]: info[props]}).then(res => {
@@ -778,7 +778,7 @@ export default {
             const name = disposition.split(";")[1].split("filename=")[1];
             fileName = decodeURI(name);
           }
-          
+
           let blob = new Blob([res.data], {
             type: "application/vnd.ms-excel;charset=utf-8"
           });
