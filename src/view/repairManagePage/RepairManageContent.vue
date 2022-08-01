@@ -3,71 +3,47 @@
   <div>
     <el-row>
       <!-- 头部功能区 -->
-      <tpms-header
-        ref="tpmsHeader"
-        :formData="equipmentFormList"
-        @inquireTableData="inquireTableData"
-      />
+      <tpms-header ref="tpmsHeader" :formData="equipmentFormList" @inquireTableData="inquireTableData" />
       <el-row class="buttom-group" type="flex" justify="end" align="middle">
-        <el-button
-          class="button-more"
-          size="small"
-          style="margin-left: 20px"
-          @click="download"
-          >导出</el-button
-        >
-        <el-button
-          class="button-more"
-          type="primary"
-          size="small"
-          @click="showAddModal"
-          >新增报修</el-button
-        >
+        <el-button class="button-more" size="small" style="margin-left: 20px" @click="download">导出</el-button>
+        <el-button class="button-more" type="primary" size="small" @click="showAddModal">新增报修</el-button>
       </el-row>
       <!-- 底部表格 -->
-      <tpms-table
-        :column_index="true"
-        ref="tpmsTable"
-        :data="tableLists"
-        :total="total"
-        :columns="[
-          { props: 'no', label: '维修单号' },
-          { props: 'workshopName', label: '车间', width: 100 },
-          { props: 'deviceNo', label: '设备编号' },
-          { props: 'deviceName', label: '设备名称' },
-          { props: 'applicantName', label: '委托人' },
-          { props: 'receiverName', label: '接单人' },
-          {
-            props: 'status',
-            label: '状态',
-            translate: (value) => {
-              if (value == 1) value = '待接单';
-              if (value == 2 || value == 32) value = '已接单';
-              if (value == 4 || value == 8) value = '待审批';
-              if (value == 16) value = '已完成';
-              return value;
-            },
+      <tpms-table :column_index="true" ref="tpmsTable" :data="tableLists" :total="total" :columns="[
+        { props: 'no', label: '维修单号' },
+        { props: 'workshopName', label: '车间', width: 100 },
+        { props: 'deviceNo', label: '设备编号' },
+        { props: 'deviceName', label: '设备名称' },
+        { props: 'applicantName', label: '委托人' },
+        { props: 'receiverName', label: '接单人' },
+        {
+          props: 'status',
+          label: '状态',
+          translate: (value) => {
+            if (value == 1) value = '待接单';
+            if (value == 2 || value == 32) value = '已接单';
+            if (value == 4 || value == 8) value = '待审批';
+            if (value == 16) value = '已完成';
+            return value;
           },
-          { props: 'workshopSectionName', label: '工段' },
-          { props: 'areaName', label: '报修区域' },
-          { props: 'content', label: '故障描述' },
-          {
-            props: 'stopLine',
-            label: '是否停线修理',
-            translate: (value) => (value ? '是' : '否'),
-            width: 120,
-          },
-          { props: 'breakdownTime', label: '报修时间', width: 120 },
-          {
-            label: '操作',
-            slotName: 'operation',
-            fixed: 'right',
-            width: '120px',
-          },
-        ]"
-        @inquireTableData="inquireTableData"
-        @getTableData="getTableData"
-      >
+        },
+        { props: 'workshopSectionName', label: '工段' },
+        { props: 'areaName', label: '报修区域' },
+        { props: 'content', label: '故障描述' },
+        {
+          props: 'stopLine',
+          label: '是否停线修理',
+          translate: (value) => (value ? '是' : '否'),
+          width: 120,
+        },
+        { props: 'breakdownTime', label: '报修时间', width: 120 },
+        {
+          label: '操作',
+          slotName: 'operation',
+          fixed: 'right',
+          width: '120px',
+        },
+      ]" @inquireTableData="inquireTableData" @getTableData="getTableData">
         <template slot="operation" slot-scope="{ row }">
           <span class="button cursor" @click="showDetailModal(row)">查看</span>
           <span class="button cursor" @click="showEditModal(row)">编辑</span>
@@ -78,12 +54,7 @@
 
     <!-- 新增|编辑|详情 维修单 -->
     <el-dialog :title="dialog.title" :visible.sync="dialog.isShow" width="80%">
-      <el-form
-        :model="dialog.data"
-        ref="dialog"
-        label-width="120px"
-        :disabled="dialog.disabled"
-      >
+      <el-form :model="dialog.data" ref="dialog" label-width="120px" :disabled="dialog.disabled">
         <el-row style="background: #f5f5f5; padding: 0.2rem">
           <el-col :span="12">
             <el-form-item label="设备名称" prop="deviceName">
@@ -133,83 +104,48 @@
 
           <el-col :span="12">
             <el-form-item label="车间" prop="workshopId">
-              <el-select
-                v-model="dialog.data.workshopId"
-                placeholder="请选择车间"
-                disabled
-              >
-                <el-option
-                  v-for="item in dialog.list.workshopList"
-                  :key="item.id"
-                  :label="item.label"
-                  :value="item.id"
-                ></el-option>
+              <el-select v-model="dialog.data.workshopId" placeholder="请选择车间" disabled>
+                <el-option v-for="item in dialog.list.workshopList" :key="item.id" :label="item.label" :value="item.id">
+                </el-option>
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="报修区域" prop="areaId">
-              <el-select
-                v-model="dialog.data.areaInfo"
-                value-key="id"
-                placeholder="请选择报修区域"
-                @change="
-                  ({ id, label }) => (
-                    (dialog.data.areaId = id), (dialog.data.areaName = label)
-                  )
-                "
-              >
-                <el-option
-                  v-for="item in dialog.list.workshopAreaList"
-                  :key="item.id"
-                  :label="item.label"
-                  :value="item"
-                ></el-option>
+              <el-select v-model="dialog.data.areaInfo" value-key="id" placeholder="请选择报修区域" @change="
+                ({ id, label }) => (
+                  (dialog.data.areaId = id), (dialog.data.areaName = label)
+                )
+              ">
+                <el-option v-for="item in dialog.list.workshopAreaList" :key="item.id" :label="item.label"
+                  :value="item"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="工段" prop="workshopSectionId">
-              <el-select
-                v-model="dialog.data.workshopSectionInfo"
-                value-key="id"
-                placeholder="请选择工段"
-                @change="
-                  ({ id, label }) => (
-                    (dialog.data.workshopSectionId = id),
-                    (dialog.data.workshopSectionName = label)
-                  )
-                "
-              >
-                <el-option
-                  v-for="item in dialog.list.workshopSectionList"
-                  :key="item.id"
-                  :label="item.label"
-                  :value="item"
-                ></el-option>
+              <el-select v-model="dialog.data.workshopSectionInfo" value-key="id" placeholder="请选择工段" @change="
+                ({ id, label }) => (
+                  (dialog.data.workshopSectionId = id),
+                  (dialog.data.workshopSectionName = label)
+                )
+              ">
+                <el-option v-for="item in dialog.list.workshopSectionList" :key="item.id" :label="item.label"
+                  :value="item"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
 
           <el-col :span="12">
             <el-form-item label="故障种类" prop="breakdownType">
-              <el-select
-                v-model="dialog.data.breakdownTypeInfo"
-                value-key="id"
-                placeholder="请选择故障种类"
-                @change="
-                  ({ id, label }) => (
-                    (dialog.data.breakdownType = id),
-                    (dialog.data.breakdownTypeName = label)
-                  )
-                "
-              >
-                <el-option
-                  v-for="item in dialog.list.faultTypeList"
-                  :key="item.id"
-                  :label="item.label"
-                  :value="item"
-                ></el-option>
+              <el-select v-model="dialog.data.breakdownTypeInfo" value-key="id" placeholder="请选择故障种类" @change="
+                ({ id, label }) => (
+                  (dialog.data.breakdownType = id),
+                  (dialog.data.breakdownTypeName = label)
+                )
+              ">
+                <el-option v-for="item in dialog.list.faultTypeList" :key="item.id" :label="item.label" :value="item">
+                </el-option>
               </el-select>
             </el-form-item>
           </el-col>
@@ -247,10 +183,7 @@
           </el-col> -->
           <el-col :span="12">
             <el-form-item label="委托人" prop="applicantName">
-              <el-input
-                v-model="dialog.data.applicantName"
-                readonly=""
-              ></el-input>
+              <el-input v-model="dialog.data.applicantName" readonly=""></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -263,12 +196,8 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="故障时间" prop="breakdownTime">
-              <el-date-picker
-                v-model="dialog.data.breakdownTime"
-                type="datetime"
-                placeholder="选择日期时间"
-                value-format="yyyy-MM-dd HH:mm:ss"
-              ></el-date-picker>
+              <el-date-picker v-model="dialog.data.breakdownTime" type="datetime" placeholder="选择日期时间"
+                value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
             </el-form-item>
           </el-col>
           <el-col :span="24">
@@ -278,11 +207,7 @@
           </el-col>
           <el-col :span="24">
             <el-form-item label="故障描述" prop="description">
-              <el-input
-                type="textarea"
-                :rows="4"
-                v-model="dialog.data.content"
-              ></el-input>
+              <el-input type="textarea" :rows="4" v-model="dialog.data.content"></el-input>
             </el-form-item>
           </el-col>
           <!-- <el-form-item label="故障照片" prop="breakdownPhotos">
@@ -300,44 +225,33 @@
           </el-form-item>-->
         </el-row>
         <!-- 底部表格 -->
-        <tpms-table
-          ref="tpmsTable"
-          :total="dialog.data.spares.length"
-          :data="dialog.data.spares"
-          :columns="[
-            {
-              props: 'replaceSpareName',
-              label: '替换备件名称',
-              width: '160px',
-            },
-            { props: 'replaceSpareNo', label: '替换备件编号' },
-            { props: 'amount', label: '替换数量' },
-            {
-              props: 'brokeSpareName',
-              label: '损坏备件名称',
-              width: '160px',
-            },
-            { props: 'brokeSpareNo', label: '损坏备件编号' },
-          ]"
-          @getTableData="dialog.data.spares"
-        >
+        <tpms-table ref="tpmsTable" :total="dialog.data.spares.length" :data="dialog.data.spares" :columns="[
+          {
+            props: 'replaceSpareName',
+            label: '替换备件名称',
+            width: '160px',
+          },
+          { props: 'replaceSpareNo', label: '替换备件编号' },
+          { props: 'amount', label: '替换数量' },
+          {
+            props: 'brokeSpareName',
+            label: '损坏备件名称',
+            width: '160px',
+          },
+          { props: 'brokeSpareNo', label: '损坏备件编号' },
+        ]" @getTableData="dialog.data.spares">
         </tpms-table>
       </el-form>
       <el-row type="flex" justify="center">
-        <el-button @click="$refs.dialog.resetFields(), (dialog.isShow = false)"
-          >取消</el-button
-        >
-        <el-button
-          v-if="!dialog.disabled"
-          type="primary"
-          @click="
-            $refs.dialog.validate((validate) => validate && save()),
-              (dialog.isShow = false)
-          "
-          >保存</el-button
-        >
+        <el-button @click="$refs.dialog.resetFields(), (dialog.isShow = false)">取消</el-button>
+        <el-button v-if="!dialog.disabled" type="primary" @click="
+          $refs.dialog.validate((validate) => validate && save()),
+          (dialog.isShow = false)
+        ">保存</el-button>
       </el-row>
     </el-dialog>
+    <!-- 详情 维修单 -->
+    <RepairManageDetail :dialog="dialog" />
   </div>
 </template>
 <script>
@@ -361,6 +275,7 @@ import {
   workshopShiftManage,
 } from "../../lib/api/workshopSettingsManage";
 import { emergencyDegree, faultTypeManage } from "../../lib/api/business";
+import RepairManageDetail from './comp/repairManageDetail.vue'
 export default {
   data() {
     const getListFuncs = [
@@ -427,6 +342,7 @@ export default {
       // 新增|编辑|详情 模态框
       dialog: {
         isShow: false,
+        isDetailShow: false,
         title: "新增",
         disabled: false,
         list: {
@@ -499,6 +415,7 @@ export default {
   components: {
     tpmsHeader,
     tpmsTable,
+    RepairManageDetail
   },
   mounted() {
     this.getTableData();
@@ -637,7 +554,7 @@ export default {
     },
     /** 显示详情Modal **/
     showDetailModal(row) {
-      this.dialog.isShow = true;
+      this.dialog.isDetailShow = true;
       this.dialog.title = "详情";
       this.dialog.disabled = true;
 
@@ -782,22 +699,27 @@ export default {
 .el-row {
   margin-top: 0.2rem;
 }
+
 .button {
   color: #0077c8;
 }
+
 .repair-photo {
   width: 3.1rem;
   height: 1.9rem;
   border: 1px solid #c0c0c0;
 }
+
 .detail-card {
   height: 6.1rem;
   padding: 0 1rem;
   margin-bottom: 1rem;
-  > .el-row {
+
+  >.el-row {
     margin-top: 0.3rem;
   }
 }
+
 .bottom-content {
   position: absolute;
   bottom: 1rem;
@@ -807,6 +729,7 @@ export default {
   box-sizing: border-box;
   background-color: #fff;
 }
+
 .acc-bottom-content {
   position: absolute;
   bottom: 1rem;
@@ -816,6 +739,7 @@ export default {
   box-sizing: border-box;
   background-color: #fff;
 }
+
 .el-select {
   width: 100%;
 }

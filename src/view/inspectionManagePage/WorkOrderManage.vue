@@ -156,12 +156,13 @@ import axios from "axios";
 
 export default {
   data() {
-    //待接单就是1,待处理就是2、3和7,审批中是4,5,已完成就是6
+    //待接单就是1,待处理就是2、3和7,审批中是4,5,已完成就是6，9异常
     const statusList = [
       { label: "待接单", id: "1" },
       { label: "待处理", id: "2,3,7" },
       { label: "审批中", id: "4,5" },
       { label: "已完成", id: "6", },
+      { label: " 异常 ", id: "9", },
     ];
     let getListFuncs = [
       factoryManage.getNames,//工厂
@@ -182,6 +183,7 @@ export default {
       if(val == 2 || val == 3 || val ==7) return "待处理";
       if(val == 4 || val ==5) return "审批中";
       if(val == 6) return "已完成";
+      if(val == 9) return "异常";
     };
     return {
       equipmentFormList: [

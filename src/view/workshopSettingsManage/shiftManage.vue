@@ -309,7 +309,7 @@ export default {
 
       // this.workshopLists=workshopLists
       this.formList.unshift({
-        props: "workshopName",
+        props: "workshopId",
         label: "所属车间",
         span: 24,
         type: "checkbox",
@@ -419,8 +419,7 @@ export default {
     ok(dialogType) {
       var _self = this;
       let form = this.form;
-      form.workshopId = this.form.workshopId;
-      delete form.workshopName;
+      // delete form.workshopName;
       console.log(this.form);
       this.$refs["ruleForm"].validate((valid) => {
         if (valid) {

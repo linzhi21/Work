@@ -285,7 +285,11 @@
                     v-show="scope.row.editShow"
                     v-model="scope.row.executionPart"
                   ></el-input>
-                  <span v-show="!scope.row.editShow">{{
+                  <span v-show="!scope.row.editShow"
+                   :style="{
+                      'text-decoration':
+                        scope.row.deleted === true ? 'line-through' : '',
+                    }">{{
                     scope.row.executionPart
                   }}</span>
                 </template>
@@ -296,7 +300,11 @@
                     v-show="scope.row.editShow"
                     v-model="scope.row.executionNode"
                   ></el-input>
-                  <span v-show="!scope.row.editShow">{{
+                  <span v-show="!scope.row.editShow"
+                   :style="{
+                      'text-decoration':
+                        scope.row.deleted === true ? 'line-through' : '',
+                    }">{{
                     scope.row.executionNode
                   }}</span>
                 </template>
@@ -307,7 +315,11 @@
                     v-show="scope.row.editShow"
                     v-model="scope.row.content"
                   ></el-input>
-                  <span v-show="!scope.row.editShow">{{
+                  <span v-show="!scope.row.editShow"
+                   :style="{
+                      'text-decoration':
+                        scope.row.deleted === true ? 'line-through' : '',
+                    }">{{
                     scope.row.content
                   }}</span>
                 </template>
@@ -387,9 +399,11 @@
                   <el-button
                     size="small"
                     @click.native.prevent="
+                      scope.row.deleted = true,
                       deleteRow(scope.$index, item.maintainPlanContents),
-                        calcTime(item)
+                      calcTime(item)
                     "
+                    :disabled="scope.row.deleted"
                     style="margin-right: 10px"
                     >删除</el-button
                   >
@@ -1215,9 +1229,14 @@ export default {
         ],
       });
     },
-    //删除maintainPlanContents里的一条数据
-    deleteRow(index, rows) {
-      rows.splice(index, 1);
+    /**
+     * 删除maintainPlanContents里的一条数据
+     */ 
+    deleteRow(row, rows) {
+      // rows.splice(index, 1);
+      
+      console.log(this.form);
+      debugger
     },
     /** 计算工时 */
     calcTime(item) {

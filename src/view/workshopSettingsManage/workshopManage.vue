@@ -277,6 +277,7 @@ export default {
         name: "",
         managerId: null,
         factoryName: "",
+        factoryId: "",
         description: "",
       },
       formList: [
@@ -285,14 +286,14 @@ export default {
           label: "车间编号",
           span: 12,
           type: "input",
-          readonly: true,
+          // readonly: true,
         },
         {
           props: "name",
           label: "车间",
           span: 12,
           type: "input",
-          readonly: true,
+          // readonly: true,
         },
         {
           props: "description",

@@ -444,3 +444,20 @@ export function getTodoyTimes() {
   } 
   return data;
 }
+
+/**
+ * 获取当月日期 - 0点到23点59
+ * @returns 
+ */
+export function getMonthTimes() {
+  const y = new Date().getFullYear(); //获取年份
+  let m = new Date().getMonth() + 1; //获取月份
+  let d = new Date(y, m, 0).getDate(); //获取当月最后一日
+  m = m < 10 ? '0' + m : m; //月份补 0
+  d = d < 10 ? '0' + d : d; //日数补 0
+  const data = {
+    startTime: [y,m,1].join("-") + ' 00:00:00',
+    endTime: [y,m,d].join("-") + ' 23:59:59'
+  } 
+  return data;
+}

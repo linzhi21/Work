@@ -423,7 +423,7 @@
                     style="margin-right: 10px"
                     >删除</el-button
                   >
-                  <el-button size="small" @click="scope.row.editShow = false"
+                  <el-button size="small" @click="scope.row.editShow = false, calcTime(item)"
                     >保存</el-button
                   >
                   <!-- <div style="display: inline-block;" @click="uploadImg(index,scope.$index)">
@@ -1314,6 +1314,7 @@ export default {
               //可展开的子节点
             ],
             sort: 1,
+            deleted: false
           },
         ],
       });
