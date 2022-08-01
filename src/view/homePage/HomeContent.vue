@@ -401,7 +401,7 @@ import {
   maintainCountBasedOnArea,
   maintenanceTimes,
 } from "../../lib/api/statistics";
-import { parseTime, getTodoyTimes } from "@/utils";
+import { parseTime, getTodoyTimes,getMonthTimes } from "@/utils";
 export default {
   data() {
     this.userInfoLocal = JSON.parse(localStorage.getItem("user_info"));
@@ -427,6 +427,9 @@ export default {
     };
     this.endTime = getTodoyTimes().endTime;
     this.startTime = getTodoyTimes().startTime;
+   
+    this.startMonth = getMonthTimes().startTime;
+    this.endMonth = getMonthTimes().endTime;
     return {
       drawer: false,
       setDrawer: false,
@@ -618,8 +621,8 @@ export default {
          * 保养根据区域统计接单数量
          */
         maintainCountBasedOnArea({
-          endTime: this.endTime,
-          startTime: this.startTime,
+          endTime: this.endMonth,
+          startTime: this.startMonth,
         }).then((res) => {
           this.maintainChartData = {
             columns: ["areaName", "completedCount", "waitReceivedCount"],
@@ -972,6 +975,8 @@ export default {
     checkTools() {
       this.startTime = this.drawerDetail.times[0];
       this.endTime = this.drawerDetail.times[1];
+      this.startMonth = this.drawerDetail.times[0];
+      this.endMonth = this.drawerDetail.times[1];
       this.workorderInfo();
       this.handleClose();
     },

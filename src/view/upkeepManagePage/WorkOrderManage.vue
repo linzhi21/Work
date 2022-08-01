@@ -147,7 +147,7 @@
               <el-table-column align="center" label="保养结果">
                 <template slot-scope="scope">
                   <span v-show="!scope.row.editShow">{{
-                    scope.row.result
+                    scope.row.status
                   }}</span>
                 </template>
               </el-table-column>
