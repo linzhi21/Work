@@ -3,121 +3,92 @@
   <div>
     <!-- 头部功能区 -->
     <el-row>
-      <tpms-header
-        ref="tpmsHeader"
-        :Btnoffset="8"
-        :formData="authFormList"
-        @inquireTableData="inquireTableData"
-      />
+      <tpms-header ref="tpmsHeader" :Btnoffset="8" :formData="authFormList" @inquireTableData="inquireTableData" />
     </el-row>
     <el-row>
       <el-row class="buttom-group" type="flex" justify="end" align="middle">
-        <el-button type="primary" size="small" @click="dialog_add.isShow=true">新增</el-button>
+        <el-button type="primary" size="small" @click="dialog_add.isShow = true">新增</el-button>
         <el-button size="small" @click='deleteMore'>
-            批量删除
+          批量删除
         </el-button>
       </el-row>
     </el-row>
     <el-row>
       <!-- 底部表格 -->
-      <tpms-table
-        ref="tpmsTable"
-        :data="table.data"
-        :total="table.total"
-        :columns="[
-            { type: 'selection' },
-            { label: '故障名称', props: 'faultName' },
-            { label: '工厂', props: 'factoryName' },
-            { label: '车间', props: 'workshopName' },
-            { label: '描述', props: 'faultDesc' },
-        ]"
-        @inquireTableData="inquireTableData"
-        @getTableData="getTableData"
-        @selection-change="handleSelectionChange"
-      >
-        <template slot-scope="{row}">
+      <tpms-table ref="tpmsTable" :data="tableData" :total="tableTotal" :columns="[
+        { type: 'selection' },
+        { label: '故障名称', props: 'faultName' },
+        { label: '工厂', props: 'factoryName' },
+        { label: '车间', props: 'workshopName' },
+        { label: '描述', props: 'faultDesc' },
+        {
+          label: '操作',
+          slotName: 'operation',
+        },
+      ]" @inquireTableData="inquireTableData" @getTableData="getTableData" @selection-change="handleSelectionChange">
+        <template slot="operation" slot-scope="{row}">
           <span class="button cursor" @click="editClick(row)">编辑</span>
         </template>
       </tpms-table>
     </el-row>
-    
+
     <!-- 新增故障类型模态框 -->
-    <el-dialog
-      width="500px"
-      title="新增故障类型"
-      center
-      :visible.sync="dialog_add.isShow"
-      @close="$refs.dialog_add.resetFields()"
-    >
-      <el-form
-        ref="dialog_add"
-        label-width="100px"
-        :model="dialog_add.data"
-        :rules="dialog_add.rules"
-      >
+    <el-dialog width="500px" title="新增故障类型" center :visible.sync="dialog_add.isShow"
+      @close="$refs.dialog_add.resetFields()">
+      <el-form ref="dialog_add" label-width="100px" :model="dialog_add.data" :rules="dialog_add.rules">
         <el-form-item label="故障名称" prop="faultName" required>
           <el-input v-model="dialog_add.data.faultName" placeholder="故障名称" style="width:100%;" />
         </el-form-item>
         <el-form-item label="工厂" prop="factoryId" required>
-            <el-select v-model="dialog_add.data.factoryId" placeholder="工厂" style="width:100%;">
-                <el-option v-for="item in dialog_add.list.factoryList" :label="item.label" :value="item.id" :key="item.id"></el-option>
-            </el-select>
+          <el-select v-model="dialog_add.data.factoryId" placeholder="工厂" style="width:100%;">
+            <el-option v-for="item in dialog_add.list.factoryList" :label="item.label" :value="item.id" :key="item.id">
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="车间" prop="workshopId" required>
-            <el-select v-model="dialog_add.data.workshopId" placeholder="车间" style="width:100%;">
-                <el-option v-for="item in dialog_add.list.workshopList" :label="item.label" :value="item.id" :key="item.id"></el-option>
-            </el-select>
+          <el-select v-model="dialog_add.data.workshopId" placeholder="车间" style="width:100%;">
+            <el-option v-for="item in dialog_add.list.workshopList" :label="item.label" :value="item.id" :key="item.id">
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="故障描述" prop="faultDesc">
           <el-input v-model="dialog_add.data.faultDesc" type="textarea"></el-input>
         </el-form-item>
       </el-form>
       <el-row type="flex" justify="center">
-        <el-button @click="dialog_add.isShow=false">取消</el-button>
-        <el-button
-          type="primary"
-          @click="$refs.dialog_add.validate(validate=>validate&&beforeAddFalutType())"
-        >保存</el-button>
+        <el-button @click="dialog_add.isShow = false">取消</el-button>
+        <el-button type="primary" @click="$refs.dialog_add.validate(validate => validate && beforeAddFalutType())">保存
+        </el-button>
       </el-row>
     </el-dialog>
 
     <!-- 编辑故障类型模态框 -->
-    <el-dialog
-      width="500px"
-      title="编辑故障类型"
-      center
-      :visible.sync="dialog_edit.isShow"
-      @close="$refs.dialog_edit.resetFields()"
-    >
-      <el-form
-        ref="dialog_edit"
-        label-width="100px"
-        :model="dialog_edit.data"
-        :rules="dialog_edit.rules"
-      >
+    <el-dialog width="500px" title="编辑故障类型" center :visible.sync="dialogEdit.isShow"
+      @close="$refs.dialogEdit.resetFields()">
+      <el-form ref="dialogEdit" label-width="100px" :model="dialogEdit.data" :rules="dialogEdit.rules">
         <el-form-item label="故障名称" prop="faultName" required>
-          <el-input v-model="dialog_edit.data.faultName"></el-input>
+          <el-input v-model="dialogEdit.data.faultName"></el-input>
         </el-form-item>
         <el-form-item label="工厂" prop="factoryId" required>
-            <el-select v-model="dialog_edit.data.factoryId" placeholder="工厂" style="width:100%;">
-                <el-option v-for="item in dialog_edit.list.factoryList" :label="item.label" :value="item.id" :key="item.id"></el-option>
-            </el-select>
+          <el-select v-model="dialogEdit.data.factoryId" placeholder="工厂" style="width:100%;">
+            <el-option v-for="item in dialogEdit.list.factoryList" :label="item.label" :value="item.id" :key="item.id">
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="车间" prop="workshopId" required>
-            <el-select v-model="dialog_edit.data.workshopId" placeholder="车间" style="width:100%;">
-                <el-option v-for="item in dialog_edit.list.workshopList" :label="item.label" :value="item.id" :key="item.id"></el-option>
-            </el-select>
+          <el-select v-model="dialogEdit.data.workshopId" placeholder="车间" style="width:100%;">
+            <el-option v-for="item in dialogEdit.list.workshopList" :label="item.label" :value="item.id"
+              :key="item.id"></el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="故障描述" prop="faultDesc">
-          <el-input v-model="dialog_edit.data.faultDesc" type="textarea"></el-input>
+          <el-input v-model="dialogEdit.data.faultDesc" type="textarea"></el-input>
         </el-form-item>
       </el-form>
       <el-row type="flex" justify="center">
-        <el-button @click="dialog_edit.isShow=false">取消</el-button>
-        <el-button
-          type="primary"
-          @click="$refs.dialog_edit.validate(validate=>validate&&beforeEdit())"
-        >保存</el-button>
+        <el-button @click="dialogEdit.isShow = false">取消</el-button>
+        <el-button type="primary" @click="$refs.dialogEdit.validate(validate => validate && beforeEdit())">保存
+        </el-button>
       </el-row>
     </el-dialog>
   </div>
@@ -138,7 +109,7 @@ export default {
       workshopManage.getNames
     ];
     // 工厂和车间下拉列表
-    const [faultName ,factoryList, workshopList] = getListFuncs.map(func => {
+    const [faultName, factoryList, workshopList] = getListFuncs.map(func => {
       const arr = [];
       func().then(res => {
         arr.push(...res.data)
@@ -147,7 +118,7 @@ export default {
     });
     return {
       authFormList: [
-        { label: "故障名称", props: "faultName", value: "",},
+        { label: "故障名称", props: "faultName", value: "", },
         { label: "工厂", props: "factoryId", value: "", type: "radio", checkList: factoryList },
         { label: "车间", props: "workshopId", value: "", type: "radio", checkList: workshopList },
       ],
@@ -155,12 +126,14 @@ export default {
         data: [],
         total: 0
       },
+      tableData: [],
+      tableTotal: 0,
       // 新增故障类型模态框
       dialog_add: {
         isShow: false,
-        list:{
-            factoryList,//工厂选项
-            workshopList,//车间选项
+        list: {
+          factoryList,//工厂选项
+          workshopList,//车间选项
         },
         data: {
           faultName: '',//故障名称
@@ -171,11 +144,11 @@ export default {
         rules: {}
       },
       // 智库编辑模态框
-      dialog_edit: {
+      dialogEdit: {
         isShow: false,
-        list:{
-            factoryList,//工厂选项
-            workshopList,//车间选项
+        list: {
+          factoryList,//工厂选项
+          workshopList,//车间选项
         },
         id: '',
         data: {},
@@ -203,8 +176,8 @@ export default {
       let pageData = this.$refs.tpmsTable.getData();
       faultTypeController.getList({ ...data, ...pageData }).then(res => {
         const { content, totalElements } = res.data;
-        this.table.data = content;
-        this.table.total = totalElements;
+        this.tableData = content;
+        this.tableTotal = totalElements;
       })
     },
     /** 新增故障之前 */
@@ -228,12 +201,13 @@ export default {
     },
     /** 点击编辑按钮 */
     editClick(row) {
-      this.dialog_edit.isShow = true;
-      this.dialog_edit.id = row.id;
-      this.dialog_edit.data = row;
-    //   faultTypeController.getDetail(null, id).then(res => {
-    //     this.dialog_edit.data = res.data;
-    //   });
+      this.dialogEdit.isShow = true;
+      this.dialogEdit.id = row.id;
+      let data = row
+      this.dialogEdit.data = {...data};
+      //   faultTypeController.getDetail(null, id).then(res => {
+      //     this.dialogEdit.data = res.data;
+      //   });
     },
     /**批量删除 */
     deleteMore() {
@@ -244,18 +218,18 @@ export default {
         cancelButtonText: "取消",
         type: "warning",
       })
-      .then(() => {
-          faultTypeController.remove({ids:`${ids}`}).then((res) => {
+        .then(() => {
+          faultTypeController.remove({ ids: `${ids}` }).then((res) => {
             this.$message.success("删除成功");
             this.getTableData();
           });
         })
-      .catch(() => {
-        this.$message({
-          type: "info",
-          message: "已取消删除",
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消删除",
+          });
         });
-      });
     },
     /** 提交修改之前 */
     beforeEdit() {
@@ -269,15 +243,15 @@ export default {
     },
     /** 确认提交修改 */
     edit() {
-      const { id, data } = this.dialog_edit;
+      const { id, data } = this.dialogEdit;
       faultTypeController.edit(data, id).then(res => {
         this.$message.success('修改成功')
         this.getTableData();
-        this.dialog_edit.isShow = false;
+        this.dialogEdit.isShow = false;
       });
     },
     /**批量选择 */
-     handleSelectionChange(e) {
+    handleSelectionChange(e) {
       this.selected = e
     },
   }

@@ -13,6 +13,8 @@
         >导出设备保养概览</el-button>
       <el-button @click="exportWorkOrders" class="button-more" size="small"
         >导出车间设备保养实施表</el-button>
+      <el-button @click="exportNextMonthWorkOrders" class="button-more" size="small"
+        >导出次月设备保养实施表</el-button>
       <tpms-choosefile plain text="指派工单" isMutiple @getFileData="importThisMonthMaintainWorkOrder($event)"></tpms-choosefile>
     </el-row>
 
@@ -425,6 +427,47 @@ export default {
           this.$message.error(error);
         });
     },
+
+    /**
+     * @description 导出次月设备保养概览
+     * @param row 工单对象
+     */
+    exportNextMonthWorkOrders() {
+      // let url = apiConfig.maintainWorkOrder + "/export"; //请求下载文件的地址
+      let url = apiConfig.maintainWorkOrder + "/getNextMonthMaintainWorkOrder"; //请求下载文件的地址
+      let token = localStorage.getItem("access_token"); //获取token
+      axios.get(url, {
+        responseType: 'blob',
+        headers: {
+          Authorization: "Bearer " + token
+        },
+      })
+        .then((res) => {
+          if (!res) return;
+          let fileName = '次月车间设备保养实施表.xls';
+          const disposition = res.headers["content-disposition"];
+          if (disposition) {
+            const name = disposition.split(";")[1].split("filename=")[1];
+            fileName = decodeURI(name);
+          }
+
+          let blob = new Blob([res.data], {
+            type: "application/vnd.ms-excel;charset=utf-8"
+          });
+          let url = window.URL.createObjectURL(blob);
+          let aLink = document.createElement("a");
+          aLink.style.display = "none";
+          aLink.href = url;
+          aLink.setAttribute("download", fileName); // 下载的文件
+          document.body.appendChild(aLink);
+          aLink.click();
+          document.body.removeChild(aLink);
+          window.URL.revokeObjectURL(url);
+        })
+        .catch((error) => {
+          this.$message.error(error);
+        });
+    },
     /**
      * @description 导入指派工单
      */
@@ -440,7 +483,7 @@ export default {
       ).catch(err => this.$message.error(err))
     },
     /**
-     * @description 导出设备保养概览
+     * @description 导出设备保养概览 
      * @param row 工单对象
      */
     getMaintainOverview() {
