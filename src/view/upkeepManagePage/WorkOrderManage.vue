@@ -277,6 +277,7 @@ export default {
         { props: "receiverName", label: "接单人" },
         { props: "completeTime", label: "完成时间", width: "200px" },
         { props: "createDate", label: "工单日期", width: "200px" },
+        { props: "exceptTime", label: "指派时间", width: "200px" },
         { props: "no", label: "点检工单编号" },
         { props: "planName", label: "点检计划名称", width: "200px" },
         { props: "planNo", label: "点检计划编号", width: "200px" },
