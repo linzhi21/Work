@@ -642,17 +642,21 @@ export default {
     /** 导出 */
     download() {
       let data = this.$refs.tpmsHeader.getData();
-      const time = data.times.split(',');
+      // const time = data.times.split(',');
       if (data.times) {
         const time = data.times.split(',');
         data.startTime = `${time[0]} 00:00:00`;
         data.endTime = parseTime(new Date(`${time[1]} 00:00:00`));
       }
-      let url = `${apiConfig.systemUrl}/tpms/business/maintenance/export?startTime=${data.startTime}&endTime=${data.endTime}`; //请求下载文件的地址
+      let url = `${apiConfig.maintenanceManage}/export`; //请求下载文件的地址
 
       let token = localStorage.getItem("access_token"); //获取token
       axios
         .get(url, {
+          params: {
+            startTime: data.startTime,
+            endTime: data.endTime
+          },
           headers: {
             Authorization: "Bearer " + token,
           },
