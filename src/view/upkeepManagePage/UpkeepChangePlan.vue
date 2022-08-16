@@ -107,7 +107,7 @@ export default {
       let data = this.$refs.tpmsHeader.getData();
       console.log(data);
       let pageData = this.$refs.tpmsTable.getData();
-      maintainPlanChanges({ ...data, ...pageData }).then((res) => {
+      maintainPlanChanges({ ...data, ...pageData, sort: 'createDate,desc' }).then((res) => {
         console.log(res);
         this.total = res.data.totalElements;
         this.equipmentTableData = res.data.content;

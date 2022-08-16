@@ -3,139 +3,71 @@
   <div>
     <!-- 头部功能区 -->
     <el-row>
-      <tpms-header
-        ref="tpmsHeader"
-        :formData="searchFormList"
-        @inquireTableData="inquireTableData"
-      />
+      <tpms-header ref="tpmsHeader" :formData="searchFormList" @inquireTableData="inquireTableData" />
     </el-row>
     <el-row class="buttom-group" type="flex" justify="end" align="middle">
-      <el-button
-        class="button-more"
-        type="primary"
-        size="small"
-        style="margin-right:45px"
-        @click="addDialog()"
-      >新增</el-button>
+      <el-button class="button-more" type="primary" size="small" style="margin-right:45px" @click="addDialog()">新增
+      </el-button>
     </el-row>
     <el-row>
       <!-- 底部表格 -->
-      <tpms-table
-        ref="tpmsTable"
-        :total="total"
-        :data="tableLists"
-        :columns="tableHeaderList"
-        :column_index="false"
-        @inquireTableData="inquireTableData"
-        @getTableData="getTableData"
-      >
+      <tpms-table ref="tpmsTable" :total="total" :data="tableLists" :columns="tableHeaderList" :column_index="false"
+        @inquireTableData="inquireTableData" @getTableData="getTableData">
         <template slot="operation" slot-scope="{row}">
-          <span class="button cursor" @click="editDialog(row,'编辑')">编辑</span>
+          <span class="button cursor" @click="editDialog(row, '编辑')">编辑</span>
           <el-divider direction="vertical"></el-divider>
-          <span class="button cursor" @click="editDialog(row,'查看')">查看</span>
+          <span class="button cursor" @click="editDialog(row, '查看')">查看</span>
           <el-divider direction="vertical"></el-divider>
-          <span class="button cursor" @click="isEnable(row)">{{row.enable?'禁用':'启用'}}</span>
+          <span class="button cursor" @click="isEnable(row)">{{ row.enable ? '禁用' : '启用' }}</span>
           <!-- <span class="button cursor" @click="remove(row)">删除</span> -->
         </template>
       </tpms-table>
     </el-row>
 
-    <el-dialog
-      :title="dialogTitleTxt"
-      :visible.sync="dialogVisible"
-      :before-close="dialogClose"
-      width="80%"
-    >
+    <el-dialog :title="dialogTitleTxt" :visible.sync="dialogVisible" :before-close="dialogClose" width="80%">
       <el-form :model="form" label-width="100px" label-position="right" size="small">
         <el-row>
-          <el-col :span="item.span" v-for="(item,index) in formList" :key="index">
-            <el-form-item v-if="item.hidden!==true" :label="item.label" :label-width="item.labelWidth||'180px'" style="width: 100%;">
-              <el-select
-                v-model="form[item.props]"
-                v-if="item.type==='checkbox'"
-                :multiple="item.multiple===true"
-                :disabled="dialogTitleTxt==='查看'"
-                :placeholder="item.placeholder"
-                style="width:100%;"
-                @change="formChanged(item)"
-              >
-                <el-option
-                  v-for="(item,i) in item.checkList"
-                  :key="i"
-                  :label="item.key"
-                  :value="item.value"
-                ></el-option>
+          <el-col :span="item.span" v-for="(item, index) in formList" :key="index">
+            <el-form-item v-if="item.hidden !== true" :label="item.label" :label-width="item.labelWidth || '180px'"
+              style="width: 100%;">
+              <el-select v-model="form[item.props]" v-if="item.type === 'checkbox'" :multiple="item.multiple === true"
+                :disabled="dialogTitleTxt === '查看'" :placeholder="item.placeholder" style="width:100%;"
+                @change="formChanged(item)">
+                <el-option v-for="(item, i) in item.checkList" :key="i" :label="item.key" :value="item.value">
+                </el-option>
               </el-select>
-              <el-select
-                v-model="form[item.props]"
-                v-else-if="item.type==='checkbox_search'"
-                :disabled="dialogTitleTxt==='查看'"
-                :placeholder="item.placeholder"
-                multiple
-                filterable
-                remote
-                :remote-method="remoteMethodFirst"
-                :loading="roleSearchLoading"
-                style="width:100%;"
-              >
-                <el-option
-                  v-for="(item,i) in item.checkList"
-                  :key="i"
-                  :label="item.key"
-                  :value="item.value"
-                ></el-option>
+              <el-select v-model="form[item.props]" v-else-if="item.type === 'checkbox_search'"
+                :disabled="dialogTitleTxt === '查看'" :placeholder="item.placeholder" multiple filterable remote
+                :remote-method="remoteMethodFirst" :loading="roleSearchLoading" style="width:100%;">
+                <el-option v-for="(item, i) in item.checkList" :key="i" :label="item.key" :value="item.value">
+                </el-option>
               </el-select>
-              <el-input
-                v-model="form[item.props]"
-                v-else-if="item.type==='textarea'"
-                :disabled="dialogTitleTxt==='查看'"
-                :rows="item.rows"
-                :type="item.type"
-              />
-              <el-radio
-                v-model="form[item.props]"
-                v-else-if="item.type==='radio'"
-                :disabled="dialogTitleTxt==='查看'"
-                :label="radio.id"
-                v-for="(radio,i) in item.radioList"
-                :key="i"
-              >{{radio.label}}</el-radio>
-              <el-tree
-                style="top: 8px;"
-                :data="item.treedata"
-                show-checkbox
-                node-key="id"
-                v-else-if="item.type==='tree'"
-              ></el-tree>
-              <el-input :disabled="dialogTitleTxt==='查看'" v-model="form[item.props]" v-else />
+              <el-input v-model="form[item.props]" v-else-if="item.type === 'textarea'" :disabled="dialogTitleTxt === '查看'"
+                :rows="item.rows" :type="item.type" />
+              <el-radio v-model="form[item.props]" v-else-if="item.type === 'radio'" :disabled="dialogTitleTxt === '查看'"
+                :label="radio.id" v-for="(radio, i) in item.radioList" :key="i">{{ radio.label }}</el-radio>
+              <el-tree style="top: 8px;" :data="item.treedata" show-checkbox node-key="id"
+                v-else-if="item.type === 'tree'"></el-tree>
+              <el-input :disabled="dialogTitleTxt === '查看'" v-model="form[item.props]" v-else />
             </el-form-item>
           </el-col>
         </el-row>
       </el-form>
       <el-row>
         <!-- 底部表格 -->
-        <tpms-table
-          ref="tpmsTable"
-          :paginationIsShow="false"
-          :data="form.nodeList"
-          :columns="tableNodeHeaderList"
-          :column_index="false"
-          @inquireTableData="inquireTableData"
-        >
-          <!-- <template slot-scope="{row,index}">
-            <span class="button" @click="removeNodeDialog(row)">删除</span>
-          </template>-->
+        <tpms-table :paginationIsShow="false" :data="form.nodeList" :columns="tableNodeHeaderList" :column_index="false"
+          @inquireTableData="inquireTableData">
           <template slot-scope="{row,$index}">
-            <span class="button cursor" @click="editNodeDialog(row,$index)">编辑</span>
-            <span class="button cursor" @click="removeNodeDialog(row,$index)">删除</span>
+            <span class="button cursor" @click="editNodeDialog(row, $index)">编辑</span>
+            <span class="button cursor" @click="removeNodeDialog(row, $index)">删除</span>
           </template>
         </tpms-table>
       </el-row>
 
       <div slot="footer" align="center" class="dialog-footer">
         <el-button @click="dialogVisible = false">关 闭</el-button>
-        <el-button v-if="dialogTitleTxt!=='查看'" @click="ok(dialogType)">保存</el-button>
-        <el-button v-if="dialogTitleTxt!=='查看'" type="primary" @click="addNodeDialog()">新增节点</el-button>
+        <el-button v-if="dialogTitleTxt !== '查看'" @click="ok(dialogType)">保存</el-button>
+        <el-button v-if="dialogTitleTxt !== '查看'" type="primary" @click="addNodeDialog()">新增节点</el-button>
       </div>
     </el-dialog>
 
@@ -151,55 +83,30 @@
             </el-form-item>-->
             <el-form-item label="审批类型" style="width: 100%;">
               <el-radio-group v-model="nodeFormList.approvalType">
-                <el-radio v-for="(v,i) in approvalType" :key="i" :label="v.value">{{v.label}}</el-radio>
+                <el-radio v-for="(v, i) in approvalType" :key="i" :label="v.value">{{ v.label }}</el-radio>
               </el-radio-group>
             </el-form-item>
-            <el-form-item v-if="nodeFormList.approvalType==2||nodeFormList.approvalType==4" label="多人审批时审批方式" style="width: 100%;">
-              <el-select
-                v-model="nodeFormList.multiApprovalType"
-                style="width:100%;"
-              >
+            <el-form-item v-if="nodeFormList.approvalType == 2 || nodeFormList.approvalType == 4" label="多人审批时审批方式"
+              style="width: 100%;">
+              <el-select v-model="nodeFormList.multiApprovalType" style="width:100%;">
                 <el-option label="会签" :value="1"></el-option>
                 <el-option label="或签" :value="2"></el-option>
               </el-select>
             </el-form-item>
-            <el-form-item v-if="nodeFormList.approvalType==2" label="成员" style="width: 100%;">
-              <el-select
-                v-model="nodeFormList.users"
-                multiple
-                filterable
-                remote
-                reserve-keyword
-                placeholder="请输入关键词"
-                :remote-method="remoteMethod"
-                :loading="userSelectLoading"
-                style="width: 100%;">
-                <el-option
-                  v-for="item in usersList"
-                  :key="item.workNo"
-                  :label="item.name"
-                  :value="item.id">
+            <el-form-item v-if="nodeFormList.approvalType == 2" label="成员" style="width: 100%;">
+              <el-select v-model="nodeFormList.users" multiple filterable remote reserve-keyword placeholder="请输入关键词"
+                :remote-method="remoteMethod" :loading="userSelectLoading" style="width: 100%;">
+                <el-option v-for="item in usersList" :key="item.workNo" :label="item.name" :value="item.id">
                   <span style="float: left">{{ item.name }}</span>
                   <span style="float: right; color: #8492a6; font-size: 13px">{{ item.workNo }}</span>
                 </el-option>
               </el-select>
             </el-form-item>
-            <el-form-item v-if="nodeFormList.approvalType==4" label="岗位" style="width: 100%;">
-              <el-select
-                v-model="nodeFormList.positions"
-                multiple
-                filterable
-                remote
-                reserve-keyword
-                placeholder="请输入关键词"
-                :remote-method="positionRemoteMethod"
-                :loading="positionSelectLoading"
+            <el-form-item v-if="nodeFormList.approvalType == 4" label="岗位" style="width: 100%;">
+              <el-select v-model="nodeFormList.positions" multiple filterable remote reserve-keyword
+                placeholder="请输入关键词" :remote-method="positionRemoteMethod" :loading="positionSelectLoading"
                 style="width: 100%;">
-                <el-option
-                  v-for="item in positionsList"
-                  :key="item.name"
-                  :label="item.name"
-                  :value="item.id">
+                <el-option v-for="item in positionsList" :key="item.name" :label="item.name" :value="item.id">
                   <span style="float: left">{{ item.name }}</span>
                   <span style="float: right; color: #8492a6; font-size: 13px">{{ item.workNo }}</span>
                 </el-option>
@@ -394,8 +301,8 @@ export default {
           span: 12,
           type: "checkbox",
           checkList: [
-            {key:'启用', value: true},
-            {key:'禁用', value: false}
+            { key: '启用', value: true },
+            { key: '禁用', value: false }
           ]
         },
         {
@@ -404,8 +311,8 @@ export default {
           span: 12,
           type: "checkbox",
           checkList: [
-            {key:'是', value: true},
-            {key:'否', value: false}
+            { key: '是', value: true },
+            { key: '否', value: false }
           ]
         },
         {
@@ -414,9 +321,9 @@ export default {
           span: 12,
           type: "checkbox",
           checkList: [
-            {key:'所有人', value: 1},
-            {key:'角色', value: 2},
-            {key:'用户', value: 4}
+            { key: '所有人', value: 1 },
+            { key: '角色', value: 2 },
+            { key: '用户', value: 4 }
           ]
         },
         {
@@ -434,14 +341,14 @@ export default {
           span: 12,
           type: "checkbox",
           checkList: [],
-          multiple:true,
+          multiple: true,
           hidden: true
         },
       ],
       module: [],
-      usersList:[],
+      usersList: [],
       userSelectLoading: false,
-      positionsList:[],
+      positionsList: [],
       positionSelectLoading: false,
       roleSearchLoading: false,
     };
@@ -452,18 +359,17 @@ export default {
   },
   mounted() {
     this.getTableData();
-    // this.getRoot();
     this.getRoleList();
   },
   methods: {
-    getRoleList(){
-      roleManage.getNames().then(res=>{
-        res.data.forEach(role=>{
+    getRoleList() {
+      roleManage.getNames().then(res => {
+        res.data.forEach(role => {
           role.key = role.name;
           role.value = role.id;
         })
-        this.formList.forEach(item=>{
-          if(item.props === 'roleList') {
+        this.formList.forEach(item => {
+          if (item.props === 'roleList') {
             item.checkList = res.data;
           }
         })
@@ -490,13 +396,16 @@ export default {
         this.module = data;
       });
     },
-    // 启用|禁用
+    /**
+     * 启用|禁用
+     * @param {*} row 
+     */
     isEnable(row) {
       const enable = !row.enable
       const data = Object.assign(row, { enable })
       workflowManage.edit(data).then(res => {
         this.getTableData();
-        this.$message.success(`${enable?'启用':'禁用'}成功`)
+        this.$message.success(`${enable ? '启用' : '禁用'}成功`)
       })
     },
     /** 点击查询按钮 */
@@ -517,7 +426,7 @@ export default {
     },
     /**
      * 编辑保存
-     */ 
+     */
     ok(dialogType) {
       var _self = this;
       console.log(JSON.stringify(this.form));
@@ -604,8 +513,22 @@ export default {
         }
       });
     },
+    /**
+     * 删除节点
+     * @param {*} row 
+     * @param {*} index 
+     */
     removeNodeDialog(row, index) {
       this.form.nodeList.splice(index, 1);
+      workflowNodeManage["remove"](",", row.uuid).then(() => {
+        this.$message({
+          type: "success",
+          message: "删除成功!"
+        });
+      }).catch(err => this.$message({
+        type: "error",
+        message: err
+      }))
     },
     editDialog(row, dialogText) {
       workflowManage["getOne"]("null", row.id).then(res => {
@@ -641,37 +564,37 @@ export default {
         if (dialogText == "编辑") {
           this.dialogType = "edit";
         }
-        
-        if(whoCanLaunch==1){
-          this.formList.forEach(item=>{
-            if(item.props==='roleList') item.hidden = true;
-            if(item.props==='userList') item.hidden = true;
+
+        if (whoCanLaunch == 1) {
+          this.formList.forEach(item => {
+            if (item.props === 'roleList') item.hidden = true;
+            if (item.props === 'userList') item.hidden = true;
           })
-        }else if(whoCanLaunch==2){
-          this.formList.forEach(item=>{
-            if(item.props==='roleList') item.hidden = false;
-            if(item.props==='userList') item.hidden = true;
+        } else if (whoCanLaunch == 2) {
+          this.formList.forEach(item => {
+            if (item.props === 'roleList') item.hidden = false;
+            if (item.props === 'userList') item.hidden = true;
           })
-        }else if(whoCanLaunch==4){
-          this.formList.forEach(item=>{
-            if(item.props==='userList') item.hidden = false;
-            if(item.props==='roleList') item.hidden = true;
+        } else if (whoCanLaunch == 4) {
+          this.formList.forEach(item => {
+            if (item.props === 'userList') item.hidden = false;
+            if (item.props === 'roleList') item.hidden = true;
           })
         }
 
         this.formList.forEach(item => {
-          if(item.props === 'userList'){
+          if (item.props === 'userList') {
             const userNameList = data.userNameList || [];
-            data.userList.map((evry, i)=>{
+            data.userList.map((evry, i) => {
               return {
                 key: userNameList[i],
                 value: evry
               }
             })
           };
-          if(item.props === 'roleList'){
+          if (item.props === 'roleList') {
             const roleNameList = data.roleNameList || [];
-            data.roleList.map((evry, i)=>{
+            data.roleList.map((evry, i) => {
               return {
                 key: roleNameList[i],
                 value: evry
@@ -683,44 +606,44 @@ export default {
         console.log(this.formList)
       });
     },
-    formChanged({props}){
+    formChanged({ props }) {
       console.log(this.formList)
-      if(props === 'whoCanLaunch') {
-        if(this.form[props] == 1){
-          this.formList.forEach(item=>{
-            if(['userList', 'roleList'].includes(item.props)){
+      if (props === 'whoCanLaunch') {
+        if (this.form[props] == 1) {
+          this.formList.forEach(item => {
+            if (['userList', 'roleList'].includes(item.props)) {
               item.hidden = true;
             };
           })
         };
-        if(this.form[props] == 2){
-          this.formList.forEach(item=>{
-            if(item.props === 'userList'){
+        if (this.form[props] == 2) {
+          this.formList.forEach(item => {
+            if (item.props === 'userList') {
               item.hidden = true;
             };
-            if(item.props === 'roleList'){
+            if (item.props === 'roleList') {
               item.hidden = false;
             };
           })
         };
-        if(this.form[props] == 4){
-          this.formList.forEach(item=>{
-            if(item.props === 'userList'){
+        if (this.form[props] == 4) {
+          this.formList.forEach(item => {
+            if (item.props === 'userList') {
               item.hidden = false;
             };
-            if(item.props === 'roleList'){
+            if (item.props === 'roleList') {
               item.hidden = true;
             };
           })
         };
       }
     },
-    remoteMethodFirst(query){
-      const item = this.formList.filter(({props})=>props==='userList')[0];
+    remoteMethodFirst(query) {
+      const item = this.formList.filter(({ props }) => props === 'userList')[0];
       if (query !== '') {
         item.checkList = [];
         item.loading = true;
-        getUserDropList({name:query}).then(res=>{
+        getUserDropList({ name: query }).then(res => {
           const { content } = res.data;
           content.forEach(ever => {
             ever.key = ever.name;
@@ -729,7 +652,7 @@ export default {
           item.checkList = content;
           item.loading = false;
           console.log(item)
-        }).catch(()=>{
+        }).catch(() => {
           item.loading = false;
         })
       } else {
@@ -755,28 +678,28 @@ export default {
         userList: []
       };
     },
-    remoteMethod(query){
+    remoteMethod(query) {
       if (query !== '') {
         this.userSelectLoading = true;
-        getUserDropList({name:query}).then(res=>{
+        getUserDropList({ name: query }).then(res => {
           const { content } = res.data;
           this.usersList = content;
           this.userSelectLoading = false;
-        }).catch(()=>{
+        }).catch(() => {
           this.userSelectLoading = false;
         })
       } else {
         this.options = [];
       }
     },
-    positionRemoteMethod(query){
+    positionRemoteMethod(query) {
       if (query !== '') {
         this.positionSelectLoading = true;
-        sysPositionManage.getLists({name:query}).then(res=>{
+        sysPositionManage.getLists({ name: query }).then(res => {
           const { content } = res.data;
           this.positionsList = content;
           this.positionSelectLoading = false;
-        }).catch(()=>{
+        }).catch(() => {
           this.positionSelectLoading = false;
         })
       } else {

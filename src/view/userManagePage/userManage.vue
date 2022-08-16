@@ -23,11 +23,17 @@
       >
         <template slot="operation" slot-scope="{row}">
           <span class="button cursor" v-if="userInfo.includes('USER_VIEW')" @click="editDialog(row.uuid, '查看')">查看</span>
-          <el-divider direction="vertical"></el-divider>
+          <el-divider v-if="userInfo.includes('USER_VIEW')" direction="vertical"></el-divider>
+          
           <span class="button cursor" v-if="userInfo.includes('USER_EDIT')" @click="editDialog(row.uuid, '编辑')">编辑</span>
-          <el-divider direction="vertical"></el-divider>
+          <el-divider v-if="userInfo.includes('USER_EDIT')" direction="vertical"></el-divider>
+
+          <span class="button cursor" v-if="userInfo.includes('USER_EDIT_FACTORY')" @click="editDialog(row.uuid, '调岗')">调岗</span>
+          <el-divider v-if="userInfo.includes('USER_EDIT_FACTORY')" direction="vertical"></el-divider>
+
           <span class="button cursor" v-if="userInfo.includes('USER_DELETE')" @click="del(row)">删除</span>
-          <el-divider direction="vertical"></el-divider>
+          <el-divider v-if="userInfo.includes('USER_DELETE')" direction="vertical"></el-divider>
+          
           <span class="button cursor" v-if="userInfo.includes('USER_RESET_PASSWORD')" @click="showPassword(row)">重置密码</span>
         </template>
       </tpms-table>
@@ -40,12 +46,12 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="工号">
-              <el-input :readonly="dialogTitleTxt=='查看' || userInfo.includes('USER_EDIT_FACTORY')" v-model="editForm.workNo" />
+              <el-input :readonly="dialogTitleTxt=='查看' || dialogTitleTxt=='调岗'" v-model="editForm.workNo" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="姓名" :label-width="labelWidth">
-              <el-input :readonly="dialogTitleTxt=='查看' || userInfo.includes('USER_EDIT_FACTORY')" v-model="editForm.name" />
+              <el-input :readonly="dialogTitleTxt=='查看' || dialogTitleTxt=='调岗'" v-model="editForm.name" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -53,12 +59,12 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="电话" :label-width="labelWidth">
-              <el-input :readonly="dialogTitleTxt=='查看' || userInfo.includes('USER_EDIT_FACTORY')" v-model="editForm.phone" />
+              <el-input :readonly="dialogTitleTxt=='查看'" v-model="editForm.phone" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="邮箱" :label-width="labelWidth">
-              <el-input :readonly="dialogTitleTxt=='查看' || userInfo.includes('USER_EDIT_FACTORY')" v-model="editForm.email" />
+              <el-input :readonly="dialogTitleTxt=='查看'" v-model="editForm.email" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -66,7 +72,7 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="性别" :label-width="labelWidth">
-              <el-select clearable :disabled="dialogTitleTxt=='查看' || userInfo.includes('USER_EDIT_FACTORY')" v-model="editForm.gender">
+              <el-select clearable :disabled="dialogTitleTxt=='查看'" v-model="editForm.gender">
                 <el-option
                   v-for="item in genderList"
                   :key="item.id"
@@ -78,7 +84,7 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="状态" :label-width="labelWidth">
-              <el-select clearable :disabled="dialogTitleTxt=='查看' || userInfo.includes('USER_EDIT_FACTORY')" v-model="editForm.enabled">
+              <el-select clearable :disabled="dialogTitleTxt=='查看' || dialogTitleTxt=='调岗'" v-model="editForm.enabled">
                 <el-option
                   v-for="item in enabledList"
                   :key="item.id"
@@ -94,7 +100,7 @@
           <el-divider content-position="left">用户工厂信息</el-divider>
           <el-col :span="12">
             <el-form-item label="工厂" :label-width="labelWidth">
-              <el-select clearable :disabled="dialogTitleTxt=='查看' || userInfo.includes('USER_EDIT_FACTORY')" v-model="formObj.factoryId" @change="userChanged('factoryId',formObj)">
+              <el-select clearable :disabled="dialogTitleTxt=='查看' || dialogTitleTxt=='调岗'" v-model="formObj.factoryId" @change="userChanged('factoryId',formObj)">
                 <el-option
                   v-for="item in formObj.selectLists.factoryList"
                   :key="item.id"
@@ -106,7 +112,7 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="车间" :label-width="labelWidth">
-              <el-select clearable :disabled="dialogTitleTxt=='查看' || userInfo.includes('USER_EDIT_FACTORY')" v-model="formObj.workshopId" @change="userChanged('workshopId',formObj)">
+              <el-select clearable :disabled="dialogTitleTxt=='查看'" v-model="formObj.workshopId" @change="userChanged('workshopId',formObj)">
                 <el-option
                   v-for="item in formObj.selectLists.workshopList"
                   :key="item.id"
@@ -193,10 +199,10 @@
             </el-form-item>
           </el-col>
 
-          <el-col :span="12">
+          <el-col :span="12" v-if="!dialogTitleTxt=='调岗'">
             <el-form-item label="角色" :label-width="labelWidth">
               <el-select
-                :disabled="dialogTitleTxt=='查看' || userInfo.includes('USER_EDIT_FACTORY')"
+                :disabled="dialogTitleTxt=='查看'"
                 v-model="formObj.roleIds"
                 multiple
                 collapse-tags
@@ -211,14 +217,14 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-button :disabled="userInfo.includes('USER_EDIT_FACTORY')" v-if="dialogTitleTxt !== '查看' " type="warning" @click.prevent="removeDomain(formObj)" size="small">删除</el-button>
+            <el-button v-if="dialogTitleTxt !== '查看' && dialogTitleTxt !=='调岗'" type="warning" @click.prevent="removeDomain(formObj)" size="small">删除</el-button>
           </el-col>
         </el-row>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button :disabled="userInfo.includes('USER_EDIT_FACTORY')" v-if="dialogTitleTxt !== '查看' " @click="addDomain">新增工厂信息</el-button>
-        <el-button v-if="dialogTitleTxt==='编辑'" type="primary" @click="edit()">确 定</el-button>
+        <el-button v-if="dialogTitleTxt !== '查看' && dialogTitleTxt !=='调岗'" @click="addDomain">新增工厂信息</el-button>
+        <el-button v-if="dialogTitleTxt==='编辑' || dialogTitleTxt ==='调岗'" type="primary" @click="edit()">确 定</el-button>
         <el-button v-if="dialogTitleTxt==='添加用户'" type="primary" @click="beforeAdd()">确 定</el-button>
       </div>
     </el-dialog>

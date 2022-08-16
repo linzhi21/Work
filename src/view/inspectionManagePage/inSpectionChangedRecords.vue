@@ -109,7 +109,7 @@ export default {
       // 获取头部搜索组数据
       let data = this.$refs.tpmsHeader.getData();
       let pageData = this.$refs.tpmsTable.getData();
-      checkPlanChanges({ ...data, ...pageData, type: "3" }).then((res) => {
+      checkPlanChanges({ ...data, ...pageData, type: "3", sort: 'createDate,desc' }).then((res) => {
         this.total = res.data.totalElements;
         this.equipmentTableData = res.data.content;
       });

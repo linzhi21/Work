@@ -1,53 +1,30 @@
 <template>
   <div>
     <!-- 头部功能区 -->
-    <tpms-header
-      ref="tpmsHeader"
-      :formData="equipmentFormList"
-      @inquireTableData="inquireTableData"
-      label-width="100px"
-      @onValueChanged="onValueChanged"
-    />
+    <tpms-header ref="tpmsHeader" :formData="equipmentFormList" @inquireTableData="inquireTableData" label-width="100px"
+      @onValueChanged="onValueChanged" />
     <el-row class="buttom-group" type="flex" justify="end" align="middle">
-      <el-button @click="getMaintainOverview" class="button-more" size="small"
-        >导出设备保养概览</el-button>
-      <el-button @click="exportWorkOrders" class="button-more" size="small"
-        >导出车间设备保养实施表</el-button>
-      <el-button @click="exportNextMonthWorkOrders" class="button-more" size="small"
-        >导出次月设备保养实施表</el-button>
-      <tpms-choosefile plain text="指派工单" isMutiple @getFileData="importThisMonthMaintainWorkOrder($event)"></tpms-choosefile>
+      <el-button @click="getMaintainOverview" class="button-more" size="small">导出设备保养概览</el-button>
+      <el-button @click="exportWorkOrders" class="button-more" size="small">导出车间设备保养实施表</el-button>
+      <el-button @click="exportNextMonthWorkOrders" class="button-more" size="small">导出次月设备保养实施表</el-button>
+      <tpms-choosefile plain text="指派工单" isMutiple @getFileData="importThisMonthMaintainWorkOrder($event)">
+      </tpms-choosefile>
     </el-row>
 
     <!-- 表格 -->
     <el-row>
       <el-card>
-        <tpms-table
-          :column_index="true"
-          ref="tpmsTable"
-          :total="total"
-          :data="listData"
-          :columns="equipmentTableList"
-          @inquireTableData="inquireTableData"
-          @getTableData="getData"
-        >
+        <tpms-table :column_index="true" ref="tpmsTable" :total="total" :data="listData" :columns="equipmentTableList"
+          @inquireTableData="inquireTableData" @getTableData="getData">
           <template slot="status" slot-scope="{ row }">
             <span>{{ statusTranslate(row.status) }}</span>
           </template>
           <template slot="operation" slot-scope="{ row }">
             <span class="button cursor" @click="showPlanDetail(row)">查看</span>
             <span class="button cursor" @click="showPlanDetail(row, 'approval')">审批</span>
-            <span class="button cursor" @click="getDeviceMaintain(row)"
-              >导出记录卡</span
-            >
-            <span class="button cursor" @click="previewNowMonthWorkOrder(row)"
-              >月度情况</span
-            >
-            <span
-              class="button cursor"
-              v-if="row.overdue === 1"
-              @click="turnOn(row)"
-              >激活</span
-            >
+            <span class="button cursor" @click="getDeviceMaintain(row)">导出记录卡</span>
+            <span class="button cursor" @click="previewNowMonthWorkOrder(row)">月度情况</span>
+            <span class="button cursor" v-if="row.overdue === 1" @click="turnOn(row)">激活</span>
           </template>
         </tpms-table>
       </el-card>
@@ -56,12 +33,7 @@
     <el-dialog title="查看详情" :visible.sync="detailModal" width="80%">
       <!-- 头部表单 -->
       <el-row style="margin-top: 40px">
-        <el-form
-          :model="detail"
-          ref="form"
-          label-width="140px"
-          label-position="left"
-        >
+        <el-form :model="detail" ref="form" label-width="140px" label-position="left">
           <el-row>
             <el-col :span="11">
               <el-form-item label="保养工单" required="required">
@@ -79,17 +51,14 @@
               </el-form-item>
             </el-col>
             <el-col :span="11" :offset="2">
-                <el-button v-if="approvalBtn" @click="approval(detail)" type="primary" size="small">审批</el-button>
+              <el-button v-if="approvalBtn" @click="approval(detail)" type="primary" size="small">审批</el-button>
               <!-- <el-form-item label="审批状态" required="required">
                 <el-input v-model="detail.status" readonly></el-input>
               </el-form-item> -->
             </el-col>
           </el-row>
-          <el-row
-            v-for="(v, i) in detail.maintainWorkOrderColonies"
-            :key="i"
-            style="background: #f5f5f5; padding: 0.2rem"
-          >
+          <el-row v-for="(v, i) in detail.maintainWorkOrderColonies" :key="i"
+            style="background: #f5f5f5; padding: 0.2rem">
             <el-col :span="11">
               <el-form-item label="设备名称" required="required">
                 <el-input v-model="v.deviceNames" readonly></el-input>
@@ -101,62 +70,51 @@
               </el-form-item>
             </el-col>
 
-            <el-table
-              :data="v.maintainWorkOrderContents"
-              style="width: 100%"
-              border
-              row-key="id"
-              default-expand-all
+            <el-table :data="v.maintainWorkOrderContents" style="width: 100%" border row-key="id" default-expand-all
               :tree-props="{
                 children: 'childPlanContents',
                 hasChildren: 'hasChildren',
-              }"
-            >
-              <el-table-column
-                align="center"
-                type="index"
-                label="项目"
-                width="80"
-              ></el-table-column>
+              }">
+              <el-table-column align="center" type="index" label="项目" width="80"></el-table-column>
               <el-table-column align="center" label="保养部位" width="150">
                 <template slot-scope="scope">
                   <span v-show="!scope.row.editShow">{{
-                    scope.row.executionPart
+                      scope.row.executionPart
                   }}</span>
                 </template>
               </el-table-column>
               <el-table-column align="center" label="保养位置">
                 <template slot-scope="scope">
                   <span v-show="!scope.row.editShow">{{
-                    scope.row.executionNode
+                      scope.row.executionNode
                   }}</span>
                 </template>
               </el-table-column>
               <el-table-column align="center" label="保养内容">
                 <template slot-scope="scope">
                   <span v-show="!scope.row.editShow">{{
-                    scope.row.content
+                      scope.row.content
                   }}</span>
                 </template>
               </el-table-column>
               <el-table-column align="center" label="周期">
                 <template slot-scope="scope">
                   <span v-show="!scope.row.editShow">{{
-                    scope.row.cycleName
+                      scope.row.cycleName
                   }}</span>
                 </template>
               </el-table-column>
               <el-table-column align="center" label="保养结果">
                 <template slot-scope="scope">
                   <span v-show="!scope.row.editShow">{{
-                    scope.row.status
+                      scope.row.status
                   }}</span>
                 </template>
               </el-table-column>
               <el-table-column align="center" label="异常记录">
                 <template slot-scope="scope">
                   <span v-show="!scope.row.editShow">{{
-                    scope.row.exception
+                      scope.row.exception
                   }}</span>
                 </template>
               </el-table-column>
@@ -164,7 +122,7 @@
           </el-row>
           <el-row>
             <el-col :span="24">
-             
+
             </el-col>
           </el-row>
         </el-form>
@@ -221,20 +179,22 @@ export default {
       });
     return {
       equipmentFormList: [
-        {
-          label: "工厂",
-          props: "factoryId",
-          value: "",
-          type: "radio",
-          checkList: factoryList,
-        },
-        {
-          label: "车间",
-          props: "workshopId",
-          value: "",
-          type: "radio",
-          checkList: [],
-        },
+        // {
+        //   label: "工厂",
+        //   props: "factoryId",
+        //   value: "",
+        //   type: "radio",
+        //   checkList: factoryList,
+        // },
+        // {
+        //   label: "车间",
+        //   props: "workshopId",
+        //   value: "",
+        //   type: "radio",
+        //   checkList: [],
+        // },
+        { label: "开始时间", props: "startTime", type: "dateFrame", value: "" },
+        { label: "结束时间", props: "endTime", type: "dateFrame", value: "" },
         { label: "设备名称", props: "deviceName", value: "" },
         { label: "设备编号", props: "deviceNo", value: "" },
         { label: "资产编号", props: "deviceAssetNo", value: "" },
@@ -297,7 +257,7 @@ export default {
   },
   components: {
     tpmsHeader,
-    tpmsTable,tpmsChoosefile
+    tpmsTable, tpmsChoosefile
   },
   mounted() {
     // 从设备履历页面跳转到这里带入设备编号
@@ -319,11 +279,11 @@ export default {
         data.status = this.statusTranslate(data.status);
         this.detail = res.data;
         this.detailModal = true;
-        if(type === 'approval') {this.approvalBtn = true} 
-        else {this.approvalBtn = false}
+        if (type === 'approval') { this.approvalBtn = true }
+        else { this.approvalBtn = false }
       });
     },
-    editWorkorders() {},
+    editWorkorders() { },
     /** 表格状态码转文字 */
     statusTranslate(val) {
       if (val == 1) return "待接单";
@@ -496,27 +456,27 @@ export default {
           Authorization: "Bearer " + token
         },
       }).then((res) => {
-          if (!res) return;
-          let fileName = '设备保养概览.xls';
-          const disposition = res.headers["content-disposition"];
-          if (disposition) {
-            const name = disposition.split(";")[1].split("filename=")[1];
-            fileName = decodeURI(name);
-          }
+        if (!res) return;
+        let fileName = '设备保养概览.xls';
+        const disposition = res.headers["content-disposition"];
+        if (disposition) {
+          const name = disposition.split(";")[1].split("filename=")[1];
+          fileName = decodeURI(name);
+        }
 
-          let blob = new Blob([res.data], {
-            type: "application/vnd.ms-excel;charset=utf-8"
-          });
-          let url = window.URL.createObjectURL(blob);
-          let aLink = document.createElement("a");
-          aLink.style.display = "none";
-          aLink.href = url;
-          aLink.setAttribute("download", fileName); // 下载的文件
-          document.body.appendChild(aLink);
-          aLink.click();
-          document.body.removeChild(aLink);
-          window.URL.revokeObjectURL(url);
-        })
+        let blob = new Blob([res.data], {
+          type: "application/vnd.ms-excel;charset=utf-8"
+        });
+        let url = window.URL.createObjectURL(blob);
+        let aLink = document.createElement("a");
+        aLink.style.display = "none";
+        aLink.href = url;
+        aLink.setAttribute("download", fileName); // 下载的文件
+        document.body.appendChild(aLink);
+        aLink.click();
+        document.body.removeChild(aLink);
+        window.URL.revokeObjectURL(url);
+      })
         .catch((error) => {
           this.$message.error(error);
         });
@@ -526,7 +486,7 @@ export default {
      * @param row 工单对象
      */
     previewNowMonthWorkOrder(row) {
-      previewNowMonthWorkOrder({workOrderId: row.id})
+      previewNowMonthWorkOrder({ workOrderId: row.id })
         .then((res) => {
           if (!res) return;
           let data = res.data.split(',');
@@ -542,41 +502,41 @@ export default {
           this.$message.error(error);
         });
     },
-     /**
-     * @description 导出设备保养记录卡
-     * @param maintainWorkOrderId 工单Id
-     */
+    /**
+    * @description 导出设备保养记录卡
+    * @param maintainWorkOrderId 工单Id
+    */
     getDeviceMaintain(row) {
       let url = apiConfig.maintainWorkOrder + "/getDeviceMaintain"; //请求下载文件的地址
       let token = localStorage.getItem("access_token"); //获取token
       axios.get(url, {
-        params: {maintainWorkOrderId: row.id},
+        params: { maintainWorkOrderId: row.id },
         responseType: 'blob',
         headers: {
           Authorization: "Bearer " + token
         },
       }).then((res) => {
-          if (!res) return;
-          let fileName = '设备保养记录卡.xls';
-          const disposition = res.headers["content-disposition"];
-          if (disposition) {
-            const name = disposition.split(";")[1].split("filename=")[1];
-            fileName = decodeURI(name);
-          }
+        if (!res) return;
+        let fileName = '设备保养记录卡.xls';
+        const disposition = res.headers["content-disposition"];
+        if (disposition) {
+          const name = disposition.split(";")[1].split("filename=")[1];
+          fileName = decodeURI(name);
+        }
 
-          let blob = new Blob([res.data], {
-            type: "application/vnd.ms-excel;charset=utf-8"
-          });
-          let url = window.URL.createObjectURL(blob);
-          let aLink = document.createElement("a");
-          aLink.style.display = "none";
-          aLink.href = url;
-          aLink.setAttribute("download", fileName); // 下载的文件
-          document.body.appendChild(aLink);
-          aLink.click();
-          document.body.removeChild(aLink);
-          window.URL.revokeObjectURL(url);
-        })
+        let blob = new Blob([res.data], {
+          type: "application/vnd.ms-excel;charset=utf-8"
+        });
+        let url = window.URL.createObjectURL(blob);
+        let aLink = document.createElement("a");
+        aLink.style.display = "none";
+        aLink.href = url;
+        aLink.setAttribute("download", fileName); // 下载的文件
+        document.body.appendChild(aLink);
+        aLink.click();
+        document.body.removeChild(aLink);
+        window.URL.revokeObjectURL(url);
+      })
         .catch((error) => {
           this.$message.error(error);
         });
@@ -586,7 +546,7 @@ export default {
      */
     approval(row) {
       let id = row.id
-      approvalMaintainWorkorder({status: 5},id).then(res => {
+      approvalMaintainWorkorder({ status: 5 }, id).then(res => {
         this.$message.success('审批成功！');
         this.getData();
         this.detailModal = false;
@@ -602,27 +562,34 @@ export default {
   width: 4.3rem;
   margin: 0 auto;
 }
+
 .upkeep-form {
   padding: 0.1rem 1rem;
 }
+
 .upkeep-line {
   padding: 0 0.4rem;
   border-bottom: 2px dashed #e9e9e9;
   line-height: 40px;
 }
+
 .upkeep-item-right {
   float: right;
   width: 2.5rem;
 }
+
 .upkeep-item-left {
   float: left;
 }
+
 .new-add-button {
   margin-left: 3rem;
 }
+
 .color-blue {
   color: #0077c8;
 }
+
 .el-select {
   width: 100%;
 }

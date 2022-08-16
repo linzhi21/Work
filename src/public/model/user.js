@@ -218,13 +218,10 @@ export const userFormList = [
   },
 ];
 
-export const userTableList = [{
-  props: 'name',
-  label: '用户名'
-},
+export const userTableList = [
 {
   props: 'workNo',
-  label: '工号'
+  label: '工号',
 },
 {
   props: 'name',
@@ -236,45 +233,9 @@ export const userTableList = [{
   translate: (value) => ({ 1: '男', 2: '女' }[value])
 },
 {
-  props: 'phone',
-  label: '电话'
-},
-{
   props: 'email',
   label: '邮箱'
 },
-// {
-//   props: 'workshopName',
-//   label: '车间'
-// },
-// {
-//   props: 'workshopSectionName',
-//   label: '工段'
-// },
-// {
-//   props: 'workshopTeamName',
-//   label: '班组'
-// },
-// {
-//   props: 'workStationName',
-//   label: '工位'
-// },
-// {
-//   props: 'workshopShiftName',
-//   label: '班次'
-// },
-// {
-//   props: 'positions',
-//   label: '岗位'
-// },
-// {
-//   props: 'roles',
-//   label: '角色'
-// },
-// {
-//   props: 'workshopAreaName',
-//   label: '区域'
-// },
 {
   props: 'enabled',
   label: '状态',
@@ -284,7 +245,7 @@ export const userTableList = [{
   label: "操作",
   slotName: "operation",
   fixed: "right",
-  width: "230px",
+  width: "350px",
 }
 ];
 
