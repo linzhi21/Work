@@ -25,11 +25,11 @@
           <span class="button cursor" v-if="userInfo.includes('USER_VIEW')" @click="editDialog(row.uuid, '查看')">查看</span>
           <el-divider v-if="userInfo.includes('USER_VIEW')" direction="vertical"></el-divider>
           
-          <span class="button cursor" v-if="userInfo.includes('USER_EDIT')" @click="editDialog(row.uuid, '编辑')">编辑</span>
-          <el-divider v-if="userInfo.includes('USER_EDIT')" direction="vertical"></el-divider>
+          <span class="button cursor" v-if="authoritiesIncludes('USER_EDIT_FACTORY') && authoritiesIncludes('USER_EDIT')" @click="editDialog(row.uuid, '编辑')">编辑</span>
+          <el-divider v-if="authoritiesIncludes('USER_EDIT_FACTORY') && authoritiesIncludes('USER_EDIT')" direction="vertical"></el-divider>
 
-          <span class="button cursor" v-if="userInfo.includes('USER_EDIT_FACTORY')" @click="editDialog(row.uuid, '调岗')">调岗</span>
-          <el-divider v-if="userInfo.includes('USER_EDIT_FACTORY')" direction="vertical"></el-divider>
+          <span class="button cursor" v-if="authoritiesIncludes('USER_EDIT')" @click="editDialog(row.uuid, '调岗')">调岗</span>
+          <el-divider v-if="authoritiesIncludes('USER_EDIT')" direction="vertical"></el-divider>
 
           <span class="button cursor" v-if="userInfo.includes('USER_DELETE')" @click="del(row)">删除</span>
           <el-divider v-if="userInfo.includes('USER_DELETE')" direction="vertical"></el-divider>
@@ -199,7 +199,7 @@
             </el-form-item>
           </el-col>
 
-          <el-col :span="12" v-if="!dialogTitleTxt=='调岗'">
+          <el-col :span="12" v-if="dialogTitleTxt!='调岗'">
             <el-form-item label="角色" :label-width="labelWidth">
               <el-select
                 :disabled="dialogTitleTxt=='查看'"
@@ -291,6 +291,7 @@ export default {
     const userInfoLocal = localStorage.getItem('user_info');
     return {
       userInfo: userInfoLocal,
+      userInfoObj: JSON.parse(userInfoLocal),
       showPasswordMoal: false,
       PasswordHistoryVO: {
         password: "",
@@ -801,6 +802,15 @@ export default {
         .catch(error => {
           this.$message.error(error.message);
         });
+    },
+    authoritiesIncludes(authorities) {
+      let flag = false;
+      this.userInfoObj.authorities.forEach(a => {
+        if(a.authority === authorities) {
+          flag = true;
+        }
+      });
+      return flag;
     }
   }
 };
