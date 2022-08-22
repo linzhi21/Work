@@ -363,7 +363,7 @@
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="checkTools">查询</el-button>
-          <el-button @click="drawerDetail.times = [startTime, endTime]"
+          <el-button @click="clearCheckTools"
             >重置</el-button
           >
         </el-form-item>
@@ -804,6 +804,8 @@ export default {
      * 重置查询
      */
     clearCheckOutWorkOrder(type) {
+      this.startTime = getTodoyTimes().startTime
+      this.endTime = getTodoyTimes().endTime
       this.drawerDetail = {
         title: "",
         tableList: [],
@@ -979,6 +981,12 @@ export default {
       this.endMonth = this.drawerDetail.times[1];
       this.workorderInfo();
       this.handleClose();
+    },
+    clearCheckTools() {
+      this.startTime = getTodoyTimes().startTime;
+      this.endTime = getTodoyTimes().endTime;
+      this.drawerDetail.times = [this.startTime, this.endTime];
+      this.checkTools()
     },
     /**
      * 显示当前选择的时间

@@ -117,7 +117,7 @@ export default {
       //   return;
       // }
       let pageData = this.$refs.tpmsTable.getData();
-      checkPlanChanges({ ...data, ...pageData, type: '1,2' }).then(res => {
+      checkPlanChanges({ ...data, ...pageData, type: '1,2', sort: 'createDate,desc' }).then(res => {
         console.log(res);
         this.total = res.data.totalElements;
         this.equipmentTableData = res.data.content;
