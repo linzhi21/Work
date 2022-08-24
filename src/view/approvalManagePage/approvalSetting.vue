@@ -42,8 +42,8 @@
                 <el-option v-for="(item, i) in item.checkList" :key="i" :label="item.key" :value="item.value">
                 </el-option>
               </el-select>
-              <el-input v-model="form[item.props]" v-else-if="item.type === 'textarea'" :disabled="dialogTitleTxt === '查看'"
-                :rows="item.rows" :type="item.type" />
+              <el-input v-model="form[item.props]" v-else-if="item.type === 'textarea'"
+                :disabled="dialogTitleTxt === '查看'" :rows="item.rows" :type="item.type" />
               <el-radio v-model="form[item.props]" v-else-if="item.type === 'radio'" :disabled="dialogTitleTxt === '查看'"
                 :label="radio.id" v-for="(radio, i) in item.radioList" :key="i">{{ radio.label }}</el-radio>
               <el-tree style="top: 8px;" :data="item.treedata" show-checkbox node-key="id"
@@ -103,12 +103,14 @@
               </el-select>
             </el-form-item>
             <el-form-item v-if="nodeFormList.approvalType == 4" label="岗位" style="width: 100%;">
-              <el-select v-model="nodeFormList.positions" multiple filterable remote reserve-keyword
-                placeholder="请输入关键词" :remote-method="positionRemoteMethod" :loading="positionSelectLoading"
+              <!--  -->
+              <el-select v-model="nodeFormList.positions" multiple filterable remote
+                :remote-method="positionRemoteMethod" :loading="positionSelectLoading" 
+                placeholder="请输入关键词"
                 style="width: 100%;">
                 <el-option v-for="item in positionsList" :key="item.name" :label="item.name" :value="item.id">
-                  <span style="float: left">{{ item.name }}</span>
-                  <span style="float: right; color: #8492a6; font-size: 13px">{{ item.workNo }}</span>
+                  <!-- <span style="float: left">{{ item.name }}</span>
+                  <span style="float: right; color: #8492a6; font-size: 13px">{{ item.workNo }}</span> -->
                 </el-option>
               </el-select>
             </el-form-item>
@@ -506,6 +508,7 @@ export default {
           id: item
         }
       });
+      this.positionRemoteMethod()
       this.usersList = row.users.map((item, i) => {
         return {
           name: row.userNames[i],
@@ -703,7 +706,13 @@ export default {
           this.positionSelectLoading = false;
         })
       } else {
-        this.options = [];
+        sysPositionManage.getLists().then(res => {
+          const { content } = res.data;
+          this.positionsList = content;
+          this.positionSelectLoading = false;
+        }).catch(() => {
+          this.positionSelectLoading = false;
+        })
       }
     }
   }

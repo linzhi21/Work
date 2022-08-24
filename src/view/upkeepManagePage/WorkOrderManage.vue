@@ -195,6 +195,18 @@ export default {
         // },
         { label: "开始时间", props: "startTime", type: "dateFrame", value: "" },
         { label: "结束时间", props: "endTime", type: "dateFrame", value: "" },
+        {
+          label: "是否过期",
+          props: "overdue",
+          type: "radio",
+          value: "",
+          checkList: [
+            { label: "未过期", id: "0" },
+            { label: "过期", id: "1" },
+            { label: "过期又启动", id: "2" },
+          ],
+        },
+        { label: "计划负责人", props: "creator", value: "", placeholder: "导出设备保养概览时，请填写!" },
         { label: "设备名称", props: "deviceName", value: "" },
         { label: "设备编号", props: "deviceNo", value: "" },
         { label: "资产编号", props: "deviceAssetNo", value: "" },
@@ -225,7 +237,7 @@ export default {
             { label: "停用", id: "4" },
           ],
         },
-        { label: "指派时间", props: "exceptTime", value: "" },
+        { label: "指派时间", props: "exceptTime", value: "", placeholder: "保养实施表中填写的指派时间!" },
       ],
       listData: [],
       equipmentTableList: [
@@ -450,7 +462,13 @@ export default {
     getMaintainOverview() {
       let url = apiConfig.maintainWorkOrder + "/getMaintainOverview"; //请求下载文件的地址
       let token = localStorage.getItem("access_token"); //获取token
+      let data = this.$refs.tpmsHeader.getData();
+      let param = { creator: data.creator }
+      if (!param.creator) {
+        param = {}
+      }
       axios.get(url, {
+        params: param,
         responseType: 'blob',
         headers: {
           Authorization: "Bearer " + token

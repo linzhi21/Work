@@ -4,68 +4,35 @@
     <el-row>
       <el-card class="equipment-manage">
         <!-- 头部功能区 -->
-        <tpms-header
-          ref="tpmsHeader"
-          :formData="equipmentFormList"
-          @inquireTableData="inquireTableData"
-          @onValueChanged="onValueChanged"
-          label-width="95px"
-        />
+        <tpms-header ref="tpmsHeader" :formData="equipmentFormList" @inquireTableData="inquireTableData"
+          @onValueChanged="onValueChanged" label-width="95px" />
         <el-row class="buttom-group" type="flex" justify="end" align="middle">
+          <el-button @click="releaseMore" class="button-more" size="small">批量发布</el-button>
           <el-button class="button-more" type="primary" size="small" @click="add">新增计划</el-button>
         </el-row>
         <!-- 底部表格 -->
-        <tpms-table
-          :column_index="true"
-          ref="tpmsTable"
-          :total="total"
-          :data="equipmentTableData"
-          :columns="[
-            { type: 'selection' },
-            { props: 'type', label: '类型' },
-            { props: 'name', label: '点检名称' },
-            { props: 'hour', label: '总工时' },
-            { props: 'creatorName', label: '制定人' },
-            { props: 'createDate', label: '制定日期', width: '200px' },
-            { props: 'status', label: '状态' },
-            { label: '操作', slotName: 'operation', fixed: 'right', width: '240px' }
-          ]"
-          @inquireTableData="inquireTableData"
-          @getTableData="getTableData"
-          @selection-change="handleSelectionChange"
-        >
+        <tpms-table :column_index="true" ref="tpmsTable" :total="total" :data="equipmentTableData" :columns="[
+          { type: 'selection' },
+          { props: 'type', label: '类型' },
+          { props: 'name', label: '点检名称' },
+          { props: 'hour', label: '总工时' },
+          { props: 'creatorName', label: '制定人' },
+          { props: 'createDate', label: '制定日期', width: '200px' },
+          { props: 'status', label: '状态' },
+          { label: '操作', slotName: 'operation', fixed: 'right', width: '240px' }
+        ]" @inquireTableData="inquireTableData" @getTableData="getTableData" @selection-change="handleSelectionChange">
           <template slot="operation" slot-scope="scope">
             <span class="button cursor" @click="view(scope.row)">查看</span>
-            <span
-              class="button cursor"
-              @click="approval(scope.row)"
-              v-if="scope.row.buttons.includes('approval')"
-            >审批</span>
-            <span
-              class="button cursor"
-              @click="edit(scope.row)"
-              v-if="scope.row.buttons.includes('launch')"
-            >编辑</span>
-            <span
-              class="button cursor"
-              @click="del(scope.row)"
-              v-if="scope.row.buttons.includes('delete')"
-            >删除</span>
-            <span
-              class="button cursor"
-              @click="release(scope.row)"
-              v-if="scope.row.buttons.includes('release')"
-            >发布</span>
-            <span
-              class="button cursor"
-              @click="cancel(scope.row)"
-              v-if="scope.row.buttons.includes('canceled')"
-            >取消计划</span>
-            <span
-              class="button cursor"
-              @click="newApproval(scope.row)"
-              v-if="scope.row.buttons.includes('launch')"
-            >重新发起审批</span>
+            <span class="button cursor" @click="approval(scope.row)"
+              v-if="scope.row.buttons.includes('approval')">审批</span>
+            <span class="button cursor" @click="edit(scope.row)" v-if="scope.row.buttons.includes('launch')">编辑</span>
+            <span class="button cursor" @click="del(scope.row)" v-if="scope.row.buttons.includes('delete')">删除</span>
+            <span class="button cursor" @click="release(scope.row)"
+              v-if="scope.row.buttons.includes('release')">发布</span>
+            <span class="button cursor" @click="cancel(scope.row)"
+              v-if="scope.row.buttons.includes('canceled')">取消计划</span>
+            <span class="button cursor" @click="newApproval(scope.row)"
+              v-if="scope.row.buttons.includes('launch')">重新发起审批</span>
             <span class="button cursor" @click="exportFile(scope.row)">导出</span>
           </template>
         </tpms-table>
@@ -73,15 +40,9 @@
     </el-row>
 
     <!-- 新增|编辑对话框 -->
-    <el-dialog
-      v-loading="loading"
-      element-loading-text="文件导入中"
-      :title="newAddDialogTitle"
-      element-loading-background="rgba(0, 0, 0, 0.8)"
-      :visible.sync="newAddDialog"
-      width="80%"
-      :before-close="handleClose"
-    >
+    <el-dialog v-loading="loading" element-loading-text="文件导入中" :title="newAddDialogTitle"
+      element-loading-background="rgba(0, 0, 0, 0.8)" :visible.sync="newAddDialog" width="80%"
+      :before-close="handleClose">
       <!-- 头部表单 -->
       <el-row style="margin-top:40px">
         <el-form :model="form" ref="form" label-width="140px" label-position="left">
@@ -104,24 +65,16 @@
             <el-col :span="18">
               <el-form-item label="导入设备点检计划">
                 <div>
-                  <tpms-choosefile
-                    size="small"
-                    isMutiple
-                    text="选择文件"
-                    accept=".xlsx,.xls"
-                    @getFileData="getFileData($event)"
-                  ></tpms-choosefile>
+                  <tpms-choosefile size="small" isMutiple text="选择文件" accept=".xlsx,.xls"
+                    @getFileData="getFileData($event)"></tpms-choosefile>
                 </div>
               </el-form-item>
             </el-col>
             <el-col :span="6">
             </el-col>
           </el-row>
-          <el-row
-            v-for="(item,index) in form.planDevices"
-            :key="index"
-            style="background: #f5f5f5;padding: 0.2rem;margin: 15px 0;"
-          >
+          <el-row v-for="(item, index) in form.planDevices" :key="index"
+            style="background: #f5f5f5;padding: 0.2rem;margin: 15px 0;">
             <el-col :span="11">
               <el-form-item label="版本" required="required">
                 <el-input v-model="item.version"></el-input>
@@ -153,73 +106,48 @@
                 <el-input readonly v-model="item.createDate"></el-input>
               </el-form-item>
             </el-col>
-            
+
             <!-- 表格区 -->
-            <el-table
-              :data="item.planContents"
-              style="width:100%"
-              row-key="content"
-              border
-              :tree-props="{children: 'childPlanContents', hasChildren: 'hasChildren'}"
-            >
+            <el-table :data="item.planContents" style="width:100%" row-key="content" border
+              :tree-props="{ children: 'childPlanContents', hasChildren: 'hasChildren' }">
               <el-table-column align="center" type="index" label="项目" width="80"></el-table-column>
               <el-table-column align="center" label="时间/部件" width="150">
                 <template slot-scope="scope">
                   <el-input v-show="scope.row.editShow" v-model="scope.row.executionNode"></el-input>
-                  <span v-show="!scope.row.editShow">{{scope.row.executionNode}}</span>
+                  <span v-show="!scope.row.editShow">{{ scope.row.executionNode }}</span>
                 </template>
               </el-table-column>
               <el-table-column align="center" label="内容" width="300">
                 <template slot-scope="scope">
                   <el-input v-show="scope.row.editShow" v-model="scope.row.content"></el-input>
-                  <span v-show="!scope.row.editShow">{{scope.row.content}}</span>
+                  <span v-show="!scope.row.editShow">{{ scope.row.content }}</span>
                 </template>
               </el-table-column>
               <el-table-column align="center" label="工时(s)">
                 <template slot-scope="scope">
-                  <el-input
-                    v-show="scope.row.editShow"
-                    v-model="scope.row.hour"
-                    @change="calcTime(item)"
-                  ></el-input>
-                  <span v-show="!scope.row.editShow">{{scope.row.hour}}</span>
+                  <el-input v-show="scope.row.editShow" v-model="scope.row.hour" @change="calcTime(item)"></el-input>
+                  <span v-show="!scope.row.editShow">{{ scope.row.hour }}</span>
                 </template>
               </el-table-column>
               <el-table-column align="center" label="方法">
                 <template slot-scope="scope">
                   <el-input v-show="scope.row.editShow" v-model="scope.row.method"></el-input>
-                  <span v-show="!scope.row.editShow">{{scope.row.method}}</span>
+                  <span v-show="!scope.row.editShow">{{ scope.row.method }}</span>
                 </template>
               </el-table-column>
               <el-table-column align="center" label="周期" width="110">
                 <template slot-scope="scope">
-                  <el-select
-                    v-model="scope.row.cycleId"
-                    style="width:100%"
-                    :disabled="!scope.row.editShow"
-                  >
-                    <el-option
-                      v-for="item in cycleList"
-                      :key="item.id"
-                      :label="item.label"
-                      :value="item.id"
-                    ></el-option>
+                  <el-select v-model="scope.row.cycleId" style="width:100%" :disabled="!scope.row.editShow">
+                    <el-option v-for="item in cycleList" :key="item.id" :label="item.label" :value="item.id">
+                    </el-option>
                   </el-select>
                 </template>
               </el-table-column>
               <el-table-column align="center" label="顺序" width="110">
                 <template slot-scope="scope">
-                  <el-select
-                    v-model="scope.row.sort"
-                    style="width:100%"
-                    :disabled="!scope.row.editShow"
-                  >
-                    <el-option
-                      v-for="itemSort in item.planContents.length"
-                      :key="itemSort"
-                      :label="itemSort"
-                      :value="itemSort"
-                    ></el-option>
+                  <el-select v-model="scope.row.sort" style="width:100%" :disabled="!scope.row.editShow">
+                    <el-option v-for="itemSort in item.planContents.length" :key="itemSort" :label="itemSort"
+                      :value="itemSort"></el-option>
                   </el-select>
                 </template>
               </el-table-column>
@@ -227,26 +155,21 @@
                 <template slot-scope="scope">
                   <el-button size="small" @click="scope.row.editShow = true">编辑</el-button>
                   <el-button size="small" @click="scope.row.editShow = false">保存</el-button>
-                  <el-button
-                    size="small"
-                    @click.native.prevent="deleteRow(scope.$index, item.planContents),calcTime(item)"
-                    style="margin-right:10px"
-                  >删除</el-button>
+                  <el-button size="small"
+                    @click.native.prevent="deleteRow(scope.$index, item.planContents), calcTime(item)"
+                    style="margin-right:10px">删除</el-button>
                 </template>
               </el-table-column>
             </el-table>
             <el-row type="flex" justify="center">
-              <i
-                class="el-icon-circle-plus"
-                style="font-size: 30px; color: #0077DC;"
-                @click="addTableRow(item.planContents)"
-              ></i>
+              <i class="el-icon-circle-plus" style="font-size: 30px; color: #0077DC;"
+                @click="addTableRow(item.planContents)"></i>
             </el-row>
           </el-row>
           <el-col :span="7" :offset="17" style="margin-top:20px">
             <el-form-item>
-              <el-button v-if="newAddDialogTitle==='新增'" type="primary" @click="submitForm()">提交</el-button>
-              <el-button v-if="newAddDialogTitle==='编辑'" type="primary" @click="changePlan()">保存</el-button>
+              <el-button v-if="newAddDialogTitle === '新增'" type="primary" @click="submitForm()">提交</el-button>
+              <el-button v-if="newAddDialogTitle === '编辑'" type="primary" @click="changePlan()">保存</el-button>
               <el-button @click="newAddDialog = false">取 消</el-button>
             </el-form-item>
           </el-col>
@@ -282,11 +205,8 @@
               </el-form-item>
             </el-col>
           </el-row>
-          <el-row
-            v-for="(item,index) in orderDetail.planDevices"
-            :key="index"
-            style="background: #f5f5f5;padding: 0.2rem"
-          >
+          <el-row v-for="(item, index) in orderDetail.planDevices" :key="index"
+            style="background: #f5f5f5;padding: 0.2rem">
             <el-col :span="11">
               <el-form-item label="版本">
                 <el-input v-model="item.version" disabled />
@@ -320,30 +240,21 @@
             <el-col :span="24">
               <el-form-item label="图示">
                 <div>
-                  <el-image
-                    v-for="(img) in item.planPictures"
-                    :key="img.accessoryId"
-                    :src="img.url"
-                    fit="fill"
-                  ></el-image>
+                  <el-image v-for="(img) in item.planPictures" :key="img.accessoryId" :src="img.url" fit="fill">
+                  </el-image>
                 </div>
               </el-form-item>
             </el-col>
             <!-- 表格区 -->
-            <el-table
-              :data="item.planContents"
-              style="width:100%"
-              border
-              default-expand-all
-              :tree-props="{children: 'childPlanContents', hasChildren: 'hasChildren'}"
-            >
+            <el-table :data="item.planContents" style="width:100%" border default-expand-all
+              :tree-props="{ children: 'childPlanContents', hasChildren: 'hasChildren' }">
               <el-table-column align="center" type="index" label="项目" width="50"></el-table-column>
               <el-table-column align="center" prop="executionNode" label="时间/部件" width="150"></el-table-column>
               <el-table-column align="center" prop="content" label="内容" width="300"></el-table-column>
               <el-table-column align="center" prop="hour" label="工时(s)"></el-table-column>
               <el-table-column align="center" prop="method" label="方法"></el-table-column>
               <el-table-column align="center" prop="cycleName" label="周期" width="110"></el-table-column>
-              
+
             </el-table>
           </el-row>
         </el-form>
@@ -383,7 +294,8 @@ import {
   planNewNo,
   cycleSelect,
   updatePlanPicture,
-  importURLPlanFile
+  importURLPlanFile,
+  postPlan
 } from "../../lib/api/checkPlan";
 import {
   factoryManage,
@@ -520,7 +432,7 @@ export default {
     tpmsTable,
     tpmsChoosefile
   },
-  created() {},
+  created() { },
   mounted() {
     this.getTableData();
   },
@@ -606,7 +518,7 @@ export default {
     /**
      * 批量选择
      */
-    handleSelectionChange(e) {},
+    handleSelectionChange(e) { },
     /**
      * 导入excel
      */
@@ -632,7 +544,7 @@ export default {
             delete data.planPictures;
           });
           this.form.planDevices = datas;
-          
+
           this.form.planDevices.forEach((info) => {
 
             info.creatorName = JSON.parse(localStorage.getItem("user_info")).principal.name; //编制人
@@ -1159,7 +1071,47 @@ export default {
         this.$message.error("上传头像图片大小不能超过 10M!");
       }
       return isLt10M;
-    }
+    },
+    /**
+     * 批量发布
+     */
+    releaseMore() {
+      const selected = this.$refs.tpmsTable.getSelectionList();
+      const ids = selected.map((item) => item.id);
+
+      if (ids.length === 0) {
+        this.$message.warning("请先选择需要发布的计划");
+        return;
+      }
+      this.$confirm("批量发布点检计划, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(() => {
+          postPlan(ids, 'released')
+            .then((res) => {
+              this.$message({
+                type: "success",
+                message: "发布成功!",
+              });
+              this.getTableData();
+            })
+            .catch(() => {
+              this.$message({
+                type: "error",
+                message: "发布失败",
+              });
+            });
+          this.getTableData();
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消发布",
+          });
+        });
+    },
   }
 };
 </script>
@@ -1168,8 +1120,10 @@ export default {
   position: absolute;
   right: 20px;
 }
+
 .buttom-group {
   padding: 20px 30px 20px 0;
+
   div {
     margin-left: 10px;
   }
