@@ -22,29 +22,17 @@
           <p>点、巡检情况</p>
           <p>
             <span>点检</span>
-            <el-progress
-              class="failure-equipment"
-              :show-text="false"
-              :percentage="wordorderNumObj.singleRate || 0"
-              color="#fff"
-            ></el-progress>
-            <i
-              >{{ wordorderNumObj.singleCompletedCount }} /
-              {{ wordorderNumObj.singleAllCount }}</i
-            >
+            <el-progress class="failure-equipment" :show-text="false" :percentage="wordorderNumObj.singleRate || 0"
+              color="#fff"></el-progress>
+            <i>{{ wordorderNumObj.singleCompletedCount }} /
+              {{ wordorderNumObj.singleAllCount }}</i>
           </p>
           <p>
             <span>巡检</span>
-            <el-progress
-              class="normal-equipment"
-              :show-text="false"
-              :percentage="wordorderNumObj.patrolRate || 0"
-              color="#fff"
-            ></el-progress>
-            <i
-              >{{ wordorderNumObj.patrolCompletedCount }} /
-              {{ wordorderNumObj.patrolAllCount }}</i
-            >
+            <el-progress class="normal-equipment" :show-text="false" :percentage="wordorderNumObj.patrolRate || 0"
+              color="#fff"></el-progress>
+            <i>{{ wordorderNumObj.patrolCompletedCount }} /
+              {{ wordorderNumObj.patrolAllCount }}</i>
           </p>
         </el-card>
       </el-col>
@@ -53,21 +41,13 @@
           <p>保养情况</p>
           <p>
             <span>已完成</span>
-            <el-progress
-              class="reply"
-              :show-text="false"
-              :percentage="wordorderNumObj.maintainRate || 0"
-              color="#fff"
-            ></el-progress>
+            <el-progress class="reply" :show-text="false" :percentage="wordorderNumObj.maintainRate || 0" color="#fff">
+            </el-progress>
             <i>{{ wordorderNumObj.maintainCompletedCount }}</i>
           </p>
           <p>
             <span>未完成</span>
-            <el-progress
-              class="reply"
-              :show-text="false"
-              color="#fff"
-            ></el-progress>
+            <el-progress class="reply" :show-text="false" color="#fff"></el-progress>
             <i>{{ wordorderNumObj.maintainWaitCompletedCount }}</i>
           </p>
         </el-card>
@@ -75,11 +55,7 @@
       <el-col :span="6">
         <el-card class="card fourth-card">
           <p>设备状态({{ parseTimeFun(new Date()) }})</p>
-          <div
-            v-for="(item, index) in equipmentSheet"
-            :key="index"
-            class="list"
-          >
+          <div v-for="(item, index) in equipmentSheet" :key="index" class="list">
             <template v-if="item.action">
               <p v-bind:style="item.style">{{ item.value }}</p>
               <p class="small">{{ item.label }}</p>
@@ -100,12 +76,8 @@
             <h4 class="list-name">{{ item.orderName }}</h4>
             <div class="list-box">
               <div class="progress">
-                <el-progress
-                  type="dashboard"
-                  :width="100"
-                  :show-text="false"
-                  :percentage="item.rate || 0"
-                ></el-progress>
+                <el-progress type="dashboard" :width="100" :show-text="false" :percentage="item.rate || 0">
+                </el-progress>
                 <div class="overtime-work-order">
                   <p>{{ item.rate }}%</p>
                   <span>完成率</span>
@@ -137,20 +109,11 @@
           <el-card class="replacement-part">
             <h4>
               点检详情
-              <el-button
-                @click="exportChart('single')"
-                type="text"
-                icon="el-icon-download"
-                >导出</el-button
-              >
+              <el-button @click="exportChart('single')" type="text" icon="el-icon-download">导出</el-button>
             </h4>
             <div @click="showChart('single')">
-              <ve-bar
-                :data="pointCheckChartData"
-                :settings="chartSettings"
-                :colors="['#37bb64', '#f68b2f']"
-                :extend="chartExtend"
-              ></ve-bar>
+              <ve-bar :data="pointCheckChartData" :settings="chartSettings" :colors="['#37bb64', '#f68b2f']"
+                :extend="chartExtend"></ve-bar>
             </div>
           </el-card>
         </div>
@@ -160,20 +123,11 @@
           <el-card class="replacement-part">
             <h4>
               巡检详情
-              <el-button
-                @click="exportChart('patrol')"
-                type="text"
-                icon="el-icon-download"
-                >导出</el-button
-              >
+              <el-button @click="exportChart('patrol')" type="text" icon="el-icon-download">导出</el-button>
             </h4>
             <div @click="showChart('patrol')">
-              <ve-histogram
-                :data="inspectionChartData"
-                :settings="chartSettings"
-                :colors="['#37bb64', '#f68b2f']"
-                :extend="chartExtend"
-              ></ve-histogram>
+              <ve-histogram :data="inspectionChartData" :settings="chartSettings" :colors="['#37bb64', '#f68b2f']"
+                :extend="chartExtend"></ve-histogram>
             </div>
           </el-card>
         </div>
@@ -183,20 +137,11 @@
           <el-card class="replacement-part">
             <h4>
               保养详情
-              <el-button
-                @click="exportChart('maintain')"
-                type="text"
-                icon="el-icon-download"
-                >导出</el-button
-              >
+              <el-button @click="exportChart('maintain')" type="text" icon="el-icon-download">导出</el-button>
             </h4>
             <div @click="showChart('maintain')">
-              <ve-histogram
-                :data="maintainChartData"
-                :settings="chartSettings"
-                :colors="['#37bb64', '#f68b2f']"
-                :extend="chartExtend"
-              ></ve-histogram>
+              <ve-histogram :data="maintainChartData" :settings="chartSettings" :colors="['#37bb64', '#f68b2f']"
+                :extend="chartExtend"></ve-histogram>
             </div>
           </el-card>
         </div>
@@ -207,27 +152,10 @@
         <div class="unrequired-equipment">
           <h4>未修理设备</h4>
           <el-table :data="unrequiredEquipmentData" height="450">
-            <el-table-column
-              align="center"
-              prop="deviceName"
-              label="设备名称"
-            ></el-table-column>
-            <el-table-column
-              align="center"
-              prop="deviceNo"
-              label="设备编号"
-            ></el-table-column>
-            <el-table-column
-              align="center"
-              prop="workshopSectionName"
-              label="工段"
-            ></el-table-column>
-            <el-table-column
-              align="center"
-              prop="createDate"
-              label="报修时间"
-              min-width="140"
-            ></el-table-column>
+            <el-table-column align="center" prop="deviceName" label="设备名称"></el-table-column>
+            <el-table-column align="center" prop="deviceNo" label="设备编号"></el-table-column>
+            <el-table-column align="center" prop="workshopSectionName" label="工段"></el-table-column>
+            <el-table-column align="center" prop="createDate" label="报修时间" min-width="140"></el-table-column>
           </el-table>
         </div>
       </el-col>
@@ -240,132 +168,72 @@
             <el-tab-pane label="月统计" name="3"></el-tab-pane>
           </el-tabs>
           <el-table :data="maintenanceTimesData" height="450">
-            <el-table-column
-              align="center"
-              prop="deviceName"
-              label="设备名称"
-            ></el-table-column>
-            <el-table-column
-              align="center"
-              prop="x"
-              label="报修时间"
-            ></el-table-column>
-            <el-table-column
-              align="center"
-              prop="breakdownTime"
-              label="影响生产时间"
-            ></el-table-column>
-            <el-table-column
-              align="center"
-              prop="times"
-              label="维修次数"
-            ></el-table-column>
+            <el-table-column align="center" prop="deviceName" label="设备名称"></el-table-column>
+            <el-table-column align="center" prop="x" label="报修时间"></el-table-column>
+            <el-table-column align="center" prop="breakdownTime" label="影响生产时间"></el-table-column>
+            <el-table-column align="center" prop="times" label="维修次数"></el-table-column>
           </el-table>
         </div>
       </el-col>
     </el-row>
 
     <!-- 报表页 -->
-    <el-drawer
-      :title="drawerDetail.title"
-      :visible.sync="drawer"
-      :with-header="true"
-      size="80%"
-      :before-close="handleClose"
-    >
+    <el-drawer :title="drawerDetail.title" :visible.sync="drawer" :with-header="true" size="80%"
+      :before-close="handleClose">
       <el-form :inline="true" label-width="80px" size="mini">
         <el-form-item label="工单状态">
           <el-select v-model="drawerDetail.status" placeholder="请选择工单状态">
-            <el-option
-              v-for="(item, index) in orderStatusList"
-              :key="index"
-              :label="item.status"
-              :value="item.key"
-            ></el-option>
+            <el-option v-for="(item, index) in orderStatusList" :key="index" :label="item.status" :value="item.key">
+            </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="所属工段">
-          <el-select
-            v-model="drawerDetail.workshopSectionId"
-            placeholder="请选择所属工段"
-          >
-            <el-option
-              v-for="(item, index) in workshopSectionSelectList"
-              :key="index"
-              :label="item.label"
-              :value="item.id"
-            ></el-option>
+        <el-form-item v-if="drawerDetail.title != '保养工单'" label="所属工段">
+          <el-select v-model="drawerDetail.workshopSectionId" placeholder="请选择所属工段">
+            <el-option v-for="(item, index) in workshopSectionSelectList" :key="index" :label="item.label"
+              :value="item.id"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item v-else label="所属区域">
+          <el-select v-model="drawerDetail.workshopAreaId" placeholder="请选择所属区域">
+            <el-option v-for="(item, index) in workshopAreaList" :key="index" :label="item.label"
+              :value="item.id"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="工单时间">
           <el-col :span="11">
-            <el-date-picker
-              v-model="drawerDetail.times"
-              type="datetimerange"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期"
-              :default-time="['00:00:00', '23:59:59']"
-            ></el-date-picker>
+            <el-date-picker v-model="drawerDetail.times" type="datetimerange" start-placeholder="开始日期"
+              end-placeholder="结束日期" :default-time="['00:00:00', '23:59:59']"></el-date-picker>
           </el-col>
         </el-form-item>
         <el-form-item>
-          <el-button
-            type="primary"
-            @click="
-              checkOutWorkOrder(
-                drawerDetail.type,
-                { page: 0, size: 1000 },
-                drawerDetail
-              )
-            "
-            >查询</el-button
-          >
-          <el-button @click="clearCheckOutWorkOrder(drawerDetail.type)"
-            >重置</el-button
-          >
+          <el-button type="primary" @click="
+            checkOutWorkOrder(
+              drawerDetail.type,
+              { page: 0, size: 1000 },
+              drawerDetail
+            )
+          ">查询</el-button>
+          <el-button @click="clearCheckOutWorkOrder(drawerDetail.type)">重置</el-button>
         </el-form-item>
       </el-form>
-      <tpms-table
-        :column_index="true"
-        ref="tpmsTable"
-        :data="drawerDetail.tableLists"
-        :total="drawerDetail.total"
-        :columns="drawerDetail.columns"
-        :pageSizes="[drawerDetail.total]"
-      ></tpms-table>
+      <tpms-table :column_index="true" ref="tpmsTable" :data="drawerDetail.tableLists" :total="drawerDetail.total"
+        :columns="drawerDetail.columns" :pageSizes="[drawerDetail.total]"></tpms-table>
     </el-drawer>
 
     <!-- 设置 -->
-    <el-button
-      @click="openTools"
-      type="primary"
-      icon="el-icon-s-tools"
-      class="s_tools"
-    ></el-button>
-    <el-drawer
-      :title="drawerDetail.title"
-      :visible.sync="setDrawer"
-      :with-header="true"
-      size="30%"
-      :before-close="handleClose"
-    >
+    <el-button @click="openTools" type="primary" icon="el-icon-s-tools" class="s_tools"></el-button>
+    <el-drawer :title="drawerDetail.title" :visible.sync="setDrawer" :with-header="true" size="30%"
+      :before-close="handleClose">
       <el-form :inline="false" label-width="80px" size="mini">
         <el-form-item label="查询时间">
           <el-col :span="8">
-            <el-date-picker
-              v-model="drawerDetail.times"
-              type="datetimerange"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期"
-              :default-time="['00:00:00', '23:59:59']"
-            ></el-date-picker>
+            <el-date-picker v-model="drawerDetail.times" type="datetimerange" start-placeholder="开始日期"
+              end-placeholder="结束日期" :default-time="['00:00:00', '23:59:59']"></el-date-picker>
           </el-col>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="checkTools">查询</el-button>
-          <el-button @click="clearCheckTools"
-            >重置</el-button
-          >
+          <el-button @click="clearCheckTools">重置</el-button>
         </el-form-item>
       </el-form>
     </el-drawer>
@@ -385,6 +253,7 @@ import apiConfig from "../../lib/api/apiConfig";
 import { getOneUser } from "../../lib/api/userManage";
 import { maintenanceManage } from "../../lib/api/business";
 import { checkWorkOrder, workshopSectionSelect } from "../../lib/api/checkPlan";
+import { workshopAreaManage } from '../../lib/api/workshopSettingsManage'
 import {
   maintainWorkOrder,
   exportWorkOrders,
@@ -401,7 +270,7 @@ import {
   maintainCountBasedOnArea,
   maintenanceTimes,
 } from "../../lib/api/statistics";
-import { parseTime, getTodoyTimes,getMonthTimes } from "@/utils";
+import { parseTime, getTodoyTimes, getMonthTimes } from "@/utils";
 export default {
   data() {
     this.userInfoLocal = JSON.parse(localStorage.getItem("user_info"));
@@ -427,7 +296,7 @@ export default {
     };
     this.endTime = getTodoyTimes().endTime;
     this.startTime = getTodoyTimes().startTime;
-   
+
     this.startMonth = getMonthTimes().startTime;
     this.endMonth = getMonthTimes().endTime;
     return {
@@ -523,39 +392,16 @@ export default {
         columns: [],
         type: "1,2",
         workshopSectionId: "",
+        workshopAreaId: '',
         status: "",
         times: [this.startTime, this.endTime],
       },
       fullscreen: false,
       orderStatusList: orderStatusList,
       workshopSectionSelectList: [],
+      workshopAreaList: [],
       typeSelect: "1",
-      maintenanceTimesData: [
-        // {
-        //   deviceName: "充电器电动葫芦",
-        //   x: "2022-02-09 14:35:10",
-        //   breakdownTime: "10",
-        //   times: "1",
-        // },
-        // {
-        //   deviceName: "常规风车(AB-AFO5750DT1)",
-        //   x: "2022-01-14 09:46:18",
-        //   breakdownTime: "2",
-        //   times: "1",
-        // },
-        // {
-        //   deviceName: "手持设备HDT –H78BA14A",
-        //   x: "2021-12-23 15:13:18",
-        //   breakdownTime: "5",
-        //   times: "1",
-        // },
-        // {
-        //   deviceName: "手持设备HDT –H78BAK03",
-        //   x: "2021-12-23 15:13:18",
-        //   breakdownTime: "5",
-        //   times: "1",
-        // },
-      ],
+      maintenanceTimesData: [],
     };
   },
   components: {
@@ -565,6 +411,10 @@ export default {
     const _this = this;
     this.workorderInfo();
     this.searchWorkshopSectionSelect();
+    workshopAreaManage['getNames']().then((res) => {
+      const data = res.data;
+      this.workshopAreaList = data;
+    });
   },
   methods: {
     workorderInfo() {
@@ -743,6 +593,9 @@ export default {
       }
       if (params.workshopSectionId !== undefined) {
         requestData.workshopSectionId = params.workshopSectionId;
+      }
+      if (params.workshopAreaId !== undefined) {
+        requestData.areaId = params.workshopAreaId;
       }
       if (params.times[0] !== undefined) {
         requestData.startTime = params.times[0];
@@ -1006,22 +859,27 @@ export default {
   color: #fff;
   line-height: 0.3rem;
 }
+
 .first-card {
   overflow: hidden;
   background-color: #fb9f51;
   text-align: center;
+
   .left,
   .right {
     width: 49%;
     height: 100%;
     line-height: 0.5rem;
   }
+
   .left {
     float: left;
   }
+
   .right {
     float: right;
   }
+
   .separator {
     width: 2px;
     height: 1rem;
@@ -1029,63 +887,79 @@ export default {
     background-color: #fff;
   }
 }
+
 .second-card {
   background-color: #287ff1;
+
   span {
     font-size: 0.14rem;
   }
+
   .failure-equipment {
     display: inline-block;
     width: 1.5rem;
   }
+
   .normal-equipment {
     display: inline-block;
     width: 1.5rem;
   }
 }
+
 .third-card {
   background-color: #37bb64;
+
   span {
     font-size: 0.14rem;
   }
+
   .not-reply {
     display: inline-block;
     width: 0.6rem;
   }
+
   .reply {
     display: inline-block;
     width: 1.5rem;
   }
 }
+
 .fourth-card {
   overflow: hidden;
   background-color: rgb(17, 87, 64);
+
   .list {
     float: left;
     width: 33%;
     height: 0.4rem;
     margin-top: 0.1rem;
     text-align: center;
+
     .small {
       font-size: 0.14rem;
     }
   }
 }
+
 .task-list {
   min-height: 160px;
   height: 2rem;
+
   .list-name {
     margin-bottom: 0.2rem;
   }
+
   .list-box {
     display: flex;
     justify-content: space-around;
     width: 100%;
+
     .progress {
       width: 100px;
       height: 1.2rem;
       overflow: hidden;
       position: relative;
+
       .overtime-work-order {
         position: absolute;
         left: 50%;
@@ -1093,30 +967,37 @@ export default {
         transform: translate(-50%, -50%);
         height: 0.6rem;
         text-align: center;
+
         p {
           font-size: 16px;
           color: #287ff1;
         }
+
         span {
           font-size: 12px;
           color: #8b8b8b;
         }
       }
     }
+
     .list-content {
       width: 130px;
       height: 1.4rem;
+
       .list-content-card {
         float: left;
         min-width: 64px;
         text-align: center;
       }
+
       .selected {
         color: #f68b2f;
       }
+
       p {
         font-size: 0.24rem;
       }
+
       span {
         font-size: 0.14rem;
         color: #8b8b8b;
@@ -1124,30 +1005,37 @@ export default {
     }
   }
 }
+
 .large-failure {
   margin-top: 0.1rem;
 }
+
 .replacement-part {
   height: 5.5rem;
+
   h4 {
     margin-bottom: 10px;
   }
 }
+
 .unrequired-equipment {
   height: 5rem;
   padding: 10px;
   box-sizing: border-box;
   overflow: hidden;
   background-color: #fff;
+
   h4 {
     margin-bottom: 10px;
   }
 }
+
 .equipment-failure-chart,
 .large-failure-chart {
   width: 100%;
   height: 1.8rem;
 }
+
 .replacement-part-chart {
   width: 100%;
   height: 4rem;
