@@ -23,7 +23,7 @@
       <!-- 底部表格 -->
       <tpms-table
         ref="tpmsTable"
-        :paginationIsShow="true"
+        :paginationIsShow="false"
         :lazy="lazy"
         :load="lazyLoad"
         :data="tableLists"
@@ -119,7 +119,7 @@
       <!-- 底部表格 -->
       <tpms-table
         ref="tpmsTable"
-        :paginationIsShow="true"
+        :paginationIsShow="false"
         :lazy="lazy"
         :load="lazyLoad"
         :data="childTableData"
@@ -153,7 +153,7 @@
       <!-- 底部表格 -->
       <tpms-table
         ref="tpmsTable"
-        :paginationIsShow="true"
+        :paginationIsShow="false"
         :lazy="lazy"
         :load="lazyLoad"
         :data="childTableData"
