@@ -17,7 +17,14 @@
             :value="item.id"
           ></el-option>
         </el-select>
-
+        <!-- 帮助文档下载按钮 -->
+        <span @mouseover="showHover=true">
+          <i class="el-icon-question" slot="reference" @mouseout="showHover=false"></i>
+          <span class="el-popover" style="width: 20px;transform-origin: center bottom;z-index: 2030;" v-if="showHover">
+            <!-- href="帮助文档的路径.pdf格式" -->
+            <a href="static\TPMS-Web端用户操作手册.pdf" @mouseout="showHover=false" download="TPMS-Web端用户操作手册">帮助</a>
+          </span>
+        </span>
         <el-badge
           class="unread-count-message"
           :style="{'margin-right':unreadCount===0?'0':'25px'}"
@@ -50,6 +57,7 @@ import { messageManage } from "../../lib/api/system";
 export default {
   data() {
     return {
+      showHover: false,
       title: [], // window.title ? window.title : "首页",
       username: JSON.parse(localStorage.getItem("user_info")).principal.name,
       workshopsList: [],
@@ -186,6 +194,14 @@ export default {
     }
     span {
       color: #0077c8;
+    }
+    .el-popover > a{
+      text-decoration: none;
+      color: #909399;
+    }
+    .el-popover{
+      padding: 5px;
+      min-width: 30px;
     }
   }
 }
