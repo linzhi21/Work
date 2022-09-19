@@ -95,14 +95,15 @@ export default {
       this.title = title;
     },
     /** 定时刷新未读消息数量 */
-    getUnreadCount() {
-      if (window.getUnreadCount) return;
-      window.getUnreadCount = setInterval(() => {
-        messageManage.getUnreadCount().then(res => {
-          this.unreadCount = res.data;
-        });
-      }, 1000 * 20);
-    },
+    /**首页提示弹窗*/
+    // getUnreadCount() {
+    //   if (window.getUnreadCount) return;
+    //   window.getUnreadCount = setInterval(() => {
+    //     messageManage.getUnreadCount().then(res => {
+    //       this.unreadCount = res.data;
+    //     });
+    //   }, 1000 * 20);
+    // },
     /**
      * 跳转到个人信息的页面
      */
@@ -135,8 +136,8 @@ export default {
         this.workshopsList = ary;
       });
     },
-    /** 
-     * 更换工厂车间时，刷新权限 // TODO 
+    /**
+     * 更换工厂车间时，刷新权限 // TODO
      */
     setUserWorkshop() {
       console.log("更换工厂了");
