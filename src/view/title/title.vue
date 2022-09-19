@@ -18,13 +18,8 @@
           ></el-option>
         </el-select>
         <!-- 帮助文档下载按钮 -->
-        <span @mouseover="showHover=true">
-          <i class="el-icon-question" slot="reference" @mouseout="showHover=false"></i>
-          <span class="el-popover" style="width: 20px;transform-origin: center bottom;z-index: 2030;" v-if="showHover">
-            <!-- href="帮助文档的路径.pdf格式" -->
-            <a href="static\TPMS-Web端用户操作手册.pdf" @mouseout="showHover=false" download="TPMS-Web端用户操作手册">帮助</a>
-          </span>
-        </span>
+        <a href="static\TPMS-Web端用户操作手册.pdf" @mouseout="showHover=false" download="TPMS-Web端用户操作手册"><i
+              class="el-icon-question" slot="reference"></i></a>
         <el-badge
           class="unread-count-message"
           :style="{'margin-right':unreadCount===0?'0':'25px'}"
@@ -100,15 +95,14 @@ export default {
       this.title = title;
     },
     /** 定时刷新未读消息数量 */
-    // 首页推出提示弹窗不友好测试
-    // getUnreadCount() {
-    //   if (window.getUnreadCount) return;
-    //   window.getUnreadCount = setInterval(() => {
-    //     messageManage.getUnreadCount().then(res => {
-    //       this.unreadCount = res.data;
-    //     });
-    //   }, 1000 * 20);
-    // },
+    getUnreadCount() {
+      if (window.getUnreadCount) return;
+      window.getUnreadCount = setInterval(() => {
+        messageManage.getUnreadCount().then(res => {
+          this.unreadCount = res.data;
+        });
+      }, 1000 * 20);
+    },
     /**
      * 跳转到个人信息的页面
      */
@@ -141,8 +135,8 @@ export default {
         this.workshopsList = ary;
       });
     },
-    /**
-     * 更换工厂车间时，刷新权限 // TODO
+    /** 
+     * 更换工厂车间时，刷新权限 // TODO 
      */
     setUserWorkshop() {
       console.log("更换工厂了");
@@ -195,14 +189,6 @@ export default {
     }
     span {
       color: #0077c8;
-    }
-    .el-popover > a{
-      text-decoration: none;
-      color: #909399;
-    }
-    .el-popover{
-      padding: 5px;
-      min-width: 30px;
     }
   }
 }
