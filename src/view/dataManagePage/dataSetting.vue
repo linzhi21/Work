@@ -163,6 +163,10 @@ export default {
     addDialog(s, t, r) {
       if (t === "add") {
         this.drawerTitle = "新增";
+        this.formObj = {
+          name:'',
+          description:''
+        };      
       } else {
         this.drawerTitle = "修改";
         dataBaseTypeApi["selectById"](r.id).then((res) => {

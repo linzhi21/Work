@@ -17,7 +17,9 @@
             :value="item.id"
           ></el-option>
         </el-select>
-
+        <!-- 帮助文档下载按钮 -->
+        <a href="static\TPMS-Web端用户操作手册.pdf" @mouseout="showHover=false" download="TPMS-Web端用户操作手册"><i
+              class="el-icon-question" slot="reference"></i></a>
         <el-badge
           class="unread-count-message"
           :style="{'margin-right':unreadCount===0?'0':'25px'}"
@@ -50,6 +52,7 @@ import { messageManage } from "../../lib/api/system";
 export default {
   data() {
     return {
+      showHover: false,
       title: [], // window.title ? window.title : "首页",
       username: JSON.parse(localStorage.getItem("user_info")).principal.name,
       workshopsList: [],
@@ -92,14 +95,15 @@ export default {
       this.title = title;
     },
     /** 定时刷新未读消息数量 */
-    getUnreadCount() {
-      if (window.getUnreadCount) return;
-      window.getUnreadCount = setInterval(() => {
-        messageManage.getUnreadCount().then(res => {
-          this.unreadCount = res.data;
-        });
-      }, 1000 * 20);
-    },
+    /**首页提示弹窗*/
+    // getUnreadCount() {
+    //   if (window.getUnreadCount) return;
+    //   window.getUnreadCount = setInterval(() => {
+    //     messageManage.getUnreadCount().then(res => {
+    //       this.unreadCount = res.data;
+    //     });
+    //   }, 1000 * 20);
+    // },
     /**
      * 跳转到个人信息的页面
      */
@@ -132,8 +136,8 @@ export default {
         this.workshopsList = ary;
       });
     },
-    /** 
-     * 更换工厂车间时，刷新权限 // TODO 
+    /**
+     * 更换工厂车间时，刷新权限 // TODO
      */
     setUserWorkshop() {
       console.log("更换工厂了");
