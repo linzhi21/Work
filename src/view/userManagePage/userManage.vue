@@ -112,7 +112,7 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="车间" :label-width="labelWidth">
-              <el-select clearable :disabled="dialogTitleTxt=='查看'" v-model="formObj.workshopId" @change="userChanged('workshopId',formObj)">
+              <el-select clearable :disabled="dialogTitleTxt=='查看'  || dialogTitleTxt=='调岗'" v-model="formObj.workshopId" @change="userChanged('workshopId',formObj)">
                 <el-option
                   v-for="item in formObj.selectLists.workshopList"
                   :key="item.id"
@@ -177,7 +177,7 @@
                 collapse-tags
               >
                 <el-option
-                  v-for="item in userFormList.filter(({props})=>props==='positionCodeSum')[0].checkList"
+                  v-for="item in userFormList.filter(({props})=>props==='positionId')[0].checkList"
                   :key="item.id"
                   :label="item.label"
                   :value="item.id"
@@ -347,7 +347,7 @@ export default {
     });
     sysPositionManage["getNames"]().then(res => {
       this.userFormList.forEach(item => {
-        if(item.props === 'positionCodeSum'){
+        if(item.props === 'positionId'){
           item.checkList = res.data;
         }
       })
@@ -491,6 +491,9 @@ export default {
           // })
           // console.log(res)
           _self.userLists = res.data.content;
+          if (_self.userLists.length == 0) {
+            this.$message.success("无符合条件的用户，请重新选择条件");
+          }
           this.total = res.data.totalElements;
         })
         .catch(err => {
@@ -508,6 +511,7 @@ export default {
         workshopId = '',//车间
         workshopAreaId = '',//区域
         workshopSectionId = '',//工段
+        positionId = "", //岗位
       } = searchData;
 
       const { userFormList } = this;
@@ -539,6 +543,19 @@ export default {
           })
         });
       };
+
+      // 选择工厂|车间，都重置岗位
+      if (["workshopId"].includes(props)) {
+        const requestData = { factoryId, workshopId };
+        sysPositionManage.getNames(requestData).then((res) => {
+          userFormList.forEach((item) => {
+            if (item.props === "positionId") {
+              item.checkList = res.data;
+              item.value = "";
+            }
+          });
+        });
+      }
 
       // 选择工厂|车间|区域，都重置工段
       if(['factoryId', 'workshopId', 'workshopAreaId'].includes(props)){
@@ -581,6 +598,7 @@ export default {
           info.workshopAreaId = '';
           info.workshopSectionId = '';
           info.workStationId = '';
+          info.positionId = '';
         });
       };
  
@@ -593,6 +611,18 @@ export default {
           info.workshopAreaId = '';
           info.workshopSectionId = '';
           info.workStationId = '';
+        });
+      };
+
+      if (props === "workshopId") {
+        // 选择车间，并重置岗位
+        sysPositionManage.getNames({ [props]: info[props] }).then((res) => {
+          userFormList.forEach((item) => {
+            if (item.props === "positionId") {
+              item.checkList = res.data;
+              item.value = "";
+            }
+          });
         });
       };
  
@@ -708,6 +738,9 @@ export default {
           item.workshopSectionId && workStationManage.getNames({workshopSectionId: item.workshopSectionId}).then(res => {
             item.selectLists.workStationList = res.data;
           });
+          item.positionId && sysPositionManage.getNames({workshopId: item.workshopId}.then(res =>{
+            item.selectLists.positionId = res.data;
+          }));
         });
         if(dialogTitleTxt == '查看') {
           // this.userInfo = false
@@ -769,11 +802,13 @@ export default {
     exportUser() {
       let url = `${apiConfig.userManage}/export`; //请求下载文件的地址
       let token = localStorage.getItem('access_token'); //获取token
+      let data = this.$refs.tpmsHeader.getData();  //获取搜索组件的数据值
       axios
         .get(url, {
           headers: {
             Authorization:'Bearer ' + token
           },
+          params: data,
           responseType: "blob"
         })
         .then(res => {
