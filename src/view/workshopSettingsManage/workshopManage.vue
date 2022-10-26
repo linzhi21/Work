@@ -330,6 +330,7 @@ export default {
         filterable: true,
         checkList: userLists,
       });
+      this.workShopFormList[4].checkList = userLists;
     });
 
     factoryManage["getNames"]().then((res) => {

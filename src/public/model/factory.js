@@ -75,6 +75,13 @@ export const workShopFormList = [
     span: 24,
     type: "textarea",
     rows: 5
+  },
+  {
+    props: "managerId",
+    label: "车间负责人",
+    span: 24,
+    type: "checkbox",
+    checkList: [],
   }
 ];
 
@@ -146,7 +153,7 @@ export const workshoprules = {
     {
       required: true,
       message: "请选择工厂负责人",
-      trigger: "change"
+      trigger: "blur"
     }
   ]
 };
