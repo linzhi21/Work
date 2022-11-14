@@ -46,7 +46,7 @@ export const form = {
   workshopTeamName: '',
   workStationName: '',
   workshopShiftName: '',
-  positionId: '',
+  positionCodeSum: '',
   roleCodeSum: "",
   workshopAreaName: ''
 };
@@ -178,7 +178,7 @@ export const userFormList = [
   },
   {
     label: "岗位",
-    props: "positionId",
+    props: "positionCodeSum",
     value: "",
     type: 'radio',
     checkList: []
