@@ -182,7 +182,7 @@
               <el-col :span="4">
                 <el-form-item label="工段" label-width="55px">
                   <el-select
-                    v-model="form.workshopSectionId"
+                    v-model="form.sectionId"
                     clearable placeholder="请选择"
                   >
                     <el-option
@@ -198,7 +198,7 @@
               <el-col :span="4">
                 <el-form-item label="审批流" label-width="55px">
                   <el-select
-                    v-model="form.workflowManageId"
+                    v-model="form.workflowId"
                     placeholder="请选择"
                     style="margin: 0px 10px"
                   >
@@ -727,8 +727,8 @@ export default {
         workshopId: "", //车间ID
         workshopName: "", //车间名称
         workshopareaId: "", //区域ID
-        workshopSectionId: "", //工段ID
-        workflowManageId: "", //审批流ID
+        sectionId: "", //工段ID
+        workflowId: "", //审批流ID
         areaName: "", //区域名称
         reason: "", //拒绝原因
         maintainContentColonies: [
@@ -1035,8 +1035,8 @@ export default {
         workshopId: "", //车间ID
         workshopName: "", //车间名称
         areaName: "", //区域名称
-        workshopSectionId: "", //工段ID
-        workflowManageId: "", //审批流ID
+        sectionId: "", //工段ID
+        workflowId: "", //审批流ID
         reason: "", //审核拒绝原因
         maintainContentColonies: [
           {
