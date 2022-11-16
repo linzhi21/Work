@@ -168,10 +168,10 @@
             <div v-if="isShow">
               <el-col :span="4">
                 <el-form-item label="区域" label-width="55px">
-                  <el-select v-model="form.workshopareaId" @change="getWorkshopAreaManageList" placeholder="请选择">
+                  <el-select v-model="form.workshopareaId" @change="getWorkshopSectionList" clearable placeholder="请选择">
                     <el-option
-                      v-for="(item, index) in quOptions"
-                      :key="index"
+                      v-for="item in quOptions"
+                      :key="item.id"
                       :label="item.label"
                       :value="item.id"
                     >
@@ -186,8 +186,8 @@
                     placeholder="请选择"
                   >
                     <el-option
-                      v-for="(item, index) in gdOptions"
-                      :key="index"
+                      v-for="item in gdOptions"
+                      :key="item.id"
                       :label="item.label"
                       :value="item.id"
                     >
@@ -205,7 +205,7 @@
                     <el-option
                       v-for="(item, index) in splOptions"
                       :key="index"
-                      :label="item.application"
+                      :label="item.name"
                       :value="item.id"
                     >
                     </el-option>
@@ -1070,8 +1070,8 @@ export default {
         ],
       };
       this.getWorkshopAreaManage();
-      this.getWorkshopAreaManageList();
-      this.getworkflowManageList();
+      this.getWorkshopAreaManageList();//查询区域下拉框
+      this.getworkflowManageList(); //查询审批流id下拉框
     },
     // 同步图示库
     syncPictureFun() {
@@ -1131,18 +1131,19 @@ export default {
       WorkshopAreaManageList.getNames(this.User_info.principal.workshopId).then(
         (res) => {
           this.quOptions = res.data;
-          var areaID = res.data.id;
-          this.getWorkshopSectionList(areaID);  //调用查询工段函数接口?
         }
       );
     },
     /**获取工段下拉列表 */
     getWorkshopSectionList(areaID) {
-      workshopSectionManageList.getNames().then((res) => {
+      workshopSectionManageList.getNames(
+        {"workshopAreaId": areaID}
+      ).then((res) => {
         this.gdOptions = res.data;
-        this.form.workshopSectionId = res.data.id;
+        //this.form.workshopSectionId = res.data[0].id;
       });
     },
+
     /**获取审批流下拉列表 */
     getworkflowManageList() {
       workflowManage
@@ -1156,14 +1157,15 @@ export default {
     getWorkshopAreaManage() {
       workshopAreaManage(null, this.User_info.principal.workshopAreaId).then(
         (res) => {
-          // console.log("---------------------");
           // console.log(res);
           this.form.areaName = res.data.name;
+          var areaNo = res.data.no;
+          this.getWorkshopManage(areaNo);
         }
       );
     },
     /**  获取车间名称 */
-    getWorkshopManage() {
+    getWorkshopManage(areaNo) {
       workshopManage(null, this.User_info.principal.workshopId).then((res) => {
         console.log("workshopName", res.data.name);
         this.form.workshopName = res.data.name;
