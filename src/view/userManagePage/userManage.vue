@@ -24,7 +24,7 @@
         <template slot="operation" slot-scope="{row}">
           <span class="button cursor" v-if="userInfo.includes('USER_VIEW')" @click="editDialog(row.uuid, '查看')">查看</span>
           <el-divider v-if="userInfo.includes('USER_VIEW')" direction="vertical"></el-divider>
-          
+
           <span class="button cursor" v-if="authoritiesIncludes('USER_EDIT_FACTORY') && authoritiesIncludes('USER_EDIT')" @click="editDialog(row.uuid, '编辑')">编辑</span>
           <el-divider v-if="authoritiesIncludes('USER_EDIT_FACTORY') && authoritiesIncludes('USER_EDIT')" direction="vertical"></el-divider>
 
@@ -33,7 +33,7 @@
 
           <span class="button cursor" v-if="userInfo.includes('USER_DELETE')" @click="del(row)">删除</span>
           <el-divider v-if="userInfo.includes('USER_DELETE')" direction="vertical"></el-divider>
-          
+
           <span class="button cursor" v-if="userInfo.includes('USER_RESET_PASSWORD')" @click="showPassword(row)">重置密码</span>
         </template>
       </tpms-table>
@@ -383,7 +383,7 @@ export default {
           });
           return;
         };
-        
+
         // 区域
         if(item.props === 'workshopAreaId'){
           workshopAreaManage.getNames().then(res => {
@@ -492,7 +492,7 @@ export default {
           // console.log(res)
           _self.userLists = res.data.content;
           if (_self.userLists.length == 0) {
-            this.$message.success("无符合条件的用户，请重新选择条件");
+            this.$message.warning("无符合条件的用户，请重新选择条件");
           }
           this.total = res.data.totalElements;
         })
@@ -500,8 +500,8 @@ export default {
           this.$message.error(err.error);
         });
     },
-    /** 
-     * 头部value变更回调 
+    /**
+     * 头部value变更回调
      * @param {props, value} 当前changed整条item
      * @param {object} searchData 整个搜索组所有有值的key-value
      */
@@ -574,7 +574,7 @@ export default {
       // 选择工厂|车间|区域|工段，都重置工位
       if(['factoryId', 'workshopId', 'workshopAreaId', 'workshopSectionId'].includes(props)){
         const requestData = { factoryId, workshopId, workshopAreaId, workshopSectionId };
-        
+
         workStationManage.getNames(requestData).then(res => {
           userFormList.forEach(item => {
             if(item.props === 'workStationId'){
@@ -601,7 +601,7 @@ export default {
           info.positionId = '';
         });
       };
- 
+
       if(props === 'workshopId'){
         // 选择车间，重置区域及以下
         workshopAreaManage.getNames({[props]: info[props]}).then(res => {
@@ -625,7 +625,7 @@ export default {
           });
         });
       };
- 
+
       if(props === 'workshopAreaId'){
         // 选择区域，重置工段及以下
         workshopSectionManage.getNames({[props]: info[props]}).then(res => {
@@ -635,7 +635,7 @@ export default {
           info.workStationId = '';
         });
       };
- 
+
       if(props === 'workshopSectionId'){
         // 选择工段，重置工位
         workStationManage.getNames({[props]: info[props]}).then(res => {
@@ -820,7 +820,7 @@ export default {
             const name = disposition.split(";")[1].split("filename=")[1];
             fileName = decodeURI(name);
           }
-          
+
           let blob = new Blob([res.data], {
             type: "application/vnd.ms-excel;charset=utf-8"
           });
