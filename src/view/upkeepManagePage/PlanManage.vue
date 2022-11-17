@@ -1138,6 +1138,7 @@ export default {
     },
     /**获取工段下拉列表 */
     getWorkshopSectionList(areaID) {
+      this.form.sectionId='';
       workshopSectionManageList.getNames(
         {"workshopAreaId": areaID}
       ).then((res) => {
@@ -1149,7 +1150,9 @@ export default {
     /**获取审批流下拉列表 */
     getworkflowManageList() {
       workflowManage
-        .getLists(this.User_info.principal.workshopId)
+        .getLists(
+          {"application": "冲压车间保养审批流程"}
+        )
         .then((res) => {
           this.splOptions = res.data.content;
         });
@@ -1180,6 +1183,12 @@ export default {
     edit(row) {
       // console.log(row);
       this.newAddDialogTitle = "编辑";
+      JSON.parse(localStorage.getItem("user_info")).principal.workshopId === 4
+        ? (this.isShow = true)
+        : (this.isShow = false);
+        this.getworkflowManageList();
+        this.getWorkshopAreaManageList();
+        this.getWorkshopSectionList();
       checkPlanDetail(null, row.id).then((res) => {
         console.log(res);
         let data = res.data;
