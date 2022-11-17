@@ -163,7 +163,61 @@
                 <el-input v-model="form.name"></el-input>
               </el-form-item>
             </el-col>
-            <el-col :span="11" :offset="2">
+          </el-row>
+          <el-row>
+            <!-- 冲压车间的用户保养计划导入，单独处理下拉列表三个 -->
+            <div v-if="isShow">
+              <el-col :span="8">
+                <el-form-item label="区域"  required="required" label-width="55px">
+                  <el-select v-model="form.workshopareaId" @change="getWorkshopSectionList" clearable placeholder="请选择" style="width: 90%">
+                    <el-option
+                      v-for="item in quOptions"
+                      :key="item.id"
+                      :label="item.label"
+                      :value="item.id"
+                    >
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :span="8">
+                <el-form-item label="工段" required="required" label-width="55px">
+                  <el-select
+                    v-model="form.sectionId"
+                    clearable placeholder="请选择"
+                    style="width: 90%"
+                  >
+                    <el-option
+                      v-for="item in gdOptions"
+                      :key="item.id"
+                      :label="item.label"
+                      :value="item.id"
+                    >
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :span="8">
+                <el-form-item label="审批流" required="required" label-width="70px">
+                  <el-select
+                    v-model="form.workflowId"
+                    placeholder="请选择"
+                    style="margin: 0px 10px ;width: 90%"
+                  >
+                    <el-option
+                      v-for="(item, index) in splOptions"
+                      :key="index"
+                      :label="item.name"
+                      :value="item.id"
+                    >
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+              </el-col>
+            </div>
+          </el-row>
+          <el-row>
+            <el-col :span="11">
               <el-form-item label="导入保养计划">
                 <div>
                   <tpms-choosefile
@@ -171,22 +225,24 @@
                     text="选择文件"
                     isMutiple
                     @getFileData="getFileData($event)"
-                  ></tpms-choosefile>
+                  >
+                  </tpms-choosefile>
                 </div>
               </el-form-item>
             </el-col>
-            <el-col :span="6">
-              <!-- <el-button type="primary" size="small" @click="uploadFiles(index)">批量导入文件</el-button> -->
-              <!-- <tpms-choosefile isMutiple :multiple='true' plain text='批量导入文件' @getFileData='getMutipleFileData($event,index)'></tpms-choosefile> -->
-              <!-- <el-button type="primary" plain size="mini" @click="addPlanDevice">新增</el-button> -->
-            </el-col>
+            <!-- 代码注释 -->
+            <!-- <el-col :span="6">
+              <el-button type="primary" size="small" @click="uploadFiles(index)">批量导入文件</el-button>
+              <tpms-choosefile isMutiple :multiple='true' plain text='批量导入文件' @getFileData='getMutipleFileData($event,index)'></tpms-choosefile>
+              <el-button type="primary" plain size="mini" @click="addPlanDevice">新增</el-button>
+            </el-col> -->
           </el-row>
           <el-row
             v-for="(item, index) in form.maintainContentColonies"
             :key="index"
             style="background: #f5f5f5; padding: 0.2rem"
           >
-            <el-col :span="11" >
+            <el-col :span="11">
               <el-form-item label="设备编号">
                 <el-input v-model="item.deviceNos"></el-input>
               </el-form-item>
@@ -226,8 +282,8 @@
                 <el-input v-model="item.hour" disabled></el-input>
               </el-form-item>
             </el-col> -->
-            
-            <el-col :span="5"  >
+
+            <el-col :span="5">
               <el-form-item label="版本" required="required">
                 <el-input v-model="item.version"></el-input>
               </el-form-item>
@@ -236,12 +292,20 @@
               <el-form-item label="编制人" required="required">
                 <!-- <el-date-picker value-format='yyyy-MM-dd' v-model="item.deviceCreatorDate" type="date" placeholder="选择日期"
                 style="width: 100%;"></el-date-picker>-->
-                <el-input readonly v-model="item.creatorName" disabled></el-input>
+                <el-input
+                  readonly
+                  v-model="item.creatorName"
+                  disabled
+                ></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="7" :offset="2">
               <el-form-item label="编制日期" required="required">
-                <el-input readonly v-model="item.createDate" disabled></el-input>
+                <el-input
+                  readonly
+                  v-model="item.createDate"
+                  disabled
+                ></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="24">
@@ -254,8 +318,12 @@
                   :action="uploadImgUrl"
                   :headers="uploadHeaders"
                   accept=".jpg, .png, .jpeg"
-                  :on-success="(res, file) => handleAvatarSuccess(res, file, item)"
-                  :on-remove=" (file, fileList) => handleRemove(file, fileList, item)"
+                  :on-success="
+                    (res, file) => handleAvatarSuccess(res, file, item)
+                  "
+                  :on-remove="
+                    (file, fileList) => handleRemove(file, fileList, item)
+                  "
                   :before-upload="beforeAvatarUpload"
                 >
                   <el-button size="small" type="file">点击上传图示</el-button>
@@ -285,13 +353,14 @@
                     v-show="scope.row.editShow"
                     v-model="scope.row.executionPart"
                   ></el-input>
-                  <span v-show="!scope.row.editShow"
-                   :style="{
+                  <span
+                    v-show="!scope.row.editShow"
+                    :style="{
                       'text-decoration':
                         scope.row.deleted === true ? 'line-through' : '',
-                    }">{{
-                    scope.row.executionPart
-                  }}</span>
+                    }"
+                    >{{ scope.row.executionPart }}</span
+                  >
                 </template>
               </el-table-column>
               <el-table-column align="center" label="保养位置" width="150">
@@ -300,13 +369,14 @@
                     v-show="scope.row.editShow"
                     v-model="scope.row.executionNode"
                   ></el-input>
-                  <span v-show="!scope.row.editShow"
-                   :style="{
+                  <span
+                    v-show="!scope.row.editShow"
+                    :style="{
                       'text-decoration':
                         scope.row.deleted === true ? 'line-through' : '',
-                    }">{{
-                    scope.row.executionNode
-                  }}</span>
+                    }"
+                    >{{ scope.row.executionNode }}</span
+                  >
                 </template>
               </el-table-column>
               <el-table-column align="center" label="内容">
@@ -315,13 +385,14 @@
                     v-show="scope.row.editShow"
                     v-model="scope.row.content"
                   ></el-input>
-                  <span v-show="!scope.row.editShow"
-                   :style="{
+                  <span
+                    v-show="!scope.row.editShow"
+                    :style="{
                       'text-decoration':
                         scope.row.deleted === true ? 'line-through' : '',
-                    }">{{
-                    scope.row.content
-                  }}</span>
+                    }"
+                    >{{ scope.row.content }}</span
+                  >
                 </template>
               </el-table-column>
               <!-- <el-table-column align="center" label="工时(s)">
@@ -342,7 +413,9 @@
               </el-table-column> -->
               <el-table-column align="center" label="周期" width="110">
                 <template slot-scope="scope">
-                  <span v-if="!scope.row.editShow">{{ scope.row.cycleName }}</span>
+                  <span v-if="!scope.row.editShow">{{
+                    scope.row.cycleName
+                  }}</span>
                   <el-select
                     v-model="scope.row.cycleName"
                     style="width: 100%"
@@ -399,9 +472,9 @@
                   <el-button
                     size="small"
                     @click.native.prevent="
-                      scope.row.deleted = true,
-                      deleteRow(scope.$index, item.maintainPlanContents),
-                      calcTime(item)
+                      (scope.row.deleted = true),
+                        deleteRow(scope.$index, item.maintainPlanContents),
+                        calcTime(item)
                     "
                     :disabled="scope.row.deleted"
                     style="margin-right: 10px"
@@ -548,7 +621,7 @@ import {
   importFile, //导入文件
   updatePlanDetail,
   deletePlanMore, //批量删除
-  releasedMore,  //批量发布
+  releasedMore, //批量发布
 } from "../../lib/api/upkeepManagePage.js";
 import {
   updatePlanPicture,
@@ -563,10 +636,15 @@ import {
 import { parseTime } from "@/utils";
 import axios from "axios";
 import {
+  workflowManage,
+  workflowNodeManage,
+} from "../../lib/api/approvalManage";
+import {
   factoryManage,
   workshopManage as workshopManageAll,
   workStationManage,
-  workshopSectionManage,
+  workshopSectionManage as workshopSectionManageList,
+  workshopAreaManage as WorkshopAreaManageList,
 } from "../../lib/api/workshopSettingsManage";
 
 import ShowPlanManage from "./comp/ShowPlanManage";
@@ -593,6 +671,13 @@ export default {
       return arr;
     });
     return {
+      isShow: false, //用于判断条件下拉列表显隐
+      quOptions: [], //区域下拉列表
+      gdOptions: [], //工段下拉列表
+      splOptions: [], //审批流下拉列表
+      quOptions1: [], //区域查看下拉列表
+      gdOptions1: [], //工段查看下拉列表
+      splOptions1: [], //审批流查看下拉列表
       newAddDialogTitle: "",
       apiConfig,
       maintainContentColoniesIndex: 0,
@@ -641,17 +726,20 @@ export default {
       newAddDialog: false, //新增保养计划弹窗
       //新增保养计划表单
       form: {
-        tyepe:1,
+        tyepe: 1,
         no: "", //保养计划编号
         name: "", //保养名称
         workshopId: "", //车间ID
         workshopName: "", //车间名称
+        workshopareaId: "", //区域ID
+        sectionId: "", //工段ID
+        workflowId: "", //审批流ID
         areaName: "", //区域名称
         reason: "", //拒绝原因
         maintainContentColonies: [
           {
             id: "",
-            tyepe:1,
+            tyepe: 1,
             version: "", //版本
             // stationId: "", //工位
             // sectionId: "", //工段
@@ -666,7 +754,7 @@ export default {
             maintainPlanContents: [
               {
                 id: "",
-                tyepe:1,
+                tyepe: 1,
                 editShow: false,
                 executionNode: "", //时间/部件
                 executionPart: "", //保养部件
@@ -710,6 +798,11 @@ export default {
   mounted() {
     this.getTableData();
     this.getCycleList();
+    this.getworkflowManageList();
+    this.getWorkshopAreaManageList();
+    this.getWorkshopSectionList();
+    this.gdOptions1= this.gdOptions; //工段查看
+    this.splOptions1=this.splOptions; //审批流查看
     // this.getDeviceList();
   },
   methods: {
@@ -748,7 +841,7 @@ export default {
           window.URL.revokeObjectURL(url);
         })
         .catch((error) => {
-          this.$message.error(error || '')
+          this.$message.error(error || "");
         });
     },
     /** 导出符合所有搜索条件的计划 */
@@ -827,13 +920,13 @@ export default {
         .then((res) => {
           datas = res.data;
           datas.forEach((data) => {
-            data.creatorName = JSON.parse(localStorage.getItem("user_info")).principal.name; //编制人
+            data.creatorName = JSON.parse(
+              localStorage.getItem("user_info")
+            ).principal.name; //编制人
             data.createDate = parseTime(new Date()); //编制日期
-            data.maintainPlanContents.forEach(
-              (item) => {
-                item.editShow = false
-              }
-            );
+            data.maintainPlanContents.forEach((item) => {
+              item.editShow = false;
+            });
           });
         })
         .catch((err) => {
@@ -842,9 +935,9 @@ export default {
 
       const time = setTimeout(() => {
         _this.form.maintainContentColonies = datas;
-        console.log(datas)
+        console.log(datas);
         this.loading = false;
-      }, 10000)
+      }, 10000);
     },
     getMutipleFileData(files, index) {
       this.loading = true;
@@ -927,8 +1020,17 @@ export default {
             });
         });
         this.orderDetail = res.data;
+        // this.getworkflowManageList();
+        // this.getWorkshopAreaManageList();
+        // this.getWorkshopSectionList();
+        this.orderDetail.quOptions = this.quOptions;
+        this.orderDetail.gdOptions = this.gdOptions1;
+        this.orderDetail.splOptions = this.splOptions;
       });
-      this.orderDetailIsShow = true;
+      // if(this.orderDetail.gdOptions != null && this.orderDetail.splOptions != null){
+        this.orderDetailIsShow = true;
+      // }
+      
     },
     /** 关闭所有对话框 */
     handleClose() {
@@ -942,6 +1044,9 @@ export default {
     add() {
       this.newAddDialog = true;
       this.newAddDialogTitle = "新增";
+      JSON.parse(localStorage.getItem("user_info")).principal.workshopId === 4
+        ? (this.isShow = true)
+        : (this.isShow = false);
       this.form = {
         no: "", //保养计划编号
         name: "", //保养名称
@@ -949,6 +1054,8 @@ export default {
         workshopId: "", //车间ID
         workshopName: "", //车间名称
         areaName: "", //区域名称
+        sectionId: "", //工段ID
+        workflowId: "", //审批流ID
         reason: "", //审核拒绝原因
         maintainContentColonies: [
           {
@@ -984,6 +1091,8 @@ export default {
         ],
       };
       this.getWorkshopAreaManage();
+      this.getWorkshopAreaManageList();//查询区域下拉框
+      this.getworkflowManageList(); //查询审批流id下拉框
     },
     // 同步图示库
     syncPictureFun() {
@@ -1038,6 +1147,39 @@ export default {
         });
       }
     },
+    /**获取区域下拉列表 */
+    getWorkshopAreaManageList() {
+      WorkshopAreaManageList.getNames(this.User_info.principal.workshopId).then(
+        (res) => {
+          this.quOptions = res.data;
+        }
+      );
+    },
+    /**获取工段下拉列表 */
+    getWorkshopSectionList(areaID) {
+      this.form.sectionId='';
+      workshopSectionManageList.getNames(
+        {"workshopAreaId": areaID}
+      ).then((res) => {
+        this.gdOptions = res.data;
+        if(areaID == null){
+          this.gdOptions1 = res.data;
+        }
+        //this.form.workshopSectionId = res.data[0].id;
+      });
+    },
+
+    /**获取审批流下拉列表 */
+    getworkflowManageList() {
+      workflowManage
+        .getLists(
+          {"application": "冲压车间保养审批流程"}
+        )
+        .then((res) => {
+          this.splOptions = res.data.content;
+        });
+    },
+
     /**  获取区域名称 */
     getWorkshopAreaManage() {
       workshopAreaManage(null, this.User_info.principal.workshopAreaId).then(
@@ -1063,6 +1205,12 @@ export default {
     edit(row) {
       // console.log(row);
       this.newAddDialogTitle = "编辑";
+      JSON.parse(localStorage.getItem("user_info")).principal.workshopId === 4
+        ? (this.isShow = true)
+        : (this.isShow = false);
+        this.getworkflowManageList();
+        this.getWorkshopAreaManageList();
+        this.getWorkshopSectionList();
       checkPlanDetail(null, row.id).then((res) => {
         console.log(res);
         let data = res.data;
@@ -1154,20 +1302,22 @@ export default {
         this.$message.warning("工作内容顺序重复，请修改");
         return;
       }
-      const validateDevices = this.form.maintainContentColonies.filter(item => {
-        const validateee = item.maintainPlanContents.filter(itemm => {
-          if(!itemm.executionNode) return true;
-          if(!itemm.content) return true;
-          if(!itemm.executionPart) return true;
-          // if(!itemm.cycleId) return true;
+      const validateDevices = this.form.maintainContentColonies.filter(
+        (item) => {
+          const validateee = item.maintainPlanContents.filter((itemm) => {
+            if (!itemm.executionNode) return true;
+            if (!itemm.content) return true;
+            if (!itemm.executionPart) return true;
+            // if(!itemm.cycleId) return true;
+            return false;
+          });
+          if (validateee.length) {
+            this.$message.warning("缺少必填项!");
+            return true;
+          }
           return false;
-        });
-        if (validateee.length) {
-          this.$message.warning("缺少必填项!");
-          return true;
         }
-        return false
-      })
+      );
       if (validateDevices.length) {
         return;
       }
@@ -1231,25 +1381,25 @@ export default {
     },
     /**
      * 删除maintainPlanContents里的一条数据
-     */ 
+     */
     deleteRow(row, rows) {
       // rows.splice(index, 1);
-      
+
       console.log(this.form);
-      debugger
+      debugger;
     },
     /** 计算工时 */
     calcTime(item) {
       console.log(item);
       const { maintainPlanContents } = item;
       const sum = maintainPlanContents
-        .filter((row => row.deleted == false))
+        .filter((row) => row.deleted == false)
         .map((row) => row.hour)
         .reduce((a, b) => {
           const pre = parseInt(a) || 0;
           const next = parseInt(b) || 0;
           return pre + next;
-        },0);
+        }, 0);
       item.hour = sum;
     },
     //审批保养计划
@@ -1388,12 +1538,12 @@ export default {
           this.form.status = 5;
           updatePlanDetail(this.form, row.id).then((res) => {
             // console.log(res);
-          this.getTableData();
+            this.getTableData();
             this.$message({
               type: "success",
               message: "发布成功!",
             });
-          this.getTableData();
+            this.getTableData();
           });
         })
         .catch(() => {
@@ -1468,18 +1618,18 @@ export default {
       // console.log(file);
       const isLt10M = file.size / 1024 / 1024 < 10;
 
-      var testmsg = file.name.substring(file.name.lastIndexOf('.')+1)
-      const extension = testmsg === 'png'
-      const extension2 = testmsg === 'jpeg'
-      const extension3 = testmsg === 'jpg'
+      var testmsg = file.name.substring(file.name.lastIndexOf(".") + 1);
+      const extension = testmsg === "png";
+      const extension2 = testmsg === "jpeg";
+      const extension3 = testmsg === "jpg";
 
-      if(!extension && !extension2 && !extension3) {
+      if (!extension && !extension2 && !extension3) {
         this.$message({
-            message: '上传文件只能是 png、jpeg、jpg格式的文件',
-            type: 'warning'
+          message: "上传文件只能是 png、jpeg、jpg格式的文件",
+          type: "warning",
         });
       }
-      
+
       if (!isLt10M) {
         this.$message.error("上传头像图片大小不能超过 10M!");
       }
