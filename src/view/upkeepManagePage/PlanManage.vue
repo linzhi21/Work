@@ -163,12 +163,13 @@
                 <el-input v-model="form.name"></el-input>
               </el-form-item>
             </el-col>
-
+          </el-row>
+          <el-row>
             <!-- 冲压车间的用户保养计划导入，单独处理下拉列表三个 -->
             <div v-if="isShow">
-              <el-col :span="4">
-                <el-form-item label="区域" label-width="55px">
-                  <el-select v-model="form.workshopareaId" @change="getWorkshopSectionList" clearable placeholder="请选择">
+              <el-col :span="8">
+                <el-form-item label="区域"  required="required" label-width="55px">
+                  <el-select v-model="form.workshopareaId" @change="getWorkshopSectionList" clearable placeholder="请选择" style="width: 90%">
                     <el-option
                       v-for="item in quOptions"
                       :key="item.id"
@@ -179,11 +180,12 @@
                   </el-select>
                 </el-form-item>
               </el-col>
-              <el-col :span="4">
-                <el-form-item label="工段" label-width="55px">
+              <el-col :span="8">
+                <el-form-item label="工段" required="required" label-width="55px">
                   <el-select
                     v-model="form.sectionId"
                     clearable placeholder="请选择"
+                    style="width: 90%"
                   >
                     <el-option
                       v-for="item in gdOptions"
@@ -195,12 +197,12 @@
                   </el-select>
                 </el-form-item>
               </el-col>
-              <el-col :span="4">
-                <el-form-item label="审批流" label-width="55px">
+              <el-col :span="8">
+                <el-form-item label="审批流" required="required" label-width="70px">
                   <el-select
                     v-model="form.workflowId"
                     placeholder="请选择"
-                    style="margin: 0px 10px"
+                    style="margin: 0px 10px ;width: 90%"
                   >
                     <el-option
                       v-for="(item, index) in splOptions"
@@ -673,6 +675,9 @@ export default {
       quOptions: [], //区域下拉列表
       gdOptions: [], //工段下拉列表
       splOptions: [], //审批流下拉列表
+      quOptions1: [], //区域查看下拉列表
+      gdOptions1: [], //工段查看下拉列表
+      splOptions1: [], //审批流查看下拉列表
       newAddDialogTitle: "",
       apiConfig,
       maintainContentColoniesIndex: 0,
@@ -793,6 +798,11 @@ export default {
   mounted() {
     this.getTableData();
     this.getCycleList();
+    this.getworkflowManageList();
+    this.getWorkshopAreaManageList();
+    this.getWorkshopSectionList();
+    this.gdOptions1= this.gdOptions; //工段查看
+    this.splOptions1=this.splOptions; //审批流查看
     // this.getDeviceList();
   },
   methods: {
@@ -1010,8 +1020,17 @@ export default {
             });
         });
         this.orderDetail = res.data;
+        // this.getworkflowManageList();
+        // this.getWorkshopAreaManageList();
+        // this.getWorkshopSectionList();
+        this.orderDetail.quOptions = this.quOptions;
+        this.orderDetail.gdOptions = this.gdOptions1;
+        this.orderDetail.splOptions = this.splOptions;
       });
-      this.orderDetailIsShow = true;
+      // if(this.orderDetail.gdOptions != null && this.orderDetail.splOptions != null){
+        this.orderDetailIsShow = true;
+      // }
+      
     },
     /** 关闭所有对话框 */
     handleClose() {
@@ -1143,6 +1162,9 @@ export default {
         {"workshopAreaId": areaID}
       ).then((res) => {
         this.gdOptions = res.data;
+        if(areaID == null){
+          this.gdOptions1 = res.data;
+        }
         //this.form.workshopSectionId = res.data[0].id;
       });
     },

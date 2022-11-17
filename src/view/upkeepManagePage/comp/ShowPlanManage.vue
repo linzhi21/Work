@@ -12,6 +12,60 @@
           <el-input v-model="orderDetail.no" disabled />
         </el-form-item>
       </el-col>
+    </el-row>
+    <el-row>
+      <div v-if="isShow">
+              <el-col :span="8">
+                <el-form-item label="区域" label-width="55px">
+                  <el-select v-model="orderDetail.workshopareaId"  disabled placeholder="请选择" style="width: 90%">
+                    <el-option
+                      v-for="item in orderDetail.quOptions"
+                      :key="item.id"
+                      :label="item.label"
+                      :value="item.id"
+                    >
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :span="8">
+                <el-form-item label="工段" label-width="55px" >
+                  <el-select
+                    v-model="orderDetail.sectionId"
+                    disabled
+                    clearable placeholder="请选择"
+                    style="width: 90%"
+                  >
+                    <el-option
+                      v-for="item in orderDetail.gdOptions"
+                      :key="item.id"
+                      :label="item.label"
+                      :value="item.id"
+                    >
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :span="8">
+                <el-form-item label="审批流" label-width="55px">
+                  <el-select
+                    v-model="orderDetail.workflowId"
+                    disabled
+                    placeholder="请选择"
+                    style="margin: 0px 10px;width: 90%"
+
+                  >
+                    <el-option
+                      v-for="(item, index) in orderDetail.splOptions"
+                      :key="index"
+                      :label="item.name"
+                      :value="item.id"
+                    >
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+              </el-col>
+            </div>
       <!-- <el-col :span="11" >
               <el-form-item label="车间名称">
                 <el-input v-model="orderDetail.workShopName" disabled />
@@ -136,10 +190,19 @@
 </template>
 <script>
 export default {
+  created(){
+    //console.log("------------");
+    // console.log("dddd"+this.orderDetail.gdOptions.label);
+    JSON.parse(localStorage.getItem("user_info")).principal.workshopId === 4
+        ? (this.isShow = true)
+        : (this.isShow = false); 
+  },
   name: "ShowPlanManage",
   props: ["orderDetail"],
   data() {
-    return {};
+    return {
+      workshopareaId:"",//区域ID
+    };
   },
 };
 </script>
