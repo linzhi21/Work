@@ -105,8 +105,7 @@
             <el-form-item v-if="nodeFormList.approvalType == 4" label="岗位" style="width: 100%;">
               <!--  -->
               <el-select v-model="nodeFormList.positions" multiple filterable remote
-                :remote-method="positionRemoteMethod" :loading="positionSelectLoading" 
-                placeholder="请输入关键词"
+                :remote-method="positionRemoteMethod" :loading="positionSelectLoading" placeholder="请输入关键词"
                 style="width: 100%;">
                 <el-option v-for="item in positionsList" :key="item.name" :label="item.name" :value="item.id">
                   <!-- <span style="float: left">{{ item.name }}</span>
@@ -114,12 +113,16 @@
                 </el-option>
               </el-select>
             </el-form-item>
+
+            <el-form-item label="排序" style="width: 100%;">
+              <el-input v-model="nodeFormList.sort" placeholder="审批节点顺序"/>
+            </el-form-item>
           </el-col>
         </el-row>
       </el-form>
       <div slot="footer" align="center" class="dialog-footer">
         <el-button @click="nodeDialogVisible = false">取 消</el-button>
-        <el-button @click="okNode(dialogType)">保存</el-button>
+        <el-button @click="okNode(dialogType)" type="primary">保存</el-button>
       </div>
     </el-dialog>
   </div>
@@ -224,6 +227,10 @@ export default {
                 break;
             }
           }
+        },
+        {
+          props: 'sort',
+          label: '排序'
         }
       ],
       nodeTableHeaderList: [

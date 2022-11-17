@@ -21,7 +21,7 @@
           </template>
           <template slot="operation" slot-scope="{ row }">
             <span class="button cursor" @click="showPlanDetail(row)">查看</span>
-            <span class="button cursor" @click="showPlanDetail(row, 'approval')">审批</span>
+            <span v-if="row.approval == true" class="button cursor" @click="showPlanDetail(row, 'approval')">审批</span>
             <span class="button cursor" @click="getDeviceMaintain(row)">导出记录卡</span>
             <span class="button cursor" @click="previewNowMonthWorkOrder(row)">月度情况</span>
             <span class="button cursor" v-if="row.overdue === 1" @click="turnOn(row)">激活</span>
