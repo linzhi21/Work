@@ -138,6 +138,7 @@
           ref="form"
           label-width="140px"
           label-position="left"
+          :rules="rules"
         >
           <el-row>
             <!-- <el-col :span="11">
@@ -168,7 +169,7 @@
             <!-- 冲压车间的用户保养计划导入，单独处理下拉列表三个 -->
             <div v-if="isShow">
               <el-col :span="8">
-                <el-form-item label="区域"  required="required" label-width="55px">
+                <el-form-item label="区域"   label-width="55px" prop="workshopareaId">
                   <el-select v-model="form.workshopareaId" @change="getWorkshopSectionList" clearable placeholder="请选择" style="width: 90%">
                     <el-option
                       v-for="item in quOptions"
@@ -181,7 +182,7 @@
                 </el-form-item>
               </el-col>
               <el-col :span="8">
-                <el-form-item label="工段" required="required" label-width="55px">
+                <el-form-item label="工段"  label-width="55px" prop="sectionId">
                   <el-select
                     v-model="form.sectionId"
                     clearable placeholder="请选择"
@@ -198,7 +199,7 @@
                 </el-form-item>
               </el-col>
               <el-col :span="8">
-                <el-form-item label="审批流" required="required" label-width="70px">
+                <el-form-item label="审批流"  label-width="70px" prop="workflowId">
                   <el-select
                     v-model="form.workflowId"
                     placeholder="请选择"
@@ -671,6 +672,21 @@ export default {
       return arr;
     });
     return {
+      //校验表单数据，为空触发提示
+      rules:{
+        // name:[
+        //   {required:true,message:"保养名称不能为空",trigger:"blur"}
+        // ],
+        workshopareaId:[
+          {required:true,message:"区域不能为空",trigger:"change"}
+        ],
+        sectionId:[
+          {required:true,message:"工段不能为空",trigger:"change"}
+        ],
+        workflowId:[
+          {required:true,message:"审批不能为空",trigger:"change"}
+        ]
+      },
       isShow: false, //用于判断条件下拉列表显隐
       quOptions: [], //区域下拉列表
       gdOptions: [], //工段下拉列表
@@ -1282,11 +1298,19 @@ export default {
         return;
       }
       console.log(JSON.stringify(form));
-      addmaintainPlan(form).then((res) => {
-        // console.log(res);
-        this.$message.success("操作成功");
-        this.newAddDialog = false;
-        this.getTableData();
+      this.$refs['form'].validate((valid) => {
+        if (valid) {
+        addmaintainPlan(form).then((res) => {
+          // console.log(res);
+          this.$message.success("操作成功");
+          this.newAddDialog = false;
+          this.getTableData();
+        });
+          console.log(JSON.stringify(form));
+        } else {
+          console.log('error submit!!');
+          return false;
+        }
       });
     },
 
