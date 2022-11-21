@@ -638,8 +638,9 @@ import {
 import { parseTime } from "@/utils";
 import axios from "axios";
 import {
-  workflowManage,
+  workflowManage, //审批流
   workflowNodeManage,
+  workflowRuningManage, //进行中的审批流
 } from "../../lib/api/approvalManage";
 import {
   factoryManage,
@@ -1043,9 +1044,13 @@ export default {
         //渲染区域列表;
         worksectionIdManage(null,this.orderDetail.sectionId).then((r) => {
           //查看时,为区域下拉列表赋值回显;
-        this.$set(this.orderDetail, 'workshopareaId',r.data.workshopAreaId);
+          this.$set(this.orderDetail, 'workshopareaId',r.data.workshopAreaId);
         });
-        
+        //查询审批流节点对应查询审批流回显
+        workflowRuningManage.getId(null,this.orderDetail.workflowId).then((r) =>{
+          //查看时，渲染审批流id
+          this.$set(this.orderDetail, 'workflowId',r.data[0]);
+        });
         this.orderDetail.quOptions = this.quOptions;
         this.orderDetail.gdOptions = this.gdOptions1;
         this.orderDetail.splOptions = this.splOptions;
@@ -1256,17 +1261,20 @@ export default {
               ever.url = this.apiConfig.accessoryFile + ever.accessoryUrl;
             });
         });
-        //console.log("工段id"+data.sectionId); //工段id
+        //查询审批流节点
+        workflowRuningManage.getId(null,data.workflowId).then((r) =>{
+          this.form.workflowId = r.data[0];
+          //console.log(this.form.workflowId);
+        });
+        //查询岗位的所属区域
         worksectionIdManage(null,data.sectionId).then((r) => {
           this.form.workshopareaId = r.data.workshopAreaId;
-          //console.log("区域id"+this.form.workshopareaId);
         });
         this.form.status = "";
         this.form = data;
         //为区域下拉列表赋值;
         this.$set(this.form, 'workshopareaId');
       });
-      
       this.newAddDialog = true;
     },
     /** 提交保养计划 */

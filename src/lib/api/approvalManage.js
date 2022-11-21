@@ -27,6 +27,7 @@ export const workflowRuningManage={
     add:(data) => POST(data, apiConfig.workflowRuningManage),
     getLists:(data) => GET(data, apiConfig.workflowRuningManage),
     getOne:(data, restful) => GET(data, apiConfig.workflowRuningManage+'/'+restful),
+    getId:(data, restful) => GET(data, apiConfig.workflowRuningManage+'/workflow-id'+'/'+restful),
     remove:(data, restful) => DELETE(data, apiConfig.workflowRuningManage+'/'+restful),
     edit:(data) => PUT(data, apiConfig.workflowRuningManage),
 }
