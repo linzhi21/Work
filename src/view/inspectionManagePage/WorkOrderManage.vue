@@ -25,7 +25,7 @@
             <span
               class="button cursor"
               @click="view(scope.row, '审批')"
-              v-if="scope.row.statusStr == '待审批'"
+              v-if="scope.row.approval == true"
               >审批</span
             >
             <span class="button cursor" @click="stop(scope.row)" v-if="scope.row.status == '待接单'">暂停</span>

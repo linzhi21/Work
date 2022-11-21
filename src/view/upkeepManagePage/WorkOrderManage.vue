@@ -21,7 +21,7 @@
           </template>
           <template slot="operation" slot-scope="{ row }">
             <span class="button cursor" @click="showPlanDetail(row)">查看</span>
-            <span class="button cursor" @click="showPlanDetail(row, 'approval')">审批</span>
+            <span v-if="row.approval == true" class="button cursor" @click="showPlanDetail(row, 'approval')">审批</span>
             <span class="button cursor" @click="getDeviceMaintain(row)">导出记录卡</span>
             <span class="button cursor" @click="previewNowMonthWorkOrder(row)">月度情况</span>
             <span class="button cursor" v-if="row.overdue === 1" @click="turnOn(row)">激活</span>
@@ -142,6 +142,7 @@ import {
   importThisMonthMaintainWorkOrder,
   approvalMaintainWorkorder
 } from "../../lib/api/upkeepManagePage";
+import { getUserDropList } from '../../lib/api/userManage'
 import { tpmsHeader, tpmsTable, tpmsChoosefile } from "../../components";
 import {
   factoryManage,
@@ -206,7 +207,7 @@ export default {
             { label: "过期又启动", id: "2" },
           ],
         },
-        { label: "计划负责人", props: "creator", value: "", placeholder: "导出设备保养概览时，请填写!" },
+        { label: "计划负责人", props: "creatorName", value: "", placeholder: "导出设备保养概览时，请填写!" },
         { label: "设备名称", props: "deviceName", value: "" },
         { label: "设备编号", props: "deviceNo", value: "" },
         { label: "资产编号", props: "deviceAssetNo", value: "" },
@@ -315,11 +316,24 @@ export default {
     getData() {
       let data = this.$refs.tpmsHeader.getData();
       let pageData = this.$refs.tpmsTable.getData();
-      console.log(data);
-      maintainWorkOrder({ ...data, ...pageData }).then((res) => {
-        this.listData = res.data.content;
-        this.total = res.data.totalElements;
-      });
+      if (data.creatorName != null && data.creatorName) {
+        this.getUserDropList(data.creatorName).then(res => {
+          const { content } = res.data;
+          data.creator = content[0].id
+          maintainWorkOrder({ ...data, ...pageData }).then((res) => {
+            this.listData = res.data.content;
+            this.total = res.data.totalElements;
+          });
+        }).catch(err => {
+          this.$message.error(`用户查询失败！${err}`);
+        });
+      } else {
+        maintainWorkOrder({ ...data, ...pageData }).then((res) => {
+          this.listData = res.data.content;
+          this.total = res.data.totalElements;
+        });
+      }
+
     },
     /** 头部value变更回调 */
     onValueChanged({ props, value }) {
@@ -571,6 +585,16 @@ export default {
       }).catch(err => {
         this.$message.error('审批失败！');
       })
+    },
+    getUserDropList(query) {
+      // getUserDropList({ name: query }).then(res => {
+      //   const { content } = res.data;
+      //   const { equipmentFormList } = this;
+      //   equipmentFormList.push({props: 'creator', value: content[0].id})
+      // }).catch(err => {
+      //   this.$message.error(`用户查询失败！${err}`);
+      // });
+      return getUserDropList({ name: query })
     }
   },
 };
