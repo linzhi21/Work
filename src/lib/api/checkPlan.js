@@ -37,6 +37,12 @@ export const oneWorkorders = (data, restful) => GET(data, apiConfig.plan, restfu
  */
 export const workshopAreaManage = (data, restful) => GET(data, apiConfig.workshopAreaManage, restful);
 
+/** 获取单个工段详情
+ * @param {Null} data
+ * @param {String} restful - 点检工单ID
+ */
+ export const worksectionIdManage = (data, restful) => GET(data, apiConfig.workshopSectionManage, restful);
+
 /** 获取单个车间详情
  * @param {Null} data
  * @param {String} restful - 点检工单ID

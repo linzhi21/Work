@@ -629,6 +629,7 @@ import {
   importURLPlanFile,
   workshopSectionSelect,
   workStationSelect,
+  worksectionIdManage,
   planStatusSelect,
   workshopAreaManage,
   workshopManage,
@@ -691,7 +692,7 @@ export default {
       quOptions: [], //区域下拉列表
       gdOptions: [], //工段下拉列表
       splOptions: [], //审批流下拉列表
-      quOptions1: [], //区域查看下拉列表
+      //quOptions1: [], //区域查看下拉列表
       gdOptions1: [], //工段查看下拉列表
       splOptions1: [], //审批流查看下拉列表
       newAddDialogTitle: "",
@@ -1039,6 +1040,12 @@ export default {
         // this.getworkflowManageList();
         // this.getWorkshopAreaManageList();
         // this.getWorkshopSectionList();
+        //渲染区域列表;
+        worksectionIdManage(null,this.orderDetail.sectionId).then((r) => {
+          //查看时,为区域下拉列表赋值回显;
+        this.$set(this.orderDetail, 'workshopareaId',r.data.workshopAreaId);
+        });
+        
         this.orderDetail.quOptions = this.quOptions;
         this.orderDetail.gdOptions = this.gdOptions1;
         this.orderDetail.splOptions = this.splOptions;
@@ -1227,6 +1234,7 @@ export default {
         this.getworkflowManageList();
         this.getWorkshopAreaManageList();
         this.getWorkshopSectionList();
+      
       checkPlanDetail(null, row.id).then((res) => {
         console.log(res);
         let data = res.data;
@@ -1248,9 +1256,17 @@ export default {
               ever.url = this.apiConfig.accessoryFile + ever.accessoryUrl;
             });
         });
+        //console.log("工段id"+data.sectionId); //工段id
+        worksectionIdManage(null,data.sectionId).then((r) => {
+          this.form.workshopareaId = r.data.workshopAreaId;
+          //console.log("区域id"+this.form.workshopareaId);
+        });
         this.form.status = "";
         this.form = data;
+        //为区域下拉列表赋值;
+        this.$set(this.form, 'workshopareaId');
       });
+      
       this.newAddDialog = true;
     },
     /** 提交保养计划 */
