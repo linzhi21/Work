@@ -199,9 +199,9 @@
                 </el-form-item>
               </el-col>
               <el-col :span="8">
-                <el-form-item label="审批流"  label-width="70px" prop="workflowId">
+                <el-form-item label="审批流"  label-width="70px" prop="ttWorkflowId">
                   <el-select
-                    v-model="form.workflowId"
+                    v-model="form.ttWorkflowId"
                     placeholder="请选择"
                     style="margin: 0px 10px ;width: 90%"
                   >
@@ -685,7 +685,7 @@ export default {
         sectionId:[
           {required:true,message:"工段不能为空",trigger:"change"}
         ],
-        workflowId:[
+        ttWorkflowId:[
           {required:true,message:"审批不能为空",trigger:"change"}
         ]
       },
@@ -751,7 +751,7 @@ export default {
         workshopName: "", //车间名称
         workshopareaId: "", //区域ID
         sectionId: "", //工段ID
-        workflowId: "", //审批流ID
+        ttWorkflowId: "", //审批流ID
         areaName: "", //区域名称
         reason: "", //拒绝原因
         maintainContentColonies: [
@@ -1038,18 +1038,10 @@ export default {
             });
         });
         this.orderDetail = res.data;
-        // this.getworkflowManageList();
-        // this.getWorkshopAreaManageList();
-        // this.getWorkshopSectionList();
         //渲染区域列表;
         worksectionIdManage(null,this.orderDetail.sectionId).then((r) => {
           //查看时,为区域下拉列表赋值回显;
           this.$set(this.orderDetail, 'workshopareaId',r.data.workshopAreaId);
-        });
-        //查询审批流节点对应查询审批流回显
-        workflowRuningManage.getId(null,this.orderDetail.workflowId).then((r) =>{
-          //查看时，渲染审批流id
-          this.$set(this.orderDetail, 'workflowId',r.data[0]);
         });
         this.orderDetail.quOptions = this.quOptions;
         this.orderDetail.gdOptions = this.gdOptions1;
@@ -1083,7 +1075,7 @@ export default {
         workshopName: "", //车间名称
         areaName: "", //区域名称
         sectionId: "", //工段ID
-        workflowId: "", //审批流ID
+        ttWorkflowId: "", //审批流ID
         reason: "", //审核拒绝原因
         maintainContentColonies: [
           {
@@ -1262,10 +1254,11 @@ export default {
             });
         });
         //查询审批流节点
-        workflowRuningManage.getId(null,data.workflowId).then((r) =>{
-          this.form.workflowId = r.data[0];
-          //console.log(this.form.workflowId);
-        });
+        // workflowRuningManage.getId(null,data.ttWorkflowId).then((r) =>{
+        //   this.form.ttWorkflowId = r.data[0];
+        //   //this.$set(this.form, 'workflowId',r.data[0]);
+        //   //console.log(this.form.workflowId);
+        // });
         //查询岗位的所属区域
         worksectionIdManage(null,data.sectionId).then((r) => {
           this.form.workshopareaId = r.data.workshopAreaId;

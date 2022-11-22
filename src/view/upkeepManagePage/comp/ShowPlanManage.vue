@@ -49,7 +49,7 @@
               <el-col :span="8">
                 <el-form-item label="审批流" label-width="55px">
                   <el-select
-                    v-model="orderDetail.workflowId"
+                    v-model="orderDetail.ttWorkflowId"
                     disabled
                     placeholder="请选择"
                     style="margin: 0px 10px;width: 90%"
