@@ -502,13 +502,13 @@
               <el-button
                 v-if="newAddDialogTitle === '新增'"
                 type="primary"
-                @click.once="submitForm()"
+                @click="submitForm()"
                 >提交</el-button
               >
               <el-button
                 v-if="newAddDialogTitle === '编辑'"
                 type="primary"
-                @click.once="changePlan()"
+                @click="changePlan()"
                 >保存</el-button
               >
               <el-button @click="newAddDialog = false">取 消</el-button>
