@@ -19,7 +19,7 @@ export default {
     // /** 专家智库 */
     expert: 'http://tpms-gateway-runtime.apps.ci-test.ocp.sitc/expert',
     /** 文件服务器地址 */
-    accessoryFile: 'http://10.160.245.70:9000/tpms',
+    accessoryFile: 'http://10.160.244.247:9000/tpms',
     log: 'http://tpms-gateway-runtime.apps.ci-test.ocp.sitc/log',  // 日志地址
 
 /* ==================================测试======================================= */
