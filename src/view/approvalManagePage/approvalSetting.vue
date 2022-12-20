@@ -705,7 +705,7 @@ export default {
     positionRemoteMethod(query) {
       if (query !== '') {
         this.positionSelectLoading = true;
-        sysPositionManage.getLists({ name: query }).then(res => {
+        sysPositionManage.getLists({ name: query,page: 0, size: 100 }).then(res => {
           const { content } = res.data;
           this.positionsList = content;
           this.positionSelectLoading = false;
@@ -713,7 +713,7 @@ export default {
           this.positionSelectLoading = false;
         })
       } else {
-        sysPositionManage.getLists().then(res => {
+        sysPositionManage.getLists({ page: 0, size: 100 }).then(res => {
           const { content } = res.data;
           this.positionsList = content;
           this.positionSelectLoading = false;
