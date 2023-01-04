@@ -250,22 +250,24 @@
               <el-form-item label="图示">
                 <!-- 20230103 图片拖拽排序 -->
                 <!-- 使用element-ui自带样式 -->
-                <draggable v-model="Photos">
-                    <li v-for="(item, index) in Photos" :key="item.accessoryId" class="el-upload-list__item is-success animated">
-                        <img :src="item.url" alt="" class="el-upload-list__item-thumbnail ">
-                        <i class="el-icon-close"></i>
-                        <span class="el-upload-list__item-actions">
-                          <!-- 预览 -->
-                          <span class="el-upload-list__item-preview" @click="handlePictureCardPreviewFileDetail(item)">
-                            <i class="el-icon-zoom-in"></i>
+                <ul class="el-upload-list el-upload-list--picture-card">
+                  <draggable v-model="Photos">
+                      <li v-for="(item, index) in Photos" :key="item.accessoryId" class="el-upload-list__item is-success animated">
+                          <img :src="item.url" alt="" class="el-upload-list__item-thumbnail ">
+                          <i class="el-icon-close"></i>
+                          <span class="el-upload-list__item-actions">
+                            <!-- 预览 -->
+                            <span class="el-upload-list__item-preview" @click="handlePictureCardPreviewFileDetail(item)">
+                              <i class="el-icon-zoom-in"></i>
+                            </span>
+                            <!-- 删除 -->
+                            <span class="el-upload-list__item-delete" @click="handleRemoveFileDetail(index)">
+                              <i class="el-icon-delete"></i>
+                            </span>
                           </span>
-                          <!-- 删除 -->
-                          <span class="el-upload-list__item-delete" @click="handleRemoveFileDetail(index)">
-                            <i class="el-icon-delete"></i>
-                          </span>
-                        </span>
-                    </li>
-                </draggable>
+                      </li>
+                  </draggable>
+                </ul>
                 <!-- :file-list="item.planPictures" -->
                 <el-upload
                   class="avatar-uploader"
@@ -275,6 +277,9 @@
                   :action="uploadImgUrl"
                   :headers="uploadHeaders"
                   accept=".jpg, .png, .jpeg"
+                  :on-error="
+                  (res, file) => handleAvatarError(res, file, item)
+                  "
                   :on-success="
                     (res, file) => handleAvatarSuccess(res, file, item)
                   "
@@ -1559,6 +1564,10 @@ export default {
       this.planDevicesIndex = index;
       this.planContentsIndex = num;
     },
+    //图片上传失败
+    handleAvatarError(){
+      this.$message.error("上传失败");
+    },
     // 图片上传成功
     handleAvatarSuccess(res, file, item) {
       // this.imageUrl = URL.createObjectURL(file.raw);
@@ -1583,7 +1592,7 @@ export default {
       console.log("上传完成");
       console.log(img);
       item.planPictures = item.planPictures || [];
-      item.planPictures.push(img);
+      //item.planPictures.push(img);
       this.Photos.push(img);
       this.$message.success("上传完成");
     },

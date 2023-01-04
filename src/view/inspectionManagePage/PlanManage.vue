@@ -321,7 +321,6 @@
                         </li>
                     </draggable>
                 </ul>
-                <!-- :file-list="item.planPictures" -->
                 <el-upload
                   class="avatar-uploader"
                   list-type="picture-card"
@@ -330,6 +329,9 @@
                   :headers="uploadHeaders"
                   :show-file-list="false"
                   accept=".jpg, .png, .jpeg"
+                  :on-error="
+                  (res, file) => handleAvatarError(res, file, item)
+                  "
                   :on-success="
                     (res, file) => handleAvatarSuccess(res, file, item)
                   "
@@ -1747,6 +1749,10 @@ export default {
       this.planDevicesIndex = index;
       this.planContentsIndex = num;
     },
+    //图片上传失败
+    handleAvatarError(){
+      this.$message.error("上传失败");
+    },
     // 图片上传成功
     handleAvatarSuccess(res, file, item) {
       // this.imageUrl = URL.createObjectURL(file.raw);
@@ -1766,7 +1772,7 @@ export default {
         url: `${this.apiConfig.accessoryFile}/${res.path + res.name}`,
       };
       item.planPictures = item.planPictures || [];
-      item.planPictures.push(img);
+      //item.planPictures.push(img);
       this.Photos.push(img);
       this.$message.success("上传完成");
     },

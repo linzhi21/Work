@@ -340,6 +340,9 @@
                   :action="uploadImgUrl"
                   :headers="uploadHeaders"
                   accept=".jpg, .png, .jpeg"
+                  :on-error="
+                  (res, file) => handleAvatarError(res, file, item)
+                  "
                   :on-success="
                     (res, file) => handleAvatarSuccess(res, file, item)
                   "
@@ -1405,7 +1408,7 @@ export default {
       }
       console.log(JSON.stringify(this.form));
       delete this.form.status;
-      this.form.planDevices[0].maintainPlanPictures=this.Photos;
+      this.form.maintainContentColonies[0].maintainPlanPictures=this.Photos;
       updatePlanDetail(this.form, this.form.id).then((res) => {
         this.newAddDialog = false;
         this.getTableData();
@@ -1674,6 +1677,10 @@ export default {
       this.maintainContentColoniesIndex = index;
       this.maintainPlanContentsIndex = num;
     },
+    //图片上传失败
+    handleAvatarError(){
+      this.$message.error("上传失败");
+    },
     // 图片上传成功
     handleAvatarSuccess(res, file, item) {
       // this.imageUrl = URL.createObjectURL(file.raw);
@@ -1693,7 +1700,7 @@ export default {
         url: `${this.apiConfig.accessoryFile}/${res.path + res.name}`,
       };
       item.maintainPlanPictures = item.maintainPlanPictures || [];
-      item.maintainPlanPictures.push(img);
+      //item.maintainPlanPictures.push(img);
       this.Photos.push(img);
       this.$message.success("上传完成");
     },
