@@ -248,14 +248,38 @@
             </el-col>
             <el-col :span="24">
               <el-form-item label="图示">
+                <!-- 20230103 图片拖拽排序 -->
+                <!-- 使用element-ui自带样式 -->
+                <ul class="el-upload-list el-upload-list--picture-card">
+                  <draggable v-model="Photos">
+                      <li v-for="(item, index) in Photos" :key="item.accessoryId" class="el-upload-list__item is-success animated">
+                          <img :src="item.url" alt="" class="el-upload-list__item-thumbnail ">
+                          <i class="el-icon-close"></i>
+                          <span class="el-upload-list__item-actions">
+                            <!-- 预览 -->
+                            <span class="el-upload-list__item-preview" @click="handlePictureCardPreviewFileDetail(item)">
+                              <i class="el-icon-zoom-in"></i>
+                            </span>
+                            <!-- 删除 -->
+                            <span class="el-upload-list__item-delete" @click="handleRemoveFileDetail(index)">
+                              <i class="el-icon-delete"></i>
+                            </span>
+                          </span>
+                      </li>
+                  </draggable>
+                </ul>
+                <!-- :file-list="item.planPictures" -->
                 <el-upload
                   class="avatar-uploader"
                   list-type="picture-card"
                   multiple
-                  :file-list="item.planPictures"
+                  :show-file-list="false"
                   :action="uploadImgUrl"
                   :headers="uploadHeaders"
                   accept=".jpg, .png, .jpeg"
+                  :on-error="
+                  (res, file) => handleAvatarError(res, file, item)
+                  "
                   :on-success="
                     (res, file) => handleAvatarSuccess(res, file, item)
                   "
@@ -266,6 +290,10 @@
                 >
                   <el-button size="small" type="file">点击上传图示</el-button>
                 </el-upload>
+                <!-- 预览弹出层 -->
+                <el-dialog :visible.sync="dialogVisibleDetail" :append-to-body="true">
+                    <img width="100%" :src="dialogImageDetailUrl" alt="">
+                </el-dialog>
               </el-form-item>
             </el-col>
             <!-- 表格区 -->
@@ -536,6 +564,7 @@
   </div>
 </template>
 <script>
+import draggable from "vuedraggable";  // 引入插件
 import axios from "axios";
 import { tpmsHeader, tpmsTable, tpmsChoosefile } from "../../components";
 import { parseTime } from "../../utils";
@@ -588,6 +617,10 @@ export default {
       }
     );
     return {
+      // zyl20230103
+      Photos:[],
+      dialogImageDetailUrl: "",
+      dialogVisibleDetail:false,
       apiConfig,
       loading: false,
       planDevicesIndex: 0,
@@ -700,12 +733,22 @@ export default {
     tpmsTable,
     tpmsChoosefile,
     ShowPlanManage,
+    draggable,
   },
   created() {},
   mounted() {
     this.getTableData();
   },
   methods: {
+    // zyl20230103 放大预览图片
+    handlePictureCardPreviewFileDetail(file) {
+        this.dialogImageDetailUrl = file.url;
+        this.dialogVisibleDetail = true;
+    },
+    // zyl20230103 删除图片
+    handleRemoveFileDetail(index) {
+      this.Photos.splice(index, 1);
+    },
     /** 导出单个计划 */
     exportFile({ id }) {
       let url = `${apiConfig.exportExcel}/${id}/download`; //请求下载文件的地址
@@ -1019,6 +1062,7 @@ export default {
 
     /**  新增点检计划按钮*/
     add() {
+      this.Photos = [];
       this.newAddDialog = true;
       this.newAddDialogTitle = "新增";
       this.form = {
@@ -1159,6 +1203,7 @@ export default {
               ever.name = ever.accessoryId;
               ever.url = this.apiConfig.accessoryFile + ever.accessoryUrl;
             });
+            this.Photos=item.planPictures;
         });
         this.form.status = "";
         this.form = data;
@@ -1247,6 +1292,7 @@ export default {
       delete this.form.status;
       let type = this.form.type;
       console.log(this.form.type)
+      this.form.planDevices[0].planPictures=this.Photos;
       patchPlan(this.form, this.form.id).then((res) => {
         console.log(res.data)
         this.newAddDialog = false;
@@ -1518,6 +1564,10 @@ export default {
       this.planDevicesIndex = index;
       this.planContentsIndex = num;
     },
+    //图片上传失败
+    handleAvatarError(){
+      this.$message.error("上传失败");
+    },
     // 图片上传成功
     handleAvatarSuccess(res, file, item) {
       // this.imageUrl = URL.createObjectURL(file.raw);
@@ -1542,7 +1592,8 @@ export default {
       console.log("上传完成");
       console.log(img);
       item.planPictures = item.planPictures || [];
-      item.planPictures.push(img);
+      //item.planPictures.push(img);
+      this.Photos.push(img);
       this.$message.success("上传完成");
     },
     // 图片上传之前

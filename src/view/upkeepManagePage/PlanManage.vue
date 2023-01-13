@@ -138,6 +138,7 @@
           ref="form"
           label-width="140px"
           label-position="left"
+          :rules="rules"
         >
           <el-row>
             <!-- <el-col :span="11">
@@ -163,7 +164,61 @@
                 <el-input v-model="form.name"></el-input>
               </el-form-item>
             </el-col>
-            <el-col :span="11" :offset="2">
+          </el-row>
+          <el-row>
+            <!-- 冲压车间的用户保养计划导入，单独处理下拉列表三个 -->
+            <div v-if="isShow">
+              <el-col :span="8">
+                <el-form-item label="区域"   label-width="55px" prop="workshopareaId">
+                  <el-select v-model="form.workshopareaId" @change="getWorkshopSectionList" clearable placeholder="请选择" style="width: 90%">
+                    <el-option
+                      v-for="item in quOptions"
+                      :key="item.id"
+                      :label="item.label"
+                      :value="item.id"
+                    >
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :span="8">
+                <el-form-item label="工段"  label-width="55px" prop="sectionId">
+                  <el-select
+                    v-model="form.sectionId"
+                    clearable placeholder="请选择"
+                    style="width: 90%"
+                  >
+                    <el-option
+                      v-for="item in gdOptions"
+                      :key="item.id"
+                      :label="item.label"
+                      :value="item.id"
+                    >
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :span="8">
+                <el-form-item label="审批流"  label-width="70px" prop="ttWorkflowId">
+                  <el-select
+                    v-model="form.ttWorkflowId"
+                    placeholder="请选择"
+                    style="margin: 0px 10px ;width: 90%"
+                  >
+                    <el-option
+                      v-for="(item, index) in splOptions"
+                      :key="index"
+                      :label="item.name"
+                      :value="item.id"
+                    >
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+              </el-col>
+            </div>
+          </el-row>
+          <el-row>
+            <el-col :span="11">
               <el-form-item label="导入保养计划">
                 <div>
                   <tpms-choosefile
@@ -171,22 +226,24 @@
                     text="选择文件"
                     isMutiple
                     @getFileData="getFileData($event)"
-                  ></tpms-choosefile>
+                  >
+                  </tpms-choosefile>
                 </div>
               </el-form-item>
             </el-col>
-            <el-col :span="6">
-              <!-- <el-button type="primary" size="small" @click="uploadFiles(index)">批量导入文件</el-button> -->
-              <!-- <tpms-choosefile isMutiple :multiple='true' plain text='批量导入文件' @getFileData='getMutipleFileData($event,index)'></tpms-choosefile> -->
-              <!-- <el-button type="primary" plain size="mini" @click="addPlanDevice">新增</el-button> -->
-            </el-col>
+            <!-- 代码注释 -->
+            <!-- <el-col :span="6">
+              <el-button type="primary" size="small" @click="uploadFiles(index)">批量导入文件</el-button>
+              <tpms-choosefile isMutiple :multiple='true' plain text='批量导入文件' @getFileData='getMutipleFileData($event,index)'></tpms-choosefile>
+              <el-button type="primary" plain size="mini" @click="addPlanDevice">新增</el-button>
+            </el-col> -->
           </el-row>
           <el-row
             v-for="(item, index) in form.maintainContentColonies"
             :key="index"
             style="background: #f5f5f5; padding: 0.2rem"
           >
-            <el-col :span="11" >
+            <el-col :span="11">
               <el-form-item label="设备编号">
                 <el-input v-model="item.deviceNos"></el-input>
               </el-form-item>
@@ -226,8 +283,8 @@
                 <el-input v-model="item.hour" disabled></el-input>
               </el-form-item>
             </el-col> -->
-            
-            <el-col :span="5"  >
+
+            <el-col :span="5">
               <el-form-item label="版本" required="required">
                 <el-input v-model="item.version"></el-input>
               </el-form-item>
@@ -236,30 +293,70 @@
               <el-form-item label="编制人" required="required">
                 <!-- <el-date-picker value-format='yyyy-MM-dd' v-model="item.deviceCreatorDate" type="date" placeholder="选择日期"
                 style="width: 100%;"></el-date-picker>-->
-                <el-input readonly v-model="item.creatorName" disabled></el-input>
+                <el-input
+                  readonly
+                  v-model="item.creatorName"
+                  disabled
+                ></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="7" :offset="2">
               <el-form-item label="编制日期" required="required">
-                <el-input readonly v-model="item.createDate" disabled></el-input>
+                <el-input
+                  readonly
+                  v-model="item.createDate"
+                  disabled
+                ></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="24">
               <el-form-item label="图示">
+                <!-- 20230103 图片拖拽排序 -->
+                <!-- 使用element-ui自带样式 -->
+                <ul class="el-upload-list el-upload-list--picture-card">
+                    <draggable v-model="Photos">
+                        <li v-for="(item, index) in Photos" :key="item.accessoryId" class="el-upload-list__item is-success animated">
+                            <img :src="item.url" alt="" class="el-upload-list__item-thumbnail ">
+                            <i class="el-icon-close"></i>
+                            <span class="el-upload-list__item-actions">
+                              <!-- 预览 -->
+                              <span class="el-upload-list__item-preview" @click="handlePictureCardPreviewFileDetail(item)">
+                                <i class="el-icon-zoom-in"></i>
+                              </span>
+                              <!-- 删除 -->
+                              <span class="el-upload-list__item-delete" @click="handleRemoveFileDetail(index)">
+                                <i class="el-icon-delete"></i>
+                              </span>
+                            </span>
+                        </li>
+                    </draggable>
+                </ul>
+                <!-- :file-list="item.maintainPlanPictures || []" -->
                 <el-upload
                   class="avatar-uploader"
                   list-type="picture-card"
                   multiple
-                  :file-list="item.maintainPlanPictures || []"
+                  :show-file-list="false"
                   :action="uploadImgUrl"
                   :headers="uploadHeaders"
                   accept=".jpg, .png, .jpeg"
-                  :on-success="(res, file) => handleAvatarSuccess(res, file, item)"
-                  :on-remove=" (file, fileList) => handleRemove(file, fileList, item)"
+                  :on-error="
+                  (res, file) => handleAvatarError(res, file, item)
+                  "
+                  :on-success="
+                    (res, file) => handleAvatarSuccess(res, file, item)
+                  "
+                  :on-remove="
+                    (file, fileList) => handleRemove(file, fileList, item)
+                  "
                   :before-upload="beforeAvatarUpload"
                 >
                   <el-button size="small" type="file">点击上传图示</el-button>
                 </el-upload>
+                <!-- 预览弹出层 -->
+                <el-dialog :visible.sync="dialogVisibleDetail" :append-to-body="true">
+                    <img width="100%" :src="dialogImageDetailUrl" alt="">
+                </el-dialog>
               </el-form-item>
             </el-col>
             <!-- 表格区 -->
@@ -285,13 +382,14 @@
                     v-show="scope.row.editShow"
                     v-model="scope.row.executionPart"
                   ></el-input>
-                  <span v-show="!scope.row.editShow"
-                   :style="{
+                  <span
+                    v-show="!scope.row.editShow"
+                    :style="{
                       'text-decoration':
                         scope.row.deleted === true ? 'line-through' : '',
-                    }">{{
-                    scope.row.executionPart
-                  }}</span>
+                    }"
+                    >{{ scope.row.executionPart }}</span
+                  >
                 </template>
               </el-table-column>
               <el-table-column align="center" label="保养位置" width="150">
@@ -300,13 +398,14 @@
                     v-show="scope.row.editShow"
                     v-model="scope.row.executionNode"
                   ></el-input>
-                  <span v-show="!scope.row.editShow"
-                   :style="{
+                  <span
+                    v-show="!scope.row.editShow"
+                    :style="{
                       'text-decoration':
                         scope.row.deleted === true ? 'line-through' : '',
-                    }">{{
-                    scope.row.executionNode
-                  }}</span>
+                    }"
+                    >{{ scope.row.executionNode }}</span
+                  >
                 </template>
               </el-table-column>
               <el-table-column align="center" label="内容">
@@ -315,13 +414,14 @@
                     v-show="scope.row.editShow"
                     v-model="scope.row.content"
                   ></el-input>
-                  <span v-show="!scope.row.editShow"
-                   :style="{
+                  <span
+                    v-show="!scope.row.editShow"
+                    :style="{
                       'text-decoration':
                         scope.row.deleted === true ? 'line-through' : '',
-                    }">{{
-                    scope.row.content
-                  }}</span>
+                    }"
+                    >{{ scope.row.content }}</span
+                  >
                 </template>
               </el-table-column>
               <!-- <el-table-column align="center" label="工时(s)">
@@ -342,7 +442,9 @@
               </el-table-column> -->
               <el-table-column align="center" label="周期" width="110">
                 <template slot-scope="scope">
-                  <span v-if="!scope.row.editShow">{{ scope.row.cycleName }}</span>
+                  <span v-if="!scope.row.editShow">{{
+                    scope.row.cycleName
+                  }}</span>
                   <el-select
                     v-model="scope.row.cycleName"
                     style="width: 100%"
@@ -399,9 +501,9 @@
                   <el-button
                     size="small"
                     @click.native.prevent="
-                      scope.row.deleted = true,
-                      deleteRow(scope.$index, item.maintainPlanContents),
-                      calcTime(item)
+                      (scope.row.deleted = true),
+                        deleteRow(scope.$index, item.maintainPlanContents),
+                        calcTime(item)
                     "
                     :disabled="scope.row.deleted"
                     style="margin-right: 10px"
@@ -536,6 +638,7 @@
   </div>
 </template>
 <script>
+import draggable from "vuedraggable";  // 引入插件
 import { tpmsHeader, tpmsTable, tpmsChoosefile } from "../../components";
 import { uploadAccessory } from "../../lib/api/accessory";
 import apiConfig from "../../lib/api/apiConfig";
@@ -548,13 +651,14 @@ import {
   importFile, //导入文件
   updatePlanDetail,
   deletePlanMore, //批量删除
-  releasedMore,  //批量发布
+  releasedMore, //批量发布
 } from "../../lib/api/upkeepManagePage.js";
 import {
   updatePlanPicture,
   importURLPlanFile,
   workshopSectionSelect,
   workStationSelect,
+  worksectionIdManage,
   planStatusSelect,
   workshopAreaManage,
   workshopManage,
@@ -563,10 +667,16 @@ import {
 import { parseTime } from "@/utils";
 import axios from "axios";
 import {
+  workflowManage, //审批流
+  workflowNodeManage,
+  workflowRuningManage, //进行中的审批流
+} from "../../lib/api/approvalManage";
+import {
   factoryManage,
   workshopManage as workshopManageAll,
   workStationManage,
-  workshopSectionManage,
+  workshopSectionManage as workshopSectionManageList,
+  workshopAreaManage as WorkshopAreaManageList,
 } from "../../lib/api/workshopSettingsManage";
 
 import ShowPlanManage from "./comp/ShowPlanManage";
@@ -593,6 +703,31 @@ export default {
       return arr;
     });
     return {
+      Photos:[],
+      dialogImageDetailUrl: "",
+      dialogVisibleDetail:false,
+      //校验表单数据，为空触发提示
+      rules:{
+        // name:[
+        //   {required:true,message:"保养名称不能为空",trigger:"blur"}
+        // ],
+        workshopareaId:[
+          {required:true,message:"区域不能为空",trigger:"change"}
+        ],
+        sectionId:[
+          {required:true,message:"工段不能为空",trigger:"change"}
+        ],
+        ttWorkflowId:[
+          {required:true,message:"审批不能为空",trigger:"change"}
+        ]
+      },
+      isShow: false, //用于判断条件下拉列表显隐
+      quOptions: [], //区域下拉列表
+      gdOptions: [], //工段下拉列表
+      splOptions: [], //审批流下拉列表
+      //quOptions1: [], //区域查看下拉列表
+      gdOptions1: [], //工段查看下拉列表
+      splOptions1: [], //审批流查看下拉列表
       newAddDialogTitle: "",
       apiConfig,
       maintainContentColoniesIndex: 0,
@@ -641,17 +776,20 @@ export default {
       newAddDialog: false, //新增保养计划弹窗
       //新增保养计划表单
       form: {
-        tyepe:1,
+        tyepe: 1,
         no: "", //保养计划编号
         name: "", //保养名称
         workshopId: "", //车间ID
         workshopName: "", //车间名称
+        workshopareaId: "", //区域ID
+        sectionId: "", //工段ID
+        ttWorkflowId: "", //审批流ID
         areaName: "", //区域名称
         reason: "", //拒绝原因
         maintainContentColonies: [
           {
             id: "",
-            tyepe:1,
+            tyepe: 1,
             version: "", //版本
             // stationId: "", //工位
             // sectionId: "", //工段
@@ -666,7 +804,7 @@ export default {
             maintainPlanContents: [
               {
                 id: "",
-                tyepe:1,
+                tyepe: 1,
                 editShow: false,
                 executionNode: "", //时间/部件
                 executionPart: "", //保养部件
@@ -705,14 +843,29 @@ export default {
     tpmsTable,
     tpmsChoosefile,
     ShowPlanManage,
+    draggable,
   },
   created() {},
   mounted() {
     this.getTableData();
     this.getCycleList();
+    this.getworkflowManageList();
+    this.getWorkshopAreaManageList();
+    this.getWorkshopSectionList();
+    this.gdOptions1= this.gdOptions; //工段查看
+    this.splOptions1=this.splOptions; //审批流查看
     // this.getDeviceList();
   },
   methods: {
+    // zyl20230103 放大预览图片
+    handlePictureCardPreviewFileDetail(file) {
+        this.dialogImageDetailUrl = file.url;
+        this.dialogVisibleDetail = true;
+    },
+    // zyl20230103 删除图片
+    handleRemoveFileDetail(index) {
+      this.Photos.splice(index, 1);
+    },
     /** 导出单个计划 */
     exportFile({ id }) {
       let url = `${apiConfig.exportMaintainPlan}/${id}/download`; //请求下载文件的地址
@@ -748,7 +901,7 @@ export default {
           window.URL.revokeObjectURL(url);
         })
         .catch((error) => {
-          this.$message.error(error || '')
+          this.$message.error(error || "");
         });
     },
     /** 导出符合所有搜索条件的计划 */
@@ -827,13 +980,13 @@ export default {
         .then((res) => {
           datas = res.data;
           datas.forEach((data) => {
-            data.creatorName = JSON.parse(localStorage.getItem("user_info")).principal.name; //编制人
+            data.creatorName = JSON.parse(
+              localStorage.getItem("user_info")
+            ).principal.name; //编制人
             data.createDate = parseTime(new Date()); //编制日期
-            data.maintainPlanContents.forEach(
-              (item) => {
-                item.editShow = false
-              }
-            );
+            data.maintainPlanContents.forEach((item) => {
+              item.editShow = false;
+            });
           });
         })
         .catch((err) => {
@@ -842,9 +995,9 @@ export default {
 
       const time = setTimeout(() => {
         _this.form.maintainContentColonies = datas;
-        console.log(datas)
+        console.log(datas);
         this.loading = false;
-      }, 10000)
+      }, 10000);
     },
     getMutipleFileData(files, index) {
       this.loading = true;
@@ -927,8 +1080,19 @@ export default {
             });
         });
         this.orderDetail = res.data;
+        //渲染区域列表;
+        worksectionIdManage(null,this.orderDetail.sectionId).then((r) => {
+          //查看时,为区域下拉列表赋值回显;
+          this.$set(this.orderDetail, 'workshopareaId',r.data.workshopAreaId);
+        });
+        this.orderDetail.quOptions = this.quOptions;
+        this.orderDetail.gdOptions = this.gdOptions1;
+        this.orderDetail.splOptions = this.splOptions;
       });
-      this.orderDetailIsShow = true;
+      // if(this.orderDetail.gdOptions != null && this.orderDetail.splOptions != null){
+        this.orderDetailIsShow = true;
+      // }
+      
     },
     /** 关闭所有对话框 */
     handleClose() {
@@ -940,8 +1104,12 @@ export default {
 
     /**  新增保养计划按钮*/
     add() {
+      this.Photos = [];
       this.newAddDialog = true;
       this.newAddDialogTitle = "新增";
+      JSON.parse(localStorage.getItem("user_info")).principal.workshopId === 4
+        ? (this.isShow = true)
+        : (this.isShow = false);
       this.form = {
         no: "", //保养计划编号
         name: "", //保养名称
@@ -949,6 +1117,8 @@ export default {
         workshopId: "", //车间ID
         workshopName: "", //车间名称
         areaName: "", //区域名称
+        sectionId: "", //工段ID
+        ttWorkflowId: "", //审批流ID
         reason: "", //审核拒绝原因
         maintainContentColonies: [
           {
@@ -984,6 +1154,8 @@ export default {
         ],
       };
       this.getWorkshopAreaManage();
+      this.getWorkshopAreaManageList();//查询区域下拉框
+      this.getworkflowManageList(); //查询审批流id下拉框
     },
     // 同步图示库
     syncPictureFun() {
@@ -1038,6 +1210,39 @@ export default {
         });
       }
     },
+    /**获取区域下拉列表 */
+    getWorkshopAreaManageList() {
+      WorkshopAreaManageList.getNames(this.User_info.principal.workshopId).then(
+        (res) => {
+          this.quOptions = res.data;
+        }
+      );
+    },
+    /**获取工段下拉列表 */
+    getWorkshopSectionList(areaID) {
+      this.form.sectionId='';
+      workshopSectionManageList.getNames(
+        {"workshopAreaId": areaID}
+      ).then((res) => {
+        this.gdOptions = res.data;
+        if(areaID == null){
+          this.gdOptions1 = res.data;
+        }
+        //this.form.workshopSectionId = res.data[0].id;
+      });
+    },
+
+    /**获取审批流下拉列表 */
+    getworkflowManageList() {
+      workflowManage
+        .getLists(
+          {"application": "冲压车间保养审批流程","enable":"true"} 
+        )
+        .then((res) => {
+          this.splOptions = res.data.content;
+        });
+    },
+
     /**  获取区域名称 */
     getWorkshopAreaManage() {
       workshopAreaManage(null, this.User_info.principal.workshopAreaId).then(
@@ -1063,6 +1268,13 @@ export default {
     edit(row) {
       // console.log(row);
       this.newAddDialogTitle = "编辑";
+      JSON.parse(localStorage.getItem("user_info")).principal.workshopId === 4
+        ? (this.isShow = true)
+        : (this.isShow = false);
+        this.getworkflowManageList();
+        this.getWorkshopAreaManageList();
+        this.getWorkshopSectionList();
+      
       checkPlanDetail(null, row.id).then((res) => {
         console.log(res);
         let data = res.data;
@@ -1083,9 +1295,22 @@ export default {
               ever.name = ever.accessoryId;
               ever.url = this.apiConfig.accessoryFile + ever.accessoryUrl;
             });
+            this.Photos=item.maintainPlanPictures;
+        });
+        //查询审批流节点
+        // workflowRuningManage.getId(null,data.ttWorkflowId).then((r) =>{
+        //   this.form.ttWorkflowId = r.data[0];
+        //   //this.$set(this.form, 'workflowId',r.data[0]);
+        //   //console.log(this.form.workflowId);
+        // });
+        //查询岗位的所属区域
+        worksectionIdManage(null,data.sectionId).then((r) => {
+          this.form.workshopareaId = r.data.workshopAreaId;
         });
         this.form.status = "";
         this.form = data;
+        //为区域下拉列表赋值;
+        this.$set(this.form, 'workshopareaId');
       });
       this.newAddDialog = true;
     },
@@ -1134,11 +1359,19 @@ export default {
         return;
       }
       console.log(JSON.stringify(form));
-      addmaintainPlan(form).then((res) => {
-        // console.log(res);
-        this.$message.success("操作成功");
-        this.newAddDialog = false;
-        this.getTableData();
+      this.$refs['form'].validate((valid) => {
+        if (valid) {
+        addmaintainPlan(form).then((res) => {
+          // console.log(res);
+          this.$message.success("操作成功");
+          this.newAddDialog = false;
+          this.getTableData();
+        });
+          console.log(JSON.stringify(form));
+        } else {
+          console.log('error submit!!');
+          return false;
+        }
       });
     },
 
@@ -1154,25 +1387,28 @@ export default {
         this.$message.warning("工作内容顺序重复，请修改");
         return;
       }
-      const validateDevices = this.form.maintainContentColonies.filter(item => {
-        const validateee = item.maintainPlanContents.filter(itemm => {
-          if(!itemm.executionNode) return true;
-          if(!itemm.content) return true;
-          if(!itemm.executionPart) return true;
-          // if(!itemm.cycleId) return true;
+      const validateDevices = this.form.maintainContentColonies.filter(
+        (item) => {
+          const validateee = item.maintainPlanContents.filter((itemm) => {
+            if (!itemm.executionNode) return true;
+            if (!itemm.content) return true;
+            if (!itemm.executionPart) return true;
+            // if(!itemm.cycleId) return true;
+            return false;
+          });
+          if (validateee.length) {
+            this.$message.warning("缺少必填项!");
+            return true;
+          }
           return false;
-        });
-        if (validateee.length) {
-          this.$message.warning("缺少必填项!");
-          return true;
         }
-        return false
-      })
+      );
       if (validateDevices.length) {
         return;
       }
       console.log(JSON.stringify(this.form));
       delete this.form.status;
+      this.form.maintainContentColonies[0].maintainPlanPictures=this.Photos;
       updatePlanDetail(this.form, this.form.id).then((res) => {
         this.newAddDialog = false;
         this.getTableData();
@@ -1231,25 +1467,25 @@ export default {
     },
     /**
      * 删除maintainPlanContents里的一条数据
-     */ 
+     */
     deleteRow(row, rows) {
       // rows.splice(index, 1);
-      
+
       console.log(this.form);
-      debugger
+      debugger;
     },
     /** 计算工时 */
     calcTime(item) {
       console.log(item);
       const { maintainPlanContents } = item;
       const sum = maintainPlanContents
-        .filter((row => row.deleted == false))
+        .filter((row) => row.deleted == false)
         .map((row) => row.hour)
         .reduce((a, b) => {
           const pre = parseInt(a) || 0;
           const next = parseInt(b) || 0;
           return pre + next;
-        },0);
+        }, 0);
       item.hour = sum;
     },
     //审批保养计划
@@ -1388,12 +1624,12 @@ export default {
           this.form.status = 5;
           updatePlanDetail(this.form, row.id).then((res) => {
             // console.log(res);
-          this.getTableData();
+            this.getTableData();
             this.$message({
               type: "success",
               message: "发布成功!",
             });
-          this.getTableData();
+            this.getTableData();
           });
         })
         .catch(() => {
@@ -1441,6 +1677,10 @@ export default {
       this.maintainContentColoniesIndex = index;
       this.maintainPlanContentsIndex = num;
     },
+    //图片上传失败
+    handleAvatarError(){
+      this.$message.error("上传失败");
+    },
     // 图片上传成功
     handleAvatarSuccess(res, file, item) {
       // this.imageUrl = URL.createObjectURL(file.raw);
@@ -1460,7 +1700,8 @@ export default {
         url: `${this.apiConfig.accessoryFile}/${res.path + res.name}`,
       };
       item.maintainPlanPictures = item.maintainPlanPictures || [];
-      item.maintainPlanPictures.push(img);
+      //item.maintainPlanPictures.push(img);
+      this.Photos.push(img);
       this.$message.success("上传完成");
     },
     // 图片上传之前
@@ -1468,18 +1709,18 @@ export default {
       // console.log(file);
       const isLt10M = file.size / 1024 / 1024 < 10;
 
-      var testmsg = file.name.substring(file.name.lastIndexOf('.')+1)
-      const extension = testmsg === 'png'
-      const extension2 = testmsg === 'jpeg'
-      const extension3 = testmsg === 'jpg'
+      var testmsg = file.name.substring(file.name.lastIndexOf(".") + 1);
+      const extension = testmsg === "png";
+      const extension2 = testmsg === "jpeg";
+      const extension3 = testmsg === "jpg";
 
-      if(!extension && !extension2 && !extension3) {
+      if (!extension && !extension2 && !extension3) {
         this.$message({
-            message: '上传文件只能是 png、jpeg、jpg格式的文件',
-            type: 'warning'
+          message: "上传文件只能是 png、jpeg、jpg格式的文件",
+          type: "warning",
         });
       }
-      
+
       if (!isLt10M) {
         this.$message.error("上传头像图片大小不能超过 10M!");
       }

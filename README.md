@@ -31,4 +31,3 @@ module.exports = {
 　　　　app: ["babel-polyfill", "./src/main.js"]
 　　}
 };
-```

@@ -170,6 +170,60 @@
                 <el-input v-model="form.name"></el-input>
               </el-form-item>
             </el-col>
+          </el-row>
+          <el-row>
+            <!-- 冲压车间的用户保养计划导入，单独处理下拉列表三个 -->
+            <div v-if="isShow">
+              <el-col :span="8">
+                <el-form-item label="区域"   label-width="55px" prop="workshopareaId">
+                  <el-select v-model="form.workshopareaId" @change="getWorkshopSectionList" clearable placeholder="请选择" style="width: 90%">
+                    <el-option
+                      v-for="item in quOptions"
+                      :key="item.id"
+                      :label="item.label"
+                      :value="item.id"
+                    >
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :span="8">
+                <el-form-item label="工段"  label-width="55px" prop="sectionId">
+                  <el-select
+                    v-model="form.sectionId"
+                    clearable placeholder="请选择"
+                    style="width: 90%"
+                  >
+                    <el-option
+                      v-for="item in gdOptions"
+                      :key="item.id"
+                      :label="item.label"
+                      :value="item.id"
+                    >
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :span="8">
+                <el-form-item label="审批流"  label-width="70px" prop="ttWorkflowId">
+                  <el-select
+                    v-model="form.ttWorkflowId"
+                    placeholder="请选择"
+                    style="margin: 0px 10px ;width: 90%"
+                  >
+                    <el-option
+                      v-for="(item, index) in splOptions"
+                      :key="index"
+                      :label="item.name"
+                      :value="item.id"
+                    >
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+              </el-col>
+            </div>
+          </el-row>
+          <el-row>
             <el-col :span="18">
               <el-form-item label="导入设备巡检计划">
                 <div>
@@ -247,14 +301,37 @@
             </el-col>
             <el-col :span="24">
               <el-form-item label="图示">
+                <!-- 20230103 图片拖拽排序 -->
+                <!-- 使用element-ui自带样式 -->
+                <ul class="el-upload-list el-upload-list--picture-card">
+                    <draggable v-model="Photos">
+                        <li v-for="(item, index) in Photos" :key="item.accessoryId" class="el-upload-list__item is-success animated">
+                            <img :src="item.url" alt="" class="el-upload-list__item-thumbnail ">
+                            <i class="el-icon-close"></i>
+                            <span class="el-upload-list__item-actions">
+                              <!-- 预览 -->
+                              <span class="el-upload-list__item-preview" @click="handlePictureCardPreviewFileDetail(item)">
+                                <i class="el-icon-zoom-in"></i>
+                              </span>
+                              <!-- 删除 -->
+                              <span class="el-upload-list__item-delete" @click="handleRemoveFileDetail(index)">
+                                <i class="el-icon-delete"></i>
+                              </span>
+                            </span>
+                        </li>
+                    </draggable>
+                </ul>
                 <el-upload
                   class="avatar-uploader"
                   list-type="picture-card"
                   multiple
-                  :file-list="item.planPictures"
                   :action="uploadImgUrl"
                   :headers="uploadHeaders"
+                  :show-file-list="false"
                   accept=".jpg, .png, .jpeg"
+                  :on-error="
+                  (res, file) => handleAvatarError(res, file, item)
+                  "
                   :on-success="
                     (res, file) => handleAvatarSuccess(res, file, item)
                   "
@@ -265,6 +342,10 @@
                 >
                   <el-button size="small" type="file">点击上传图示</el-button>
                 </el-upload>
+                <!-- 预览弹出层 -->
+                <el-dialog :visible.sync="dialogVisibleDetail" :append-to-body="true">
+                    <img width="100%" :src="dialogImageDetailUrl" alt="">
+                </el-dialog>
               </el-form-item>
             </el-col>
             <!-- 表格区 -->
@@ -562,6 +643,7 @@
   </div>
 </template>
 <script>
+import draggable from "vuedraggable";  // 引入插件
 import { tpmsHeader, tpmsTable, tpmsChoosefile } from "../../components";
 import { uploadAccessory } from "../../lib/api/accessory";
 import apiConfig from "../../lib/api/apiConfig";
@@ -583,14 +665,19 @@ import {
   updatePlanPicture,
   importURLPlanFile,
   postPlan,
+  worksectionIdManage,
 } from "../../lib/api/checkPlan";
 import { parseTime } from "@/utils";
 import axios from "axios";
 import {
+  workflowManage, //巡检审批流
+} from "../../lib/api/approvalManage";
+import {
   factoryManage,
   workshopManage as workshopManageAll,
   workStationManage,
-  workshopSectionManage,
+  workshopSectionManage as workshopSectionManageList,
+  workshopAreaManage as WorkshopAreaManageList,
 } from "../../lib/api/workshopSettingsManage";
 import ShowPlanManage from "./comp/ShowPlanManage";
 export default {
@@ -623,6 +710,31 @@ export default {
         return arr;
       });
     return {
+      Photos:[],
+      dialogImageDetailUrl: "",
+      dialogVisibleDetail:false,
+      //校验表单数据，为空触发提示
+      rules:{
+        // name:[
+        //   {required:true,message:"保养名称不能为空",trigger:"blur"}
+        // ],
+        workshopareaId:[
+          {required:true,message:"区域不能为空",trigger:"change"}
+        ],
+        sectionId:[
+          {required:true,message:"工段不能为空",trigger:"change"}
+        ],
+        ttWorkflowId:[
+          {required:true,message:"审批不能为空",trigger:"change"}
+        ]
+      },
+      isShow: false, //用于判断条件下拉列表显隐
+      quOptions: [], //区域下拉列表
+      gdOptions: [], //工段下拉列表
+      splOptions: [], //审批流下拉列表
+      //quOptions1: [], //区域查看下拉列表
+      gdOptions1: [], //工段查看下拉列表
+      splOptions1: [], //审批流查看下拉列表
       newAddDialogTitle: "",
       apiConfig,
       planDevicesIndex: 0,
@@ -724,6 +836,10 @@ export default {
         workshopId: "", //车间ID
         workshopName: "", //车间名称
         areaName: "", //区域名称
+        //zyl 20221206
+        workshopareaId: "", //区域ID
+        sectionId: "", //工段ID
+        ttWorkflowId: "", //审批流ID
         reason: "", //拒绝原因
         planDevices: [
           {
@@ -781,14 +897,30 @@ export default {
     tpmsTable,
     tpmsChoosefile,
     ShowPlanManage,
+    draggable,
   },
   created() {},
   mounted() {
     this.getTableData();
     this.getCycleList();
     this.getDeviceList();
+    //zyl 20221206
+    this.getworkflowManageList();
+    this.getWorkshopAreaManageList();
+    this.getWorkshopSectionList();
+    this.gdOptions1= this.gdOptions; //工段查看
+    this.splOptions1=this.splOptions; //审批流查看
   },
   methods: {
+    // zyl20230103 放大预览图片
+    handlePictureCardPreviewFileDetail(file) {
+        this.dialogImageDetailUrl = file.url;
+        this.dialogVisibleDetail = true;
+    },
+    // zyl20230103 删除图片
+    handleRemoveFileDetail(index) {
+      this.Photos.splice(index, 1);
+    },
     /** 导出单个计划 */
     exportFile({ id }) {
       let url = `${apiConfig.exportExcel}/${id}/download`; //请求下载文件的地址
@@ -1011,6 +1143,15 @@ export default {
             });
         });
         this.orderDetail = res.data;
+        //zyl 20221206
+        //渲染区域列表;
+        worksectionIdManage(null,this.orderDetail.sectionId).then((r) => {
+          //查看时,为区域下拉列表赋值回显;
+          this.$set(this.orderDetail, 'workshopareaId',r.data.workshopAreaId);
+        });
+        this.orderDetail.quOptions = this.quOptions;
+        this.orderDetail.gdOptions = this.gdOptions1;
+        this.orderDetail.splOptions = this.splOptions;
       });
       this.orderDetailIsShow = true;
     },
@@ -1024,8 +1165,13 @@ export default {
 
     /**  新增巡检计划按钮*/
     add() {
+      this.Photos = [];
       this.newAddDialog = true;
       this.newAddDialogTitle = "新增";
+      //zyl 20221206
+      JSON.parse(localStorage.getItem("user_info")).principal.workshopId === 4
+        ? (this.isShow = true)
+        : (this.isShow = false);
       this.form = {
         type: "1", //巡检计划
         no: "", //巡检计划编号
@@ -1033,6 +1179,8 @@ export default {
         workshopId: "", //车间ID
         workshopName: "", //车间名称
         areaName: "", //区域名称
+        sectionId: "", //工段ID
+        ttWorkflowId: "", //审批流ID
         reason: "", //审核拒绝原因
         planDevices: [
           {
@@ -1066,6 +1214,8 @@ export default {
         ],
       };
       this.getWorkshopAreaManage();
+      this.getWorkshopAreaManageList();//查询区域下拉框
+      this.getworkflowManageList(); //查询审批流id下拉框
     },
     // 同步图示库
     syncPictureFun() {
@@ -1120,6 +1270,38 @@ export default {
         });
       }
     },
+    //zyl 20221206
+    /**获取区域下拉列表 */
+    getWorkshopAreaManageList() {
+      WorkshopAreaManageList.getNames(this.User_info.principal.workshopId).then(
+        (res) => {
+          this.quOptions = res.data;
+        }
+      );
+    },
+    /**获取工段下拉列表 */
+    getWorkshopSectionList(areaID) {
+      this.form.sectionId='';
+      workshopSectionManageList.getNames(
+        {"workshopAreaId": areaID}
+      ).then((res) => {
+        this.gdOptions = res.data;
+        if(areaID == null){
+          this.gdOptions1 = res.data;
+        }
+      });
+    },
+
+    /**获取审批流下拉列表 */
+    getworkflowManageList() {
+      workflowManage
+        .getLists(
+          {"application": "巡检工单审批","enable":"true"} 
+        )
+        .then((res) => {
+          this.splOptions = res.data.content;
+        });
+    },
     /**  获取区域名称 */
     getWorkshopAreaManage() {
       workshopAreaManage(null, this.User_info.principal.workshopAreaId).then(
@@ -1159,6 +1341,14 @@ export default {
     edit(row) {
       // console.log(row);
       this.newAddDialogTitle = "编辑";
+      //zyl 20221206
+      JSON.parse(localStorage.getItem("user_info")).principal.workshopId === 4
+        ? (this.isShow = true)
+        : (this.isShow = false);
+      this.getworkflowManageList();
+      this.getWorkshopAreaManageList();
+      this.getWorkshopSectionList();
+
       queryPlan(null, row.id).then((res) => {
         console.log(res);
         let data = res.data;
@@ -1173,9 +1363,17 @@ export default {
               ever.name = ever.accessoryId;
               ever.url = this.apiConfig.accessoryFile + ever.accessoryUrl;
             });
+            this.Photos=item.planPictures;
+        });
+        //zyl 20221206 编辑能不能获取到区域/工段id？需要验证
+        //查询岗位的所属区域
+        worksectionIdManage(null,data.sectionId).then((r) => {
+          this.form.workshopareaId = r.data.workshopAreaId;
         });
         this.form.status = "";
         this.form = data;
+        //为区域下拉列表赋值;
+        this.$set(this.form, 'workshopareaId');
       });
       this.newAddDialog = true;
     },
@@ -1224,11 +1422,19 @@ export default {
         return;
       }
       console.log(JSON.stringify(form));
-      addPlan(form).then((res) => {
-        // console.log(res);
-        this.$message.success("操作成功");
-        this.newAddDialog = false;
-        this.getTableData();
+      this.$refs['form'].validate((valid) => {
+        if (valid) {
+        addPlan(form).then((res) => {
+          // console.log(res);
+          this.$message.success("操作成功");
+          this.newAddDialog = false;
+          this.getTableData();
+        });
+          console.log(JSON.stringify(form));
+        } else {
+          console.log('error submit!!');
+          return false;
+        }
       });
     },
 
@@ -1262,6 +1468,7 @@ export default {
       }
       console.log(JSON.stringify(this.form));
       delete this.form.status;
+      this.form.planDevices[0].planPictures=this.Photos;
       patchPlan(this.form, this.form.id).then((res) => {
         this.newAddDialog = false;
         this.getTableData();
@@ -1542,6 +1749,10 @@ export default {
       this.planDevicesIndex = index;
       this.planContentsIndex = num;
     },
+    //图片上传失败
+    handleAvatarError(){
+      this.$message.error("上传失败");
+    },
     // 图片上传成功
     handleAvatarSuccess(res, file, item) {
       // this.imageUrl = URL.createObjectURL(file.raw);
@@ -1561,7 +1772,8 @@ export default {
         url: `${this.apiConfig.accessoryFile}/${res.path + res.name}`,
       };
       item.planPictures = item.planPictures || [];
-      item.planPictures.push(img);
+      //item.planPictures.push(img);
+      this.Photos.push(img);
       this.$message.success("上传完成");
     },
     // 图片上传之前
