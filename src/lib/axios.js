@@ -12,7 +12,9 @@ import store from '../store/index.js'
 service.interceptors.request.use(
 
     config => {
-        config.headers['iv-user'] = Cookies.get('iv-user');
+        if(Cookies.get('iv-user') != null && Cookies.get('iv-user')!=-1){
+            config.headers['iv-user'] = Cookies.get('iv-user');
+        }
         const access_token = localStorage.getItem('access_token');
         config.headers.Authorization = 'Bearer ' + access_token;       
         const newurl =config.url.substring(config.url.length-9);

@@ -48,7 +48,7 @@ const actions = {
     for (let each in mutations) {
       commit(each, '');
     }
-    Cookies.remove('iv-user');
+    Cookies.set('iv-user',-1);
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
   }

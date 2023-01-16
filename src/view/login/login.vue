@@ -52,7 +52,7 @@ export default {
       const { preventLogin } = this.$route.params;
       preventLogin || this.login();
     }
-    if(Cookies.get('iv-user')){
+    if(Cookies.get('iv-user') != null && Cookies.get('iv-user') != -1){
       this.ivLogin();
     }
   },
