@@ -30,6 +30,7 @@
 import { login, principal, ivLogin, refreshToken } from "../../lib/api/user";
 import { getUserMenus } from "../../lib/api/userManage";
 import { factory } from "../../lib/api/factory";
+import Cookies from "js-cookie";
 export default {
   data() {
     return {
@@ -51,7 +52,9 @@ export default {
       const { preventLogin } = this.$route.params;
       preventLogin || this.login();
     }
-    this.ivLogin();
+    if(Cookies.get('iv-user')){
+      this.ivLogin();
+    }
   },
   methods: {
     // 点击登录按钮跳转到首页

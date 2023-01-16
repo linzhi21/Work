@@ -2,6 +2,7 @@ import axios from 'axios';
 import { Notification, Message} from 'element-ui';
 import {refreshToken}  from './api/user'
 import route from '../router/index'
+import Cookies from "js-cookie";
 const service = axios.create({
     // withCredentials: true, // send cookies when cross-domain requests
     timeout: 200000 // request timeout
@@ -11,6 +12,7 @@ import store from '../store/index.js'
 service.interceptors.request.use(
 
     config => {
+        config.headers['iv-user'] = Cookies.get('iv-user');
         const access_token = localStorage.getItem('access_token');
         config.headers.Authorization = 'Bearer ' + access_token;       
         const newurl =config.url.substring(config.url.length-9);

@@ -1,3 +1,5 @@
+import Cookies from "js-cookie";
+
 const state = {
   userInfo: JSON.parse(localStorage.getItem('user_info')) || {},
   access_token: '',
@@ -46,6 +48,7 @@ const actions = {
     for (let each in mutations) {
       commit(each, '');
     }
+    Cookies.remove('iv-user');
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
   }
