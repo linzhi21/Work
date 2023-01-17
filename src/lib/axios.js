@@ -3,6 +3,8 @@ import { Notification, Message} from 'element-ui';
 import {refreshToken}  from './api/user'
 import route from '../router/index'
 import Cookies from "js-cookie";
+import {hmacMD5} from "../utils/index"
+
 const service = axios.create({
     // withCredentials: true, // send cookies when cross-domain requests
     timeout: 200000 // request timeout
@@ -23,6 +25,11 @@ service.interceptors.request.use(
         } else {
             config.headers['Content-Type'] = 'application/json';
         }
+        let r = Date.now()+''+Math.random();
+        let paramTokenKey = hmacMD5(r);
+        let paramTokenValue = hmacMD5(paramTokenKey);
+        config.headers['paramTokenKey'] = paramTokenKey;
+        config.headers['paramTokenValue'] = paramTokenValue;
         return config;
     },
     error => {
