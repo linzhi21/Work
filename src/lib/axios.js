@@ -12,7 +12,7 @@ import store from '../store/index.js'
 service.interceptors.request.use(
 
     config => {
-        if(Cookies.get('iv-user') != null && Cookies.get('iv-user')!=-1){
+        if(Cookies.get('iv-user')){
             config.headers['iv-user'] = Cookies.get('iv-user');
         }
         const access_token = localStorage.getItem('access_token');
