@@ -145,6 +145,7 @@
           ref="form"
           label-width="140px"
           label-position="left"
+          :rules="rules"
         >
           <el-row>
             <!-- <el-col :span="11">
@@ -176,7 +177,7 @@
             <div v-if="isShow">
               <el-col :span="8">
                 <el-form-item label="区域"   label-width="55px" prop="workshopareaId">
-                  <el-select v-model="form.workshopareaId" @change="getWorkshopSectionList" clearable placeholder="请选择" style="width: 90%">
+                  <el-select v-model="form.workshopareaId" @change="getWorkshopSectionList"  placeholder="请选择" style="width: 90%">
                     <el-option
                       v-for="item in quOptions"
                       :key="item.id"
@@ -191,7 +192,7 @@
                 <el-form-item label="工段"  label-width="55px" prop="sectionId">
                   <el-select
                     v-model="form.sectionId"
-                    clearable placeholder="请选择"
+                    placeholder="请选择"
                     style="width: 90%"
                   >
                     <el-option
@@ -304,17 +305,17 @@
                 <!-- 20230103 图片拖拽排序 -->
                 <!-- 使用element-ui自带样式 -->
                 <ul class="el-upload-list el-upload-list--picture-card">
-                    <draggable v-model="Photos">
-                        <li v-for="(item, index) in Photos" :key="item.accessoryId" class="el-upload-list__item is-success animated">
-                            <img :src="item.url" alt="" class="el-upload-list__item-thumbnail ">
+                    <draggable v-model="item.planPictures">
+                        <li v-for="(img, index) in item.planPictures" :key="img.accessoryId" class="el-upload-list__item is-success animated">
+                            <img :src="img.url" alt="" class="el-upload-list__item-thumbnail ">
                             <i class="el-icon-close"></i>
                             <span class="el-upload-list__item-actions">
                               <!-- 预览 -->
-                              <span class="el-upload-list__item-preview" @click="handlePictureCardPreviewFileDetail(item)">
+                              <span class="el-upload-list__item-preview" @click="handlePictureCardPreviewFileDetail(img)">
                                 <i class="el-icon-zoom-in"></i>
                               </span>
                               <!-- 删除 -->
-                              <span class="el-upload-list__item-delete" @click="handleRemoveFileDetail(index)">
+                              <span class="el-upload-list__item-delete" @click="handleRemoveFileDetail(index,item.planPictures)">
                                 <i class="el-icon-delete"></i>
                               </span>
                             </span>
@@ -710,7 +711,6 @@ export default {
         return arr;
       });
     return {
-      Photos:[],
       dialogImageDetailUrl: "",
       dialogVisibleDetail:false,
       //校验表单数据，为空触发提示
@@ -918,8 +918,8 @@ export default {
         this.dialogVisibleDetail = true;
     },
     // zyl20230103 删除图片
-    handleRemoveFileDetail(index) {
-      this.Photos.splice(index, 1);
+    handleRemoveFileDetail(index,planPictures) {
+      planPictures.splice(index, 1);
     },
     /** 导出单个计划 */
     exportFile({ id }) {
@@ -1165,7 +1165,6 @@ export default {
 
     /**  新增巡检计划按钮*/
     add() {
-      this.Photos = [];
       this.newAddDialog = true;
       this.newAddDialogTitle = "新增";
       //zyl 20221206
@@ -1363,7 +1362,6 @@ export default {
               ever.name = ever.accessoryId;
               ever.url = this.apiConfig.accessoryFile + ever.accessoryUrl;
             });
-            this.Photos=item.planPictures;
         });
         //zyl 20221206 编辑能不能获取到区域/工段id？需要验证
         //查询岗位的所属区域
@@ -1468,7 +1466,6 @@ export default {
       }
       console.log(JSON.stringify(this.form));
       delete this.form.status;
-      this.form.planDevices[0].planPictures=this.Photos;
       patchPlan(this.form, this.form.id).then((res) => {
         this.newAddDialog = false;
         this.getTableData();
@@ -1771,9 +1768,12 @@ export default {
         name: res.id,
         url: `${this.apiConfig.accessoryFile}/${res.path + res.name}`,
       };
-      item.planPictures = item.planPictures || [];
-      //item.planPictures.push(img);
-      this.Photos.push(img);
+      //item.planPictures = item.planPictures || [];
+      if(!item.planPictures){
+        this.$set(item, 'planPictures',[]);
+      }
+      item.planPictures.push(img);
+      console.log(item);
       this.$message.success("上传完成");
     },
     // 图片上传之前

@@ -170,7 +170,7 @@
             <div v-if="isShow">
               <el-col :span="8">
                 <el-form-item label="区域"   label-width="55px" prop="workshopareaId">
-                  <el-select v-model="form.workshopareaId" @change="getWorkshopSectionList" clearable placeholder="请选择" style="width: 90%">
+                  <el-select v-model="form.workshopareaId" @change="getWorkshopSectionList"  placeholder="请选择" style="width: 90%">
                     <el-option
                       v-for="item in quOptions"
                       :key="item.id"
@@ -185,7 +185,7 @@
                 <el-form-item label="工段"  label-width="55px" prop="sectionId">
                   <el-select
                     v-model="form.sectionId"
-                    clearable placeholder="请选择"
+                    placeholder="请选择"
                     style="width: 90%"
                   >
                     <el-option
@@ -314,24 +314,24 @@
                 <!-- 20230103 图片拖拽排序 -->
                 <!-- 使用element-ui自带样式 -->
                 <ul class="el-upload-list el-upload-list--picture-card">
-                    <draggable v-model="Photos">
-                        <li v-for="(item, index) in Photos" :key="item.accessoryId" class="el-upload-list__item is-success animated">
-                            <img :src="item.url" alt="" class="el-upload-list__item-thumbnail ">
+                    <draggable v-model="item.maintainPlanPictures">
+                        <li v-for="(img, index) in item.maintainPlanPictures" :key="img.accessoryId" class="el-upload-list__item is-success animated">
+                            <img :src="img.url" alt="" class="el-upload-list__item-thumbnail ">
                             <i class="el-icon-close"></i>
                             <span class="el-upload-list__item-actions">
                               <!-- 预览 -->
-                              <span class="el-upload-list__item-preview" @click="handlePictureCardPreviewFileDetail(item)">
+                              <span class="el-upload-list__item-preview" @click="handlePictureCardPreviewFileDetail(img)">
                                 <i class="el-icon-zoom-in"></i>
                               </span>
                               <!-- 删除 -->
-                              <span class="el-upload-list__item-delete" @click="handleRemoveFileDetail(index)">
+                              <span class="el-upload-list__item-delete" @click="handleRemoveFileDetail(index,item.maintainPlanPictures)">
                                 <i class="el-icon-delete"></i>
                               </span>
                             </span>
                         </li>
                     </draggable>
                 </ul>
-                <!-- :file-list="item.maintainPlanPictures || []" -->
+                    <!-- :file-list="item.maintainPlanPictures || []" -->
                 <el-upload
                   class="avatar-uploader"
                   list-type="picture-card"
@@ -703,7 +703,6 @@ export default {
       return arr;
     });
     return {
-      Photos:[],
       dialogImageDetailUrl: "",
       dialogVisibleDetail:false,
       //校验表单数据，为空触发提示
@@ -863,8 +862,8 @@ export default {
         this.dialogVisibleDetail = true;
     },
     // zyl20230103 删除图片
-    handleRemoveFileDetail(index) {
-      this.Photos.splice(index, 1);
+    handleRemoveFileDetail(index,maintainPlanPictures) {
+      maintainPlanPictures.splice(index, 1);
     },
     /** 导出单个计划 */
     exportFile({ id }) {
@@ -1104,7 +1103,6 @@ export default {
 
     /**  新增保养计划按钮*/
     add() {
-      this.Photos = [];
       this.newAddDialog = true;
       this.newAddDialogTitle = "新增";
       JSON.parse(localStorage.getItem("user_info")).principal.workshopId === 4
@@ -1295,7 +1293,6 @@ export default {
               ever.name = ever.accessoryId;
               ever.url = this.apiConfig.accessoryFile + ever.accessoryUrl;
             });
-            this.Photos=item.maintainPlanPictures;
         });
         //查询审批流节点
         // workflowRuningManage.getId(null,data.ttWorkflowId).then((r) =>{
@@ -1408,7 +1405,6 @@ export default {
       }
       console.log(JSON.stringify(this.form));
       delete this.form.status;
-      this.form.maintainContentColonies[0].maintainPlanPictures=this.Photos;
       updatePlanDetail(this.form, this.form.id).then((res) => {
         this.newAddDialog = false;
         this.getTableData();
@@ -1700,8 +1696,7 @@ export default {
         url: `${this.apiConfig.accessoryFile}/${res.path + res.name}`,
       };
       item.maintainPlanPictures = item.maintainPlanPictures || [];
-      //item.maintainPlanPictures.push(img);
-      this.Photos.push(img);
+      item.maintainPlanPictures.push(img);
       this.$message.success("上传完成");
     },
     // 图片上传之前

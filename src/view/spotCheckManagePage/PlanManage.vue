@@ -251,17 +251,17 @@
                 <!-- 20230103 图片拖拽排序 -->
                 <!-- 使用element-ui自带样式 -->
                 <ul class="el-upload-list el-upload-list--picture-card">
-                  <draggable v-model="Photos">
-                      <li v-for="(item, index) in Photos" :key="item.accessoryId" class="el-upload-list__item is-success animated">
-                          <img :src="item.url" alt="" class="el-upload-list__item-thumbnail ">
+                  <draggable v-model="item.planPictures">
+                      <li v-for="(img, index) in item.planPictures" :key="img.accessoryId" class="el-upload-list__item is-success animated">
+                          <img :src="img.url" alt="" class="el-upload-list__item-thumbnail ">
                           <i class="el-icon-close"></i>
                           <span class="el-upload-list__item-actions">
                             <!-- 预览 -->
-                            <span class="el-upload-list__item-preview" @click="handlePictureCardPreviewFileDetail(item)">
+                            <span class="el-upload-list__item-preview" @click="handlePictureCardPreviewFileDetail(img)">
                               <i class="el-icon-zoom-in"></i>
                             </span>
                             <!-- 删除 -->
-                            <span class="el-upload-list__item-delete" @click="handleRemoveFileDetail(index)">
+                            <span class="el-upload-list__item-delete" @click="handleRemoveFileDetail(index,item.planPictures)">
                               <i class="el-icon-delete"></i>
                             </span>
                           </span>
@@ -618,7 +618,6 @@ export default {
     );
     return {
       // zyl20230103
-      Photos:[],
       dialogImageDetailUrl: "",
       dialogVisibleDetail:false,
       apiConfig,
@@ -746,8 +745,8 @@ export default {
         this.dialogVisibleDetail = true;
     },
     // zyl20230103 删除图片
-    handleRemoveFileDetail(index) {
-      this.Photos.splice(index, 1);
+    handleRemoveFileDetail(index,planPictures) {
+      planPictures.splice(index, 1);
     },
     /** 导出单个计划 */
     exportFile({ id }) {
@@ -1062,7 +1061,6 @@ export default {
 
     /**  新增点检计划按钮*/
     add() {
-      this.Photos = [];
       this.newAddDialog = true;
       this.newAddDialogTitle = "新增";
       this.form = {
@@ -1203,7 +1201,6 @@ export default {
               ever.name = ever.accessoryId;
               ever.url = this.apiConfig.accessoryFile + ever.accessoryUrl;
             });
-            this.Photos=item.planPictures;
         });
         this.form.status = "";
         this.form = data;
@@ -1292,7 +1289,6 @@ export default {
       delete this.form.status;
       let type = this.form.type;
       console.log(this.form.type)
-      this.form.planDevices[0].planPictures=this.Photos;
       patchPlan(this.form, this.form.id).then((res) => {
         console.log(res.data)
         this.newAddDialog = false;
@@ -1589,11 +1585,12 @@ export default {
         name: res.id,
         url: `${this.apiConfig.accessoryFile}/${res.path + res.name}`,
       };
-      console.log("上传完成");
-      console.log(img);
-      item.planPictures = item.planPictures || [];
-      //item.planPictures.push(img);
-      this.Photos.push(img);
+      //item.planPictures = item.planPictures || [];
+      if(!item.planPictures){
+        this.$set(item, 'planPictures',[]);
+      }
+      item.planPictures.push(img);
+      console.log(item);
       this.$message.success("上传完成");
     },
     // 图片上传之前
