@@ -25,6 +25,12 @@ const route = new Router({
       hidden: true
     },
     {
+      path: '/loading',
+      name: 'loading',
+      component: () => import('@/view/loading/loading'),
+      hidden: true
+    },
+    {
       path: '/home',
       name: 'home',
       component: () => import('@/view/home/home'),
