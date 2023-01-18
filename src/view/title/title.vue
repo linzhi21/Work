@@ -49,6 +49,7 @@
 import { principal, userWorkshopManage } from "../../lib/api/user";
 import { getUserMenus } from "../../lib/api/userManage";
 import { messageManage } from "../../lib/api/system";
+import Cookies from "js-cookie";
 export default {
   data() {
     return {
@@ -158,6 +159,7 @@ export default {
     },
     /** 退出登陆 */
     logout() {
+      Cookies.remove('iv-user',{ path:'/tpmsjct/'});
       this.$router.replace({
         name: "login",
         params: {
