@@ -680,6 +680,7 @@ import {
 } from "../../lib/api/workshopSettingsManage";
 
 import ShowPlanManage from "./comp/ShowPlanManage";
+import {setHeadToken} from "../../utils";
 export default {
   data() {
     // const statusList =[
@@ -1092,7 +1093,7 @@ export default {
       // if(this.orderDetail.gdOptions != null && this.orderDetail.splOptions != null){
         this.orderDetailIsShow = true;
       // }
-      
+
     },
     /** 关闭所有对话框 */
     handleClose() {
@@ -1236,7 +1237,7 @@ export default {
     getworkflowManageList() {
       workflowManage
         .getLists(
-          {"application": "冲压车间保养审批流程","enable":"true"} 
+          {"application": "冲压车间保养审批流程","enable":"true"}
         )
         .then((res) => {
           this.splOptions = res.data.content;
@@ -1274,7 +1275,7 @@ export default {
         this.getworkflowManageList();
         this.getWorkshopAreaManageList();
         this.getWorkshopSectionList();
-      
+
       checkPlanDetail(null, row.id).then((res) => {
         console.log(res);
         let data = res.data;
@@ -1706,6 +1707,7 @@ export default {
     },
     // 图片上传之前
     beforeAvatarUpload(file) {
+      setHeadToken(this.uploadHeaders);
       // console.log(file);
       const isLt10M = file.size / 1024 / 1024 < 10;
 

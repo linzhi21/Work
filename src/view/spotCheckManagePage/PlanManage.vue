@@ -570,6 +570,7 @@ import { tpmsHeader, tpmsTable, tpmsChoosefile } from "../../components";
 import { parseTime } from "../../utils";
 import { uploadAccessory } from "../../lib/api/accessory";
 import apiConfig from "../../lib/api/apiConfig";
+import {setHeadToken} from "../../utils/index"
 import {
   planList,
   oneWorkorders,
@@ -1348,7 +1349,7 @@ export default {
         const planContents = device.planContents;
         planContents.map((item, i) => {
           if (row.id === item.id) {
-            
+
             item.deleted = true;
           }
         });
@@ -1598,6 +1599,7 @@ export default {
     },
     // 图片上传之前
     beforeAvatarUpload(file) {
+      setHeadToken(this.uploadHeaders);
       const isLt10M = file.size / 1024 / 1024 < 10;
 
       var testmsg = file.name.substring(file.name.lastIndexOf('.')+1)
@@ -1611,7 +1613,7 @@ export default {
             type: 'warning'
         });
       }
-      
+
       if (!isLt10M) {
         this.$message.error("上传头像图片大小不能超过 10M!");
       }

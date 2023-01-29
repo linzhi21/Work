@@ -507,3 +507,18 @@ export function hmacMD5(word) {
   return CryptoJS.HmacMD5(word,secretKey).toString();
 }
 
+/**
+ * el-upload组件预设头信息
+ * @param head
+ * @returns {null}
+ */
+export function setHeadToken(head){
+  if(!head && typeof head !== 'object') return null;
+  head.Authorization = "Bearer " + localStorage.getItem("access_token");
+  let r = Date.now()+''+Math.random();
+  let paramTokenKey = hmacMD5(r);
+  let paramTokenValue = hmacMD5(paramTokenKey);
+  head.paramTokenKey = paramTokenKey;
+  head.paramTokenValue = paramTokenValue;
+}
+
