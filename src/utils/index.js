@@ -1,6 +1,7 @@
 /**
  * Created by PanJiaChen on 16/11/18.
  */
+import CryptoJS from 'crypto-js'
 
 /**
  * Parse the time to string
@@ -433,7 +434,7 @@ export function getWeek(dt) {
 
 /**
  * 获取当天时间 - 0点到23点59
- * @returns 
+ * @returns
  */
 export function getTodoyTimes() {
   const start = new Date(new Date(new Date().toLocaleDateString()).getTime());
@@ -441,13 +442,13 @@ export function getTodoyTimes() {
   const data = {
     startTime: parseTime(start),
     endTime: parseTime(end)
-  } 
+  }
   return data;
 }
 
 /**
  * 获取当月日期 - 0点到23点59
- * @returns 
+ * @returns
  */
 export function getMonthTimes() {
   const y = new Date().getFullYear(); //获取年份
@@ -458,6 +459,66 @@ export function getMonthTimes() {
   const data = {
     startTime: [y,m,1].join("-") + ' 00:00:00',
     endTime: [y,m,d].join("-") + ' 23:59:59'
-  } 
+  }
   return data;
 }
+
+
+/**
+ * DES、HmacMD5加密密钥
+ * @type {string}
+ */
+const secretKey = 'com.tpms.svw.202301';
+
+/**
+ * @description: 加密
+ * @param {*} word
+ */
+export function encodeToken(word) {
+  if(null == word || '' == word){
+    return word
+  }
+  var srcs = CryptoJS.enc.Utf8.parse(word) //  字符串到数组转换，解析明文
+  var key = CryptoJS.enc.Utf8.parse(secretKey) //  字符串到数组转换，解析秘钥
+  var encrypted = CryptoJS.DES.encrypt(srcs, key, { mode: CryptoJS.mode.ECB, padding: CryptoJS.pad.Pkcs7 });
+  return encrypted.toString()
+
+}
+
+/**
+ * @description: 解密
+ * @param {*} word
+ */
+export function decodeToken(word) {
+  if(null == word || '' == word){
+    return word
+  }
+  var key = CryptoJS.enc.Utf8.parse(secretKey) //  字符串到数组转换，解析秘钥
+  var decrypt = CryptoJS.DES.decrypt(word, key, { mode: CryptoJS.mode.ECB, padding: CryptoJS.pad.Pkcs7 });
+  return CryptoJS.enc.Utf8.stringify(decrypt).toString() //  数组到字符串转换
+}
+
+
+/**
+ * @description: HmacMD5加密
+ * @param {*} word
+ */
+export function hmacMD5(word) {
+  return CryptoJS.HmacMD5(word,secretKey).toString();
+}
+
+/**
+ * el-upload组件预设头信息
+ * @param head
+ * @returns {null}
+ */
+export function setHeadToken(head){
+  if(!head && typeof head !== 'object') return null;
+  head.Authorization = "Bearer " + localStorage.getItem("access_token");
+  let r = Date.now()+''+Math.random();
+  let paramTokenKey = hmacMD5(r);
+  let paramTokenValue = hmacMD5(paramTokenKey);
+  head.paramTokenKey = paramTokenKey;
+  head.paramTokenValue = paramTokenValue;
+}
+

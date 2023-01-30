@@ -3,6 +3,23 @@ import { Notification, Message} from 'element-ui';
 import {refreshToken}  from './api/user'
 import route from '../router/index'
 import Cookies from "js-cookie";
+import {hmacMD5} from "../utils/index"
+
+//默认实例的拦截器
+axios.interceptors.request.use(
+  config => {
+    let r = Date.now()+''+Math.random();
+    let paramTokenKey = hmacMD5(r);
+    let paramTokenValue = hmacMD5(paramTokenKey);
+    config.headers['paramTokenKey'] = paramTokenKey;
+    config.headers['paramTokenValue'] = paramTokenValue;
+    return config;
+  },
+  error => {
+    return Promise.reject(error)
+  }
+);
+
 const service = axios.create({
     // withCredentials: true, // send cookies when cross-domain requests
     timeout: 200000 // request timeout
@@ -16,13 +33,18 @@ service.interceptors.request.use(
             config.headers['iv-user'] = Cookies.get('iv-user');
         }
         const access_token = localStorage.getItem('access_token');
-        config.headers.Authorization = 'Bearer ' + access_token;       
+        config.headers.Authorization = 'Bearer ' + access_token;
         const newurl =config.url.substring(config.url.length-9);
         if (newurl == "importURL") {
             config.headers['Content-Type'] = 'multipart/form-data; boundary=<calculated when request is sent>';
         } else {
             config.headers['Content-Type'] = 'application/json';
         }
+        let r = Date.now()+''+Math.random();
+        let paramTokenKey = hmacMD5(r);
+        let paramTokenValue = hmacMD5(paramTokenKey);
+        config.headers['paramTokenKey'] = paramTokenKey;
+        config.headers['paramTokenValue'] = paramTokenValue;
         return config;
     },
     error => {
@@ -82,7 +104,7 @@ service.interceptors.response.use(
                 message: responseData.message,
                 type: 'warning'
             })
-            
+
             store.commit('SET_UPLOADING',false)
           }
 

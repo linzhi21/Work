@@ -37,6 +37,7 @@
 <script>
   import axios from 'axios';
   import apiConfig from '../../../../lib/api/apiConfig';
+  import {setHeadToken} from "../../../../utils";
 //
 export default {
   data() {
@@ -66,7 +67,7 @@ export default {
             const name = disposition.split(";")[1].split("filename=")[1];
             fileName = decodeURI(name);
           }
-            
+
           let blob = new Blob([res.data], {
             type: "application/vnd.ms-excel;charset=utf-8"
           });
@@ -103,7 +104,7 @@ export default {
               const name = disposition.split(";")[1].split("filename=")[1];
               fileName = decodeURI(name);
             }
-          
+
             let blob = new Blob([res.data], {
               type: "application/vnd.ms-excel;charset=utf-8"
             });
@@ -123,6 +124,7 @@ export default {
     },
     /** 设备上传之前的钩子 */
     beforeUpload() {
+      setHeadToken(this.uploadHeaders);
       this.isUploading = true;
       this.$store.commit('SET_UPLOADING',true)
     },

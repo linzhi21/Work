@@ -649,6 +649,7 @@ import { tpmsHeader, tpmsTable, tpmsChoosefile } from "../../components";
 import { uploadAccessory } from "../../lib/api/accessory";
 import apiConfig from "../../lib/api/apiConfig";
 import { device } from "@/lib/api/device.js";
+import {setHeadToken} from "../../utils/index"
 import {
   planList,
   oneWorkorders,
@@ -1295,7 +1296,7 @@ export default {
     getworkflowManageList() {
       workflowManage
         .getLists(
-          {"application": "巡检工单审批","enable":"true"} 
+          {"application": "巡检工单审批","enable":"true"}
         )
         .then((res) => {
           this.splOptions = res.data.content;
@@ -1778,6 +1779,7 @@ export default {
     },
     // 图片上传之前
     beforeAvatarUpload(file) {
+      setHeadToken(this.uploadHeaders);
       // console.log(file);
       const isLt10M = file.size / 1024 / 1024 < 10;
 
