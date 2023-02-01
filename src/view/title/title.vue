@@ -160,6 +160,7 @@ export default {
     /** 退出登陆 */
     logout() {
       Cookies.remove('iv-user',{ path:'/tpmsjct/'});
+      window.close();
       this.$router.replace({
         name: "login",
         params: {
