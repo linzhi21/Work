@@ -43,7 +43,8 @@ export default {
         { props: "success", label: "状态" },
         { props: "createDate", label: "调用时间" },
         { props: "ip", label: "IP" },
-        { props: "exception", label: "异常信息" }
+        { props: "exception", label: "异常信息" },
+        { props: "source", label: "登录方式" }
       ],
       currentPage: 1, //分页起 当前页
       pageSize: 30, //分页器 每页展示多少数据
