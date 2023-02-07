@@ -44,32 +44,32 @@ export default {
 
 
     // GET - 查询设备列表|查询单个设备; POST - 新增设备; PUT - 修改设备;
-    device: `${urls.device}`,
-    bom:`${urls.device}/bom`,
+    device: `${urls.device}/api/device`,
+    bom:`${urls.device}/api/device/bom`,
 
     // GET - 查询异常领用列表
-    getAbnormalConsuming: `${urls.device}/getAbnormalConsuming`,
+    getAbnormalConsuming: `${urls.device}/api/device/getAbnormalConsuming`,
     // GET - 查询单条异常领用详情
-    getAbnormalConsumingDetail: `${urls.device}/getAbnormalConsumingDetail`,
+    getAbnormalConsumingDetail: `${urls.device}/api/device/getAbnormalConsumingDetail`,
     // GET - 查询BOM列表
-    getBom: `${urls.device}/bom`,
+    getBom: `${urls.device}/api/device/bom`,
     // GET - 获取单个BOM备件详情
-    getBomDetail: `${urls.device}/getBomDetail`,
+    getBomDetail: `${urls.device}/api/device/getBomDetail`,
     // GET - 获取设备状态列表|设备状态详情； POST - 新增设备状态； PUT - 修改设备状态；
-    deviceStatus: `${urls.device}/status`,
+    deviceStatus: `${urls.device}/api/device/status`,
 
     //GET - 获取BOM开关状态
-    getEnableBom: `${urls.device}/getEnableBom`,
+    getEnableBom: `${urls.device}/api/device/getEnableBom`,
     // PATCH - 修改BOM开关
-    enableBom: `${urls.device}/enableBom`,
+    enableBom: `${urls.device}/api/device/enableBom`,
     // GET - BOM开关历史记录
-    bomHistory: `${urls.device}/bomHistory`,
+    bomHistory: `${urls.device}/api/device/bomHistory`,
     // GET - 下载bom表单
-    bomDownload: `${urls.device}/bom/download`,
+    bomDownload: `${urls.device}/api/device/bom/download`,
     // GET - 导出设备
-    deviceDownload: `${urls.device}/download`,
+    deviceDownload: `${urls.device}/api/device/download`,
     // GET - 导出bom备件
-    deviceBomDownload: `${urls.device}/bom/download`,
+    deviceBomDownload: `${urls.device}/api/device/bom/download`,
 
 
     // GET - 查询通用备件列表｜查询单个通用备件详情； POST - 添加通用备件； PUT - 修改通用备件； PATCH - 启用/禁用通用备件

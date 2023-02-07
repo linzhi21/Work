@@ -1,18 +1,20 @@
 import axios from 'axios';
+import buildURL from 'axios/lib/helpers/buildURL'
 import { Notification, Message} from 'element-ui';
 import {refreshToken}  from './api/user'
 import route from '../router/index'
 import Cookies from "js-cookie";
 import {hmacMD5} from "../utils/index"
+import dev from "../../environment.dev";
+import prod from "../../environment.prod";
+
+const urls = process.env.NODE_ENV === 'development' ? dev : prod;
+const systemUrls = [urls.systemUrl, urls.oauth2, urls.system, urls.device, urls.spare, urls.business, urls.approval, urls.accessory, urls.database, urls.expert, urls.log]
 
 //默认实例的拦截器
 axios.interceptors.request.use(
   config => {
-    let r = Date.now()+''+Math.random();
-    let paramTokenKey = hmacMD5(r);
-    let paramTokenValue = hmacMD5(paramTokenKey);
-    config.headers['paramTokenKey'] = paramTokenKey;
-    config.headers['paramTokenValue'] = paramTokenValue;
+    addTokenToHead(config)
     return config;
   },
   error => {
@@ -29,23 +31,19 @@ import store from '../store/index.js'
 service.interceptors.request.use(
 
     config => {
-        if(Cookies.get('iv-user')){
-            config.headers['iv-user'] = Cookies.get('iv-user');
-        }
-        const access_token = localStorage.getItem('access_token');
-        config.headers.Authorization = 'Bearer ' + access_token;
-        const newurl =config.url.substring(config.url.length-9);
-        if (newurl == "importURL") {
-            config.headers['Content-Type'] = 'multipart/form-data; boundary=<calculated when request is sent>';
-        } else {
-            config.headers['Content-Type'] = 'application/json';
-        }
-        let r = Date.now()+''+Math.random();
-        let paramTokenKey = hmacMD5(r);
-        let paramTokenValue = hmacMD5(paramTokenKey);
-        config.headers['paramTokenKey'] = paramTokenKey;
-        config.headers['paramTokenValue'] = paramTokenValue;
-        return config;
+      if(Cookies.get('iv-user')){
+          config.headers['iv-user'] = Cookies.get('iv-user');
+      }
+      const access_token = localStorage.getItem('access_token');
+      config.headers.Authorization = 'Bearer ' + access_token;
+      const newurl =config.url.substring(config.url.length-9);
+      if (newurl == "importURL") {
+          config.headers['Content-Type'] = 'multipart/form-data; boundary=<calculated when request is sent>';
+      } else {
+        config.headers['Content-Type'] = 'application/json';
+      }
+      addTokenToHead(config)
+      return config;
     },
     error => {
         console.log(error)
@@ -53,6 +51,38 @@ service.interceptors.request.use(
         return Promise.reject(error)
     }
 );
+
+
+function addTokenToHead(config){
+  let uri = config.url
+  let qs = '';
+  let method = config.method.toUpperCase();
+  for (let systemUrl of systemUrls) {
+    if(uri.startsWith(systemUrl)){
+      uri = uri.substring(systemUrl.length);
+      break;
+    }
+  }
+  uri = uri.startsWith('/') ? uri : '/'+uri;
+  uri = uri.indexOf('?') >=0 ? uri.substring(0,uri.indexOf('?')) : uri;
+
+  if(method === 'GET' && config.params){
+    qs = buildURL("",config.params)
+    if(qs && qs.startsWith('?')){
+      qs = qs.substring(1);
+    }
+  } else if(config.data){
+    qs = typeof config.data == 'string' ? config.data : JSON.stringify(config.data);
+  } else if(config.url.indexOf('?') >= 0){
+    qs = config.url.substring(config.url.indexOf('?')+1);
+  }
+  qs = qs ? qs : '';
+  let r = Date.now()+''+Math.random();
+  let paramTokenKey = hmacMD5(r);
+  let paramTokenValue = hmacMD5(paramTokenKey+':'+method+':'+uri+':'+qs);
+  config.headers['paramTokenKey'] = paramTokenKey;
+  config.headers['paramTokenValue'] = paramTokenValue;
+}
 
 // response interceptor
 service.interceptors.response.use(
