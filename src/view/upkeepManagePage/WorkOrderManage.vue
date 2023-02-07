@@ -584,6 +584,7 @@ export default {
         this.detailModal = false;
       }).catch(err => {
         this.$message.error('审批失败！');
+        this.getData();
       })
     },
     getUserDropList(query) {

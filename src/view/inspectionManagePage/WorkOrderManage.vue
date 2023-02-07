@@ -355,6 +355,8 @@ export default {
             message: "审批成功!",
           });
           this.orderDetailIsShow = false;
+          //刷新列表
+          this.getTableData();
         })
         .catch((e) => {
           this.$message({
@@ -362,6 +364,8 @@ export default {
             message: e.message,
           });
           this.orderDetailIsShow = false;
+          //刷新列表
+          this.getTableData();
         });
     },
     /**
