@@ -5,7 +5,7 @@ export default {
     /** 系统设置模块 */
     system: 'http://tpms-gateway-runtime.apps.ci-test.ocp.sitc/system',
     /** 设备模块 */
-    device: 'http://tpms-gateway-runtime.apps.ci-test.ocp.sitc/device/api/device',
+    device: 'http://tpms-gateway-runtime.apps.ci-test.ocp.sitc/device',
     /** 备件模块 */
     spare: 'http://tpms-gateway-runtime.apps.ci-test.ocp.sitc/spare/',
     /** 商业模块 */
