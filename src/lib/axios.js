@@ -9,7 +9,7 @@ import dev from "../../environment.dev";
 import prod from "../../environment.prod";
 
 const urls = process.env.NODE_ENV === 'development' ? dev : prod;
-const systemUrls = [urls.systemUrl, urls.oauth2, urls.system, urls.device, urls.spare, urls.business, urls.approval, urls.accessory, urls.database, urls.expert, urls.log]
+const systemUrls = [urls.oauth2, urls.system, urls.device, urls.spare, urls.business, urls.approval, urls.accessory, urls.database, urls.expert, urls.log, urls.systemUrl]
 
 //默认实例的拦截器
 axios.interceptors.request.use(
