@@ -14,78 +14,64 @@
       </el-col>
     </el-row>
     <el-row>
+      <!-- 冲压车间的用户保养计划导入，单独处理下拉列表三个  -->
       <div v-if="isShow">
-              <el-col :span="8">
-                <el-form-item label="区域" label-width="55px">
-                  <el-select v-model="orderDetail.workshopareaId"  disabled placeholder="请选择" style="width: 90%">
-                    <el-option
-                      v-for="item in orderDetail.quOptions"
-                      :key="item.id"
-                      :label="item.label"
-                      :value="item.id"
-                    >
-                    </el-option>
-                  </el-select>
-                </el-form-item>
-              </el-col>
-              <el-col :span="8">
-                <el-form-item label="工段" label-width="55px" >
-                  <el-select
-                    v-model="orderDetail.sectionId"
-                    disabled
-                    clearable placeholder="请选择"
-                    style="width: 90%"
-                  >
-                    <el-option
-                      v-for="item in orderDetail.gdOptions"
-                      :key="item.id"
-                      :label="item.label"
-                      :value="item.id"
-                    >
-                    </el-option>
-                  </el-select>
-                </el-form-item>
-              </el-col>
-              <el-col :span="8">
-                <el-form-item label="审批流" label-width="55px">
-                  <el-select
-                    v-model="orderDetail.ttWorkflowId"
-                    disabled
-                    placeholder="请选择"
-                    style="margin: 0px 10px;width: 90%"
-
-                  >
-                    <el-option
-                      v-for="(item, index) in orderDetail.splOptions"
-                      :key="index"
-                      :label="item.name"
-                      :value="item.id"
-                    >
-                    </el-option>
-                  </el-select>
-                </el-form-item>
-              </el-col>
-            </div>
-      <!-- <el-col :span="11" >
-              <el-form-item label="车间名称">
-                <el-input v-model="orderDetail.workShopName" disabled />
-              </el-form-item>
-            </el-col>-->
-      <!-- <el-col :span="11" :offset="2">
-              <el-form-item label="保养名称">
-                <el-input v-model="orderDetail.name" disabled />
-              </el-form-item>
-            </el-col>-->
-      <!-- <el-col :span="11">
-              <el-form-item label="保养工单编号">
-                <el-input v-model="orderDetail.no" disabled />
-              </el-form-item>
-            </el-col>
-            <el-col :span="11" :offset="2">
-              <el-form-item label="总工时">
-                <el-input v-model="orderDetail.hour" disabled />
-              </el-form-item>
-            </el-col>-->
+        <el-col :span="8">
+          <el-form-item label="区域" label-width="55px">
+            <el-select
+              v-model="orderDetail.workshopareaId"
+              disabled
+              placeholder="请选择"
+              style="width: 90%"
+            >
+              <el-option
+                v-for="item in orderDetail.quOptions"
+                :key="item.id"
+                :label="item.label"
+                :value="item.id"
+              >
+              </el-option>
+            </el-select>
+          </el-form-item>
+        </el-col>
+        <el-col :span="8">
+          <el-form-item label="工段" label-width="55px">
+            <el-select
+              v-model="orderDetail.sectionId"
+              disabled
+              clearable
+              placeholder="请选择"
+              style="width: 90%"
+            >
+              <el-option
+                v-for="item in orderDetail.gdOptions"
+                :key="item.id"
+                :label="item.label"
+                :value="item.id"
+              >
+              </el-option>
+            </el-select>
+          </el-form-item>
+        </el-col>
+        <el-col :span="8">
+          <el-form-item label="审批流" label-width="55px">
+            <el-select
+              v-model="orderDetail.ttWorkflowId"
+              disabled
+              placeholder="请选择"
+              style="margin: 0px 10px; width: 90%"
+            >
+              <el-option
+                v-for="(item, index) in orderDetail.splOptions"
+                :key="index"
+                :label="item.name"
+                :value="item.id"
+              >
+              </el-option>
+            </el-select>
+          </el-form-item>
+        </el-col>
+      </div>
     </el-row>
     <el-row
       v-for="(item, index) in orderDetail.maintainContentColonies"
@@ -97,16 +83,7 @@
           <el-input v-model="item.version" disabled />
         </el-form-item>
       </el-col>
-      <!-- <el-col :span="11" :offset="2">
-              <el-form-item label="工位/工段">
-                <el-input v-model="item.sectionOrStationName" disabled />
-              </el-form-item>
-            </el-col>
-            <el-col :span="11">
-              <el-form-item label="工时">
-                <el-input v-model="item.hour" disabled />
-              </el-form-item>
-            </el-col> -->
+      
       <el-col :span="11" :offset="2">
         <el-form-item label="设备(生产线)名称">
           <el-input v-model="item.deviceNames" disabled />
@@ -174,34 +151,22 @@
           prop="cycleName"
           label="周期"
         ></el-table-column>
-        <!-- <el-table-column align="center" prop="photoDisplay" label="图示">
-                <template slot-scope="scope">
-                  <img
-                    v-if="scope.row.accessoryUrl"
-                    style="width: 40px;height: 40px;"
-                    :src="`${apiConfig.accessoryFile+scope.row.accessoryUrl}`"
-                    class="avatar"
-                  />
-                </template>
-              </el-table-column> -->
       </el-table>
     </el-row>
   </el-form>
 </template>
 <script>
 export default {
-  created(){
-    //console.log("------------");
-    // console.log("dddd"+this.orderDetail.gdOptions.label);
+  created() {
     JSON.parse(localStorage.getItem("user_info")).principal.workshopId === 4
-        ? (this.isShow = true)
-        : (this.isShow = false); 
+      ? (this.isShow = true)
+      : (this.isShow = false);
   },
   name: "ShowPlanManage",
   props: ["orderDetail"],
   data() {
     return {
-      workshopareaId:"",//区域ID
+      workshopareaId: "", //区域ID
     };
   },
 };

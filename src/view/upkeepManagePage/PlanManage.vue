@@ -128,7 +128,7 @@
       element-loading-background="rgba(0, 0, 0, 0.8)"
       :title="newAddDialogTitle"
       :visible.sync="newAddDialog"
-      width="80%"
+      width="90%"
       :before-close="handleClose"
     >
       <!-- 头部表单 -->
@@ -141,24 +141,6 @@
           :rules="rules"
         >
           <el-row>
-            <!-- <el-col :span="11">
-              <el-form-item label="类型2" required="required">
-                <el-radio-group v-model="form.type">
-                  <el-radio label="1">保养计划</el-radio>
-                  <el-radio label="3">日常保养</el-radio>
-                </el-radio-group>
-              </el-form-item>
-            </el-col>-->
-            <!-- <el-col :span="11">
-              <el-form-item label="车间名称">
-                <el-input v-model="form.workshopName" readonly></el-input>
-              </el-form-item>
-            </el-col> -->
-            <!--  <el-col :span="11" :offset="2">
-              <el-form-item label="保养计划编号" required="required">
-                <el-input v-model="form.no" readonly></el-input>
-              </el-form-item>
-            </el-col>-->
             <el-col :span="11">
               <el-form-item label="保养名称" required="required">
                 <el-input v-model="form.name"></el-input>
@@ -169,8 +151,17 @@
             <!-- 冲压车间的用户保养计划导入，单独处理下拉列表三个 -->
             <div v-if="isShow">
               <el-col :span="8">
-                <el-form-item label="区域"   label-width="55px" prop="workshopareaId">
-                  <el-select v-model="form.workshopareaId" @change="getWorkshopSectionList"  placeholder="请选择" style="width: 90%">
+                <el-form-item
+                  label="区域"
+                  label-width="55px"
+                  prop="workshopareaId"
+                >
+                  <el-select
+                    v-model="form.workshopareaId"
+                    @change="getWorkshopSectionList"
+                    placeholder="请选择"
+                    style="width: 90%"
+                  >
                     <el-option
                       v-for="item in quOptions"
                       :key="item.id"
@@ -182,7 +173,7 @@
                 </el-form-item>
               </el-col>
               <el-col :span="8">
-                <el-form-item label="工段"  label-width="55px" prop="sectionId">
+                <el-form-item label="工段" label-width="55px" prop="sectionId">
                   <el-select
                     v-model="form.sectionId"
                     placeholder="请选择"
@@ -199,11 +190,15 @@
                 </el-form-item>
               </el-col>
               <el-col :span="8">
-                <el-form-item label="审批流"  label-width="70px" prop="ttWorkflowId">
+                <el-form-item
+                  label="审批流"
+                  label-width="70px"
+                  prop="ttWorkflowId"
+                >
                   <el-select
                     v-model="form.ttWorkflowId"
                     placeholder="请选择"
-                    style="margin: 0px 10px ;width: 90%"
+                    style="margin: 0px 10px; width: 90%"
                   >
                     <el-option
                       v-for="(item, index) in splOptions"
@@ -217,7 +212,7 @@
               </el-col>
             </div>
           </el-row>
-          <el-row>
+          <el-row v-if="newAddDialogTitle === '新增'">
             <el-col :span="11">
               <el-form-item label="导入保养计划">
                 <div>
@@ -231,200 +226,185 @@
                 </div>
               </el-form-item>
             </el-col>
-            <!-- 代码注释 -->
-            <!-- <el-col :span="6">
-              <el-button type="primary" size="small" @click="uploadFiles(index)">批量导入文件</el-button>
-              <tpms-choosefile isMutiple :multiple='true' plain text='批量导入文件' @getFileData='getMutipleFileData($event,index)'></tpms-choosefile>
-              <el-button type="primary" plain size="mini" @click="addPlanDevice">新增</el-button>
-            </el-col> -->
           </el-row>
-          <el-row
-            v-for="(item, index) in form.maintainContentColonies"
-            :key="index"
-            style="background: #f5f5f5; padding: 0.2rem"
-          >
-            <el-col :span="11">
-              <el-form-item label="设备编号">
-                <el-input v-model="item.deviceNos"></el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :span="11" :offset="2" required="required">
-              <el-form-item label="设备(生产线)名称">
-                <!-- <el-input v-model="item.deviceName"></el-input> -->
-                <!-- <el-select @change="getDeviceId($event,item)" v-model="item.deviceName" placeholder="请选择" style="width:100%">
-                  <el-option v-for="(item,i) in deviceInfo" :key="i" :label="item.name" :value="item.name">
-                  </el-option>
-                </el-select>-->
-                <el-input v-model="item.deviceNames"></el-input>
-              </el-form-item>
-            </el-col>
-
-            <!-- <el-col :span="11">
-              <el-form-item label="工位" required="required">
-                <el-select v-model="item.stationId" style="width:100%">
-                  <el-option v-for="item in stationList" :key="item.id" :label="item.label" :value="item.id"></el-option>
-                </el-select>
-              </el-form-item>
-            </el-col>
-            <el-col :span="11" :offset="2">
-              <el-form-item label="工段" required="required">
-                <el-select v-model="item.sectionId" style="width:100%">
-                  <el-option v-for="item in sectionList" :key="item.id" :label="item.label" :value="item.id"></el-option>
-                </el-select>
-              </el-form-item>
-            </el-col>-->
-            <!-- <el-col :span="11">
-              <el-form-item label="工位(工段)" required="required">
-                <el-input v-model="item.sectionOrStationName"></el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :span="11" :offset="2">
-              <el-form-item label="工时" required="required">
-                <el-input v-model="item.hour" disabled></el-input>
-              </el-form-item>
-            </el-col> -->
-
-            <el-col :span="5">
-              <el-form-item label="版本" required="required">
-                <el-input v-model="item.version"></el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :span="7" :offset="2">
-              <el-form-item label="编制人" required="required">
-                <!-- <el-date-picker value-format='yyyy-MM-dd' v-model="item.deviceCreatorDate" type="date" placeholder="选择日期"
-                style="width: 100%;"></el-date-picker>-->
-                <el-input
-                  readonly
-                  v-model="item.creatorName"
-                  disabled
-                ></el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :span="7" :offset="2">
-              <el-form-item label="编制日期" required="required">
-                <el-input
-                  readonly
-                  v-model="item.createDate"
-                  disabled
-                ></el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :span="24">
-              <el-form-item label="图示">
-                <!-- 20230103 图片拖拽排序 -->
-                <!-- 使用element-ui自带样式 -->
-                <ul class="el-upload-list el-upload-list--picture-card">
-                    <draggable v-model="item.maintainPlanPictures">
-                        <li v-for="(img, index) in item.maintainPlanPictures" :key="img.accessoryId" class="el-upload-list__item is-success animated">
-                            <img :src="img.url" alt="" class="el-upload-list__item-thumbnail ">
-                            <i class="el-icon-close"></i>
-                            <span class="el-upload-list__item-actions">
-                              <!-- 预览 -->
-                              <span class="el-upload-list__item-preview" @click="handlePictureCardPreviewFileDetail(img)">
-                                <i class="el-icon-zoom-in"></i>
-                              </span>
-                              <!-- 删除 -->
-                              <span class="el-upload-list__item-delete" @click="handleRemoveFileDetail(index,item.maintainPlanPictures)">
-                                <i class="el-icon-delete"></i>
-                              </span>
-                            </span>
-                        </li>
-                    </draggable>
-                </ul>
-                    <!-- :file-list="item.maintainPlanPictures || []" -->
-                <el-upload
-                  class="avatar-uploader"
-                  list-type="picture-card"
-                  multiple
-                  :show-file-list="false"
-                  :action="uploadImgUrl"
-                  :headers="uploadHeaders"
-                  accept=".jpg, .png, .jpeg"
-                  :on-error="
-                  (res, file) => handleAvatarError(res, file, item)
-                  "
-                  :on-success="
-                    (res, file) => handleAvatarSuccess(res, file, item)
-                  "
-                  :on-remove="
-                    (file, fileList) => handleRemove(file, fileList, item)
-                  "
-                  :before-upload="beforeAvatarUpload"
-                >
-                  <el-button size="small" type="file">点击上传图示</el-button>
-                </el-upload>
-                <!-- 预览弹出层 -->
-                <el-dialog :visible.sync="dialogVisibleDetail" :append-to-body="true">
-                    <img width="100%" :src="dialogImageDetailUrl" alt="">
-                </el-dialog>
-              </el-form-item>
-            </el-col>
-            <!-- 表格区 -->
-            <el-table
-              :data="item.maintainPlanContents"
-              style="width: 100%"
-              border
-              default-expand-all
-              :tree-props="{
-                children: 'childmaintainPlanContents',
-                hasChildren: 'hasChildren',
-              }"
+          <template v-if="newAddDialogTitle === '新增'">
+            <el-row
+              v-for="(item, index) in form.maintainContentColonies"
+              :key="index"
+              style="background: #f5f5f5; padding: 0.2rem"
             >
-              <el-table-column
-                align="center"
-                type="index"
-                label="项目"
-                width="80"
-              ></el-table-column>
-              <el-table-column align="center" label="保养部件" width="150">
-                <template slot-scope="scope">
+              <el-col :span="11">
+                <el-form-item label="设备编号">
+                  <el-input v-model="item.deviceNos"></el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :span="11" :offset="2" required="required">
+                <el-form-item label="设备(生产线)名称">
+                  <el-input v-model="item.deviceNames"></el-input>
+                </el-form-item>
+              </el-col>
+
+              <el-col :span="5">
+                <el-form-item label="版本" required="required">
+                  <el-input v-model="item.version"></el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :span="7" :offset="2">
+                <el-form-item label="编制人" required="required">
                   <el-input
-                    v-show="scope.row.editShow"
-                    v-model="scope.row.executionPart"
+                    readonly
+                    v-model="item.creatorName"
+                    disabled
                   ></el-input>
-                  <span
-                    v-show="!scope.row.editShow"
-                    :style="{
-                      'text-decoration':
-                        scope.row.deleted === true ? 'line-through' : '',
-                    }"
-                    >{{ scope.row.executionPart }}</span
-                  >
-                </template>
-              </el-table-column>
-              <el-table-column align="center" label="保养位置" width="150">
-                <template slot-scope="scope">
+                </el-form-item>
+              </el-col>
+              <el-col :span="7" :offset="2">
+                <el-form-item label="编制日期" required="required">
                   <el-input
-                    v-show="scope.row.editShow"
-                    v-model="scope.row.executionNode"
+                    readonly
+                    v-model="item.createDate"
+                    disabled
                   ></el-input>
-                  <span
-                    v-show="!scope.row.editShow"
-                    :style="{
-                      'text-decoration':
-                        scope.row.deleted === true ? 'line-through' : '',
-                    }"
-                    >{{ scope.row.executionNode }}</span
+                </el-form-item>
+              </el-col>
+              <el-col :span="24">
+                <el-form-item label="图示">
+                  <!-- 20230103 图片拖拽排序 -->
+                  <!-- 使用element-ui自带样式 -->
+                  <ul class="el-upload-list el-upload-list--picture-card">
+                    <draggable v-model="item.maintainPlanPictures">
+                      <li
+                        v-for="(img, index) in item.maintainPlanPictures"
+                        :key="img.accessoryId"
+                        class="el-upload-list__item is-success animated"
+                      >
+                        <img
+                          :src="img.url"
+                          alt=""
+                          class="el-upload-list__item-thumbnail"
+                        />
+                        <i class="el-icon-close"></i>
+                        <span class="el-upload-list__item-actions">
+                          <!-- 预览 -->
+                          <span
+                            class="el-upload-list__item-preview"
+                            @click="handlePictureCardPreviewFileDetail(img)"
+                          >
+                            <i class="el-icon-zoom-in"></i>
+                          </span>
+                          <!-- 删除 -->
+                          <span
+                            class="el-upload-list__item-delete"
+                            @click="
+                              handleRemoveFileDetail(
+                                index,
+                                item.maintainPlanPictures
+                              )
+                            "
+                          >
+                            <i class="el-icon-delete"></i>
+                          </span>
+                        </span>
+                      </li>
+                    </draggable>
+                  </ul>
+                  <!-- :file-list="item.maintainPlanPictures || []" -->
+                  <el-upload
+                    class="avatar-uploader"
+                    list-type="picture-card"
+                    multiple
+                    :show-file-list="false"
+                    :action="uploadImgUrl"
+                    :headers="uploadHeaders"
+                    accept=".jpg, .png, .jpeg"
+                    :on-error="
+                      (res, file) => handleAvatarError(res, file, item)
+                    "
+                    :on-success="
+                      (res, file) => handleAvatarSuccess(res, file, item)
+                    "
+                    :on-remove="
+                      (file, fileList) => handleRemove(file, fileList, item)
+                    "
+                    :before-upload="beforeAvatarUpload"
                   >
-                </template>
-              </el-table-column>
-              <el-table-column align="center" label="内容">
-                <template slot-scope="scope">
-                  <el-input
-                    v-show="scope.row.editShow"
-                    v-model="scope.row.content"
-                  ></el-input>
-                  <span
-                    v-show="!scope.row.editShow"
-                    :style="{
-                      'text-decoration':
-                        scope.row.deleted === true ? 'line-through' : '',
-                    }"
-                    >{{ scope.row.content }}</span
+                    <el-button size="small" type="file">点击上传图示</el-button>
+                  </el-upload>
+                  <!-- 预览弹出层 -->
+                  <el-dialog
+                    :visible.sync="dialogVisibleDetail"
+                    :append-to-body="true"
                   >
-                </template>
-              </el-table-column>
-              <!-- <el-table-column align="center" label="工时(s)">
+                    <img width="100%" :src="dialogImageDetailUrl" alt="" />
+                  </el-dialog>
+                </el-form-item>
+              </el-col>
+              <!-- 表格区 -->
+              <el-table
+                :data="item.maintainPlanContents"
+                style="width: 100%"
+                border
+                default-expand-all
+                :tree-props="{
+                  children: 'childmaintainPlanContents',
+                  hasChildren: 'hasChildren',
+                }"
+              >
+                <el-table-column
+                  align="center"
+                  type="index"
+                  label="项目"
+                  width="80"
+                ></el-table-column>
+                <el-table-column align="center" label="保养部件" width="150">
+                  <template slot-scope="scope">
+                    <el-input
+                      v-show="scope.row.editShow"
+                      v-model="scope.row.executionPart"
+                    ></el-input>
+                    <span
+                      v-show="!scope.row.editShow"
+                      :style="{
+                        'text-decoration':
+                          scope.row.deleted === true ? 'line-through' : '',
+                      }"
+                      >{{ scope.row.executionPart }}</span
+                    >
+                  </template>
+                </el-table-column>
+                <el-table-column align="center" label="保养位置" width="150">
+                  <template slot-scope="scope">
+                    <el-input
+                      v-show="scope.row.editShow"
+                      v-model="scope.row.executionNode"
+                    ></el-input>
+                    <span
+                      v-show="!scope.row.editShow"
+                      :style="{
+                        'text-decoration':
+                          scope.row.deleted === true ? 'line-through' : '',
+                      }"
+                      >{{ scope.row.executionNode }}</span
+                    >
+                  </template>
+                </el-table-column>
+                <el-table-column align="center" label="内容">
+                  <template slot-scope="scope">
+                    <el-input
+                      v-show="scope.row.editShow"
+                      v-model="scope.row.content"
+                    ></el-input>
+                    <span
+                      v-show="!scope.row.editShow"
+                      :style="{
+                        'text-decoration':
+                          scope.row.deleted === true ? 'line-through' : '',
+                      }"
+                      >{{ scope.row.content }}</span
+                    >
+                  </template>
+                </el-table-column>
+                <!-- <el-table-column align="center" label="工时(s)">
                 <template slot-scope="scope">
                   <el-input
                     v-show="scope.row.editShow"
@@ -434,48 +414,48 @@
                   <span v-show="!scope.row.editShow">{{scope.row.hour}}</span>
                 </template>
               </el-table-column> -->
-              <!-- <el-table-column align="center" label="方法">
+                <!-- <el-table-column align="center" label="方法">
                 <template slot-scope="scope">
                   <el-input v-show="scope.row.editShow" v-model="scope.row.method"></el-input>
                   <span v-show="!scope.row.editShow">{{scope.row.method}}</span>
                 </template>
               </el-table-column> -->
-              <el-table-column align="center" label="周期" width="110">
-                <template slot-scope="scope">
-                  <span v-if="!scope.row.editShow">{{
-                    scope.row.cycleName
-                  }}</span>
-                  <el-select
-                    v-model="scope.row.cycleName"
-                    style="width: 100%"
-                    v-if="scope.row.editShow"
-                  >
-                    <el-option
-                      v-for="item in cycleList"
-                      :key="item.id"
-                      :label="item.label"
-                      :value="item.id"
-                    ></el-option>
-                  </el-select>
-                </template>
-              </el-table-column>
-              <el-table-column align="center" label="顺序" width="110">
-                <template slot-scope="scope">
-                  <el-select
-                    v-model="scope.row.sort"
-                    style="width: 100%"
-                    :disabled="!scope.row.editShow"
-                  >
-                    <el-option
-                      v-for="itemSort in item.maintainPlanContents.length"
-                      :key="itemSort"
-                      :label="itemSort"
-                      :value="itemSort"
-                    ></el-option>
-                  </el-select>
-                </template>
-              </el-table-column>
-              <!-- <el-table-column align="center" prop="photoDisplay" label="图示">
+                <el-table-column align="center" label="周期" width="110">
+                  <template slot-scope="scope">
+                    <span v-if="!scope.row.editShow">{{
+                      scope.row.cycleName
+                    }}</span>
+                    <el-select
+                      v-model="scope.row.cycleName"
+                      style="width: 100%"
+                      v-if="scope.row.editShow"
+                    >
+                      <el-option
+                        v-for="item in cycleList"
+                        :key="item.id"
+                        :label="item.label"
+                        :value="item.id"
+                      ></el-option>
+                    </el-select>
+                  </template>
+                </el-table-column>
+                <el-table-column align="center" label="顺序" width="110">
+                  <template slot-scope="scope">
+                    <el-select
+                      v-model="scope.row.sort"
+                      style="width: 100%"
+                      :disabled="!scope.row.editShow"
+                    >
+                      <el-option
+                        v-for="itemSort in item.maintainPlanContents.length"
+                        :key="itemSort"
+                        :label="itemSort"
+                        :value="itemSort"
+                      ></el-option>
+                    </el-select>
+                  </template>
+                </el-table-column>
+                <!-- <el-table-column align="center" prop="photoDisplay" label="图示">
                 <template slot-scope="scope">
                   <img
                     v-if="scope.row.accessoryUrl"
@@ -485,31 +465,31 @@
                   />
                 </template>
               </el-table-column> -->
-              <el-table-column
-                align="center"
-                width="300"
-                label="操作"
-                fixed="right"
-              >
-                <template slot-scope="scope">
-                  <el-button size="small" @click="scope.row.editShow = true"
-                    >编辑</el-button
-                  >
-                  <el-button size="small" @click="scope.row.editShow = false"
-                    >保存</el-button
-                  >
-                  <el-button
-                    size="small"
-                    @click.native.prevent="
-                      (scope.row.deleted = true),
-                        deleteRow(scope.$index, item.maintainPlanContents),
-                        calcTime(item)
-                    "
-                    :disabled="scope.row.deleted"
-                    style="margin-right: 10px"
-                    >删除</el-button
-                  >
-                  <!-- <div style="display: inline-block;" @click="uploadImg(index,scope.$index)">
+                <el-table-column
+                  align="center"
+                  width="300"
+                  label="操作"
+                  fixed="right"
+                >
+                  <template slot-scope="scope">
+                    <el-button size="small" @click="scope.row.editShow = true"
+                      >编辑</el-button
+                    >
+                    <el-button size="small" @click="scope.row.editShow = false"
+                      >保存</el-button
+                    >
+                    <el-button
+                      size="small"
+                      @click.native.prevent="
+                        (scope.row.deleted = true),
+                          deleteRow(scope.$index, item.maintainPlanContents),
+                          calcTime(item)
+                      "
+                      :disabled="scope.row.deleted"
+                      style="margin-right: 10px"
+                      >删除</el-button
+                    >
+                    <!-- <div style="display: inline-block;" @click="uploadImg(index,scope.$index)">
                     <el-upload
                       class="avatar-uploader"
                       :action="uploadImgUrl"
@@ -521,10 +501,14 @@
                       <el-button size="small" type="file">上传图示</el-button>
                     </el-upload>
                   </div> -->
-                </template>
-              </el-table-column>
-            </el-table>
-          </el-row>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </el-row>
+          </template>
+          <template v-if="newAddDialogTitle === '编辑'">
+            <EditPlanManage ref="EditPlanManage" :form="form" :cycleList="cycleList"/>
+          </template>
           <el-col :span="7" :offset="17" style="margin-top: 20px">
             <el-form-item>
               <el-button
@@ -638,7 +622,7 @@
   </div>
 </template>
 <script>
-import draggable from "vuedraggable";  // 引入插件
+import draggable from "vuedraggable"; // 引入插件
 import { tpmsHeader, tpmsTable, tpmsChoosefile } from "../../components";
 import { uploadAccessory } from "../../lib/api/accessory";
 import apiConfig from "../../lib/api/apiConfig";
@@ -680,7 +664,8 @@ import {
 } from "../../lib/api/workshopSettingsManage";
 
 import ShowPlanManage from "./comp/ShowPlanManage";
-import {setHeadToken} from "../../utils";
+import EditPlanManage from './comp/EditPlanManage';
+import { setHeadToken } from "../../utils";
 export default {
   data() {
     // const statusList =[
@@ -705,21 +690,21 @@ export default {
     });
     return {
       dialogImageDetailUrl: "",
-      dialogVisibleDetail:false,
+      dialogVisibleDetail: false,
       //校验表单数据，为空触发提示
-      rules:{
+      rules: {
         // name:[
         //   {required:true,message:"保养名称不能为空",trigger:"blur"}
         // ],
-        workshopareaId:[
-          {required:true,message:"区域不能为空",trigger:"change"}
+        workshopareaId: [
+          { required: true, message: "区域不能为空", trigger: "change" },
         ],
-        sectionId:[
-          {required:true,message:"工段不能为空",trigger:"change"}
+        sectionId: [
+          { required: true, message: "工段不能为空", trigger: "change" },
         ],
-        ttWorkflowId:[
-          {required:true,message:"审批不能为空",trigger:"change"}
-        ]
+        ttWorkflowId: [
+          { required: true, message: "审批不能为空", trigger: "change" },
+        ],
       },
       isShow: false, //用于判断条件下拉列表显隐
       quOptions: [], //区域下拉列表
@@ -844,6 +829,7 @@ export default {
     tpmsChoosefile,
     ShowPlanManage,
     draggable,
+    EditPlanManage
   },
   created() {},
   mounted() {
@@ -852,18 +838,18 @@ export default {
     this.getworkflowManageList();
     this.getWorkshopAreaManageList();
     this.getWorkshopSectionList();
-    this.gdOptions1= this.gdOptions; //工段查看
-    this.splOptions1=this.splOptions; //审批流查看
+    this.gdOptions1 = this.gdOptions; //工段查看
+    this.splOptions1 = this.splOptions; //审批流查看
     // this.getDeviceList();
   },
   methods: {
     // zyl20230103 放大预览图片
     handlePictureCardPreviewFileDetail(file) {
-        this.dialogImageDetailUrl = file.url;
-        this.dialogVisibleDetail = true;
+      this.dialogImageDetailUrl = file.url;
+      this.dialogVisibleDetail = true;
     },
     // zyl20230103 删除图片
-    handleRemoveFileDetail(index,maintainPlanPictures) {
+    handleRemoveFileDetail(index, maintainPlanPictures) {
       maintainPlanPictures.splice(index, 1);
     },
     /** 导出单个计划 */
@@ -1081,18 +1067,17 @@ export default {
         });
         this.orderDetail = res.data;
         //渲染区域列表;
-        worksectionIdManage(null,this.orderDetail.sectionId).then((r) => {
+        worksectionIdManage(null, this.orderDetail.sectionId).then((r) => {
           //查看时,为区域下拉列表赋值回显;
-          this.$set(this.orderDetail, 'workshopareaId',r.data.workshopAreaId);
+          this.$set(this.orderDetail, "workshopareaId", r.data.workshopAreaId);
         });
         this.orderDetail.quOptions = this.quOptions;
         this.orderDetail.gdOptions = this.gdOptions1;
         this.orderDetail.splOptions = this.splOptions;
       });
       // if(this.orderDetail.gdOptions != null && this.orderDetail.splOptions != null){
-        this.orderDetailIsShow = true;
+      this.orderDetailIsShow = true;
       // }
-
     },
     /** 关闭所有对话框 */
     handleClose() {
@@ -1153,7 +1138,7 @@ export default {
         ],
       };
       this.getWorkshopAreaManage();
-      this.getWorkshopAreaManageList();//查询区域下拉框
+      this.getWorkshopAreaManageList(); //查询区域下拉框
       this.getworkflowManageList(); //查询审批流id下拉框
     },
     // 同步图示库
@@ -1219,24 +1204,22 @@ export default {
     },
     /**获取工段下拉列表 */
     getWorkshopSectionList(areaID) {
-      this.form.sectionId='';
-      workshopSectionManageList.getNames(
-        {"workshopAreaId": areaID}
-      ).then((res) => {
-        this.gdOptions = res.data;
-        if(areaID == null){
-          this.gdOptions1 = res.data;
-        }
-        //this.form.workshopSectionId = res.data[0].id;
-      });
+      this.form.sectionId = "";
+      workshopSectionManageList
+        .getNames({ workshopAreaId: areaID })
+        .then((res) => {
+          this.gdOptions = res.data;
+          if (areaID == null) {
+            this.gdOptions1 = res.data;
+          }
+          //this.form.workshopSectionId = res.data[0].id;
+        });
     },
 
     /**获取审批流下拉列表 */
     getworkflowManageList() {
       workflowManage
-        .getLists(
-          {"application": "冲压车间保养审批流程","enable":"true"}
-        )
+        .getLists({ application: "冲压车间保养审批流程", enable: "true" })
         .then((res) => {
           this.splOptions = res.data.content;
         });
@@ -1270,9 +1253,9 @@ export default {
       JSON.parse(localStorage.getItem("user_info")).principal.workshopId === 4
         ? (this.isShow = true)
         : (this.isShow = false);
-        this.getworkflowManageList();
-        this.getWorkshopAreaManageList();
-        this.getWorkshopSectionList();
+      this.getworkflowManageList();
+      this.getWorkshopAreaManageList();
+      this.getWorkshopSectionList();
 
       checkPlanDetail(null, row.id).then((res) => {
         console.log(res);
@@ -1302,13 +1285,13 @@ export default {
         //   //console.log(this.form.workflowId);
         // });
         //查询岗位的所属区域
-        worksectionIdManage(null,data.sectionId).then((r) => {
+        worksectionIdManage(null, data.sectionId).then((r) => {
           this.form.workshopareaId = r.data.workshopAreaId;
         });
         this.form.status = "";
         this.form = data;
         //为区域下拉列表赋值;
-        this.$set(this.form, 'workshopareaId');
+        this.$set(this.form, "workshopareaId");
       });
       this.newAddDialog = true;
     },
@@ -1357,17 +1340,17 @@ export default {
         return;
       }
       console.log(JSON.stringify(form));
-      this.$refs['form'].validate((valid) => {
+      this.$refs["form"].validate((valid) => {
         if (valid) {
-        addmaintainPlan(form).then((res) => {
-          // console.log(res);
-          this.$message.success("操作成功");
-          this.newAddDialog = false;
-          this.getTableData();
-        });
+          addmaintainPlan(form).then((res) => {
+            // console.log(res);
+            this.$message.success("操作成功");
+            this.newAddDialog = false;
+            this.getTableData();
+          });
           console.log(JSON.stringify(form));
         } else {
-          console.log('error submit!!');
+          console.log("error submit!!");
           return false;
         }
       });
@@ -1375,38 +1358,9 @@ export default {
 
     /** 修改计划 */
     changePlan() {
-      const validate = this.form.maintainContentColonies.some(
-        ({ maintainPlanContents }) => {
-          const arr = maintainPlanContents.map(({ sort }) => sort);
-          return new Set(arr).size !== arr.length;
-        }
-      );
-      if (validate) {
-        this.$message.warning("工作内容顺序重复，请修改");
-        return;
-      }
-      const validateDevices = this.form.maintainContentColonies.filter(
-        (item) => {
-          const validateee = item.maintainPlanContents.filter((itemm) => {
-            if (!itemm.executionNode) return true;
-            if (!itemm.content) return true;
-            if (!itemm.executionPart) return true;
-            // if(!itemm.cycleId) return true;
-            return false;
-          });
-          if (validateee.length) {
-            this.$message.warning("缺少必填项!");
-            return true;
-          }
-          return false;
-        }
-      );
-      if (validateDevices.length) {
-        return;
-      }
-      console.log(JSON.stringify(this.form));
-      delete this.form.status;
-      updatePlanDetail(this.form, this.form.id).then((res) => {
+      const data = this.$refs.EditPlanManage.getPlanData()
+      debugger
+      updatePlanDetail(data, data.id).then((res) => {
         this.newAddDialog = false;
         this.getTableData();
       });
@@ -1675,7 +1629,7 @@ export default {
       this.maintainPlanContentsIndex = num;
     },
     //图片上传失败
-    handleAvatarError(){
+    handleAvatarError() {
       this.$message.error("上传失败");
     },
     // 图片上传成功
