@@ -13,4 +13,5 @@ export const orderStatusList = [
   {key: '2', status: '已接单'},
   {key: '4', status: '未审批'},
   {key: '6', status: '已完成'},
+  {key: '7', status: '审批驳回'},
 ]
