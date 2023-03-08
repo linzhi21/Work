@@ -31,3 +31,10 @@ module.exports = {
 　　　　app: ["babel-polyfill", "./src/main.js"]
 　　}
 };
+
+// 2023.3.8
+* 解决卡顿bug
+    * 在审查那个里面
+    * element ui配置项深挖 
+* 浏览项目代码
+
